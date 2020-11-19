@@ -1,0 +1,48 @@
+doctype html
+html(lang='it')
+    head
+        title WISP Light
+        link(href="scss/style.scss",rel="stylesheet")
+        script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
+        script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
+        script(src="choosepsp.ts")
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    body.page--check
+        .main-wrapper.d-flex.flex-column
+            // HEADER
+            include includes/header.pug
+            .main.flex-fill.container
+                .row.justify-content-md-center
+                    form(action="check.html").windowcont.px-4.px-md-0
+                        .mt-2.mt-md-0
+                            .windowcont__psp
+                                .windowcont__psp__select
+                                    .h3 Seleziona un gestore
+                                    p Ogni gestore propone un suo costo di transazione. In questa lista trovi tutti i gestori 
+                                        strong.font-weight-bold compatibili con la tua carta, anche se non sei loro cliente.
+                                .windowcont__psp__list.my-5
+                                    a.windowcont__psp__item(href="#", data-template="pspitem")
+                                        .d-flex.mb-2
+                                            img(src="https://via.placeholder.com/161x36?text=BANK") 
+                                            .ml-auto.windowcont__psp__tag
+                                                span Donazione
+                                        .d-flex
+                                            .windowcont__psp__label Intesa Sanpaolo
+                                            .windowcont__psp__commission.ml-auto Costo transazione: 
+                                                span € 123
+                            
+                            .windowcont__bottom
+                                .container
+                                    .windowcont__bottom__wrap.d-flex
+                                        a.btn.btn-outline-primary.mr-2(href="check.pug", data-lang="cta.cancel") Indietro
+                                        button.btn.btn-primary.flex-grow-1.windowcont__psp__submit(type="submit", data-lang="cta.continue", disabled) Continua
+                                    .text-center
+                                        a.d-block.font-weight-bold.text-decoration-none.py-2(href="#",data-modal="#modal-choosepspwhytransaction", data-modal-buttons="close") Perchè i costi di transazione?
+                                        
+
+                                        
+
+            // FOOTER
+            include includes/footer.pug
+            include includes/modal/choosepspwhytransaction.pug

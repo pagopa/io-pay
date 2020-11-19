@@ -1,0 +1,36 @@
+{
+    "data": {
+        "sessionToken": "7a1U5u6q1I6g9t7P5j1x4V6g5n6I4a1i3W0e5u2W4f3s7J2h6c8K8c9n4R5b7o3Q8z1f5O4c7w3H9h2f8Y9e4b4T6p6s4B9t8q7T3k0a6G0d3f5F0b5i8D3f5h9W2g3q",
+        "payment": {
+            "id" : 563,
+            "idPayment" : "c8e7c816-2d84-43cb-b961-15cae477a3b5",
+            "amount" : {
+                "currency" : "EUR",
+                "currencyNumber" : null,
+                "amount" : 5415471,
+                "decimalDigits" : 2
+            },
+            "email" : "test123@example.com",
+            "subject" : "Pagamento",
+            "receiver" : "PagoPa",
+            "urlRedirectEc" : "http://localhost:8082/pa/ec?paymentId=a9711488-12fe-4a91-8b5a-f58f0b2657d2",
+            "isCancelled" : false,
+            "bolloDigitale" : false,
+            "fiscalCode" : "SXOBBP86C06G702J",
+            "origin" : "WALLET_APP",
+            "idCarrello" : "fQT2qIxBzZVYuIz",
+            "detailsList" : [ {
+                "idPayment" : null,
+                "IUV" : "iuv_aIPnRTwbJqzNJhv",
+                "CCP" : "ccp_PuvdmMOjTTUUGuy",
+                "idDominio" : "idD_cgYbyOZFbGZNPxH",
+                "enteBeneficiario" : "Vertapple TAFE",
+                "importo" : 54154.71,
+                "tipoPagatore" : "G",
+                "codicePagatore" : "YJIFYF96C50I471P",
+                "nomePagatore" : "Lucia D'amico"
+            } ],
+            "iban" : "IT28V7783068935Q514JA19BB8U"
+        }
+    }
+}
