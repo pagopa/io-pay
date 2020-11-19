@@ -1,0 +1,82 @@
+doctype html
+html(lang='it')
+    - var languages = [{'label':'IT', 'full':'Italiano'},{'label':'EN', 'full':'English'}];
+    - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'amex'}];
+    head
+        title WISP Light
+        link(href="scss/style.scss",rel="stylesheet")
+        script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
+        script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
+        script(src="check.ts")
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    body.page--check
+        .main-wrapper.d-flex.flex-column
+            // HEADER
+            include includes/header.pug
+            .main.flex-fill.container
+                .row.justify-content-md-center
+                    .windowcont.px-4.px-md-0
+                        form(action="response-ok.html").mt-2.mt-md-0
+                            .windowcont__totamount.d-flex.border-bottom.border-bottom-gray.py-2
+                                .h3 Totale
+                                .h3.ml-auto(id="check__totamount") 
+                            .windowcont__paywith.d-flex.py-2.mt-2
+                                .font-weight-bold Paga con:
+                                a(href="index.pug").text-decoration-none.font-weight-bold.ml-auto Modifica
+                            .windowcont__recapcc.mt-2.mb-4
+                                .windowcont__recapcc__inner.p-4.rounded.shadow.d-flex.flex-column.justify-content-between
+                                    .text-monospace(id="check__creditcardnumber") 
+                                    .windowcont__recapcc__valid Valida fino al 
+                                        span(id="check__creditcardexpirationdate") 
+                                    .windowcont__recapcc__holder.d-flex.align-items-center
+                                        .text-uppercase(id="check__creditcardname") 
+                                        svg.windowcont__recapcc__circuit.card.ml-auto(height="30", width="43")
+                                            title= "Circuito"
+                                            use(href="/assets/icons/sprite.svg#it-card")
+                                        svg.windowcont__recapcc__circuit--custom.card.ml-auto.d-none(height="30", width="48")
+                                            title= "Circuito"
+                                            use(href="/assets/icons/app.svg#icons-visa")
+                            .windowcont__paymanage.d-flex.mt-2.border-top.border-top-gray.py-3
+                                .font-weight-bold Il pagamento sarà gestito da
+                                svg.icon.icon-sm.icon-primary.ml-auto.cursor-pointer(data-modal="#modal-checkwhypsp", data-modal-buttons="close")
+                                    title= "Info gestore"
+                                    use(href="/assets/icons/sprite.svg#it-info-circle")
+                            .windowcont__bank.d-flex.py-2.mt-2.align-items-center
+                                div
+                                    img(src="https://via.placeholder.com/161x36?text=BANK") 
+                                a.font-weight-bold.text-decoration-none.ml-auto(href="choosepsp.pug") Modifica
+                            .windowcont__comm.d-flex.py-2.mt-2.border-bottom.border-bottom-gray
+                                div.text-muted Costo transazione
+                                div.ml-auto.d-flex.font-weight-bold € 0,50
+                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-checkpaypsp", data-modal-buttons="close")
+                                        title= "Info PSP"
+                                        use(href="/assets/icons/sprite.svg#it-info-circle")
+                            .windowcont__sendto.d-flex.py-2.mt-2.border-bottom.border-bottom-gray
+                                div.text-muted Invio esito a
+                                div.ml-auto.d-flex.font-weight-bold da******@g***.com
+                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-checkemail", data-modal-buttons="close")
+                                        title= "Info PSP"
+                                        use(href="/assets/icons/sprite.svg#it-info-circle")
+                            .windowcont__payattention.py-4.mt-2
+                                div.small.text-center
+                                    span.font-weight-bold Attenzione:&nbsp;
+                                    span dopo la conferma non sarà più possibile annullare
+                            .windowcont__bottom
+                                .container
+                                    .windowcont__bottom__wrap.d-flex
+                                        a.btn.btn-outline-primary.mr-2(data-modal="#modal-checkcancel", data-modal-buttons="cancel,close", href="#", data-lang="cta.cancel") Annulla
+                                        button.btn.btn-primary.flex-grow-1(type="submit", data-lang="cta.continue") Paga 
+                                            span.amount(id="check__totamount__button") &nbsp;
+                                    .text-center
+                                        a.d-block.font-weight-bold.text-decoration-none.py-2(href="#",data-modal="#modal-checkwhypsp", data-modal-buttons="close") Perchè vedo Intesa San Paolo?
+                                        
+
+                                        
+
+            // FOOTER
+            include includes/footer.pug                       
+            include includes/modal/checkcancel.pug
+            include includes/modal/checkwhypsp.pug
+            include includes/modal/checkpaypsp.pug
+            include includes/modal/checkemail.pug

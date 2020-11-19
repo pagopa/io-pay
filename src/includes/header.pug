@@ -1,0 +1,19 @@
+header.position-fixed.header.bg-white.shadow.py-3.py-md-2.px-4.d-flex
+    .header__sx.d-flex
+        .logo-pagopa.d-flex.align-items-center.mr-2.mr-md-4
+            svg(width="56", height="36")
+                title Logo pagoPA
+                use(href="/assets/icons/app.svg#pagopa-logo")
+        .logo-institution.d-flex.align-items-center.mr-2
+            svg(width="46", height="48")
+                title Logo Ente
+                use(href="/assets/icons/app.svg#institutions-milano")
+    .topbar.d-flex.flex-fill.flex-column.align-items-end.align-items-md-center.justify-content-center.mr-2
+        .topbar__name.text-center.d-none.d-md-inline-flex(data-sessiondata="enteBeneficiario") 
+        .topbar__obj.text-center.font-weight-bold.my-1.d-none.d-md-inline-flex(data-sessiondata="subject") 
+        .topbar__amount.font-weight-bold(data-sessiondata="importo")   
+    .header__dx.d-flex
+        .align-items-center.d-flex.d-md-none
+            a.btn-dropdown(href="#",role="button",data-target="paymentdash", aria-expanded="false")
+                svg.icon.icon-primary
+                    use(href="/assets/icons/sprite.svg#it-info-circle")

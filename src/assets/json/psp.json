@@ -1,0 +1,30 @@
+[
+    {
+        "name":"Intesa Sanpaolo",
+        "label":"Intesa Sanpaolo",
+        "image":"",
+        "commission":1.25,
+        "tag": "Donazioni"
+    },
+    {
+        "name":"Unicredit",
+        "label":"Unicredit",
+        "image":"",
+        "commission":2,
+        "tag":""
+    },
+    {
+        "name":"Postepay",
+        "label":"Postepay",
+        "image":"",
+        "commission":0.5,
+        "tag": "Donazioni"
+    },
+    {
+        "name":"Nexi",
+        "label":"Intesa Sanpaolo",
+        "image":"",
+        "commission":1,
+        "tag":""
+    }
+]
