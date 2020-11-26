@@ -1,0 +1,5 @@
+# never lint node_modules
+node_modules
+
+# We should not lint assets
+assets
