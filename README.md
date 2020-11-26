@@ -2,17 +2,16 @@
 # io-pay
 - [io-pay](#io-pay)
   - [Prerequisites](#prerequisites)
-  - [Usage](#usage)
+  - [Running](#running)
   
 Is a [WISP](https://docs.italia.it/italia/pagopa/pagopa-specifichepagamenti-docs/it/stabile/_docs/SANP_2.2_Sez2_Cap06_ComponentiTecnicheNodo.html#componente-wisp) replacement project and it will be the first web interface to allow guest (_citizen_) payment of [pagoPa](https://www.pagopa.gov.it/) system.
 
-From now wont be true _"pagoPA non è un sito dove pagare"_ it'll be too 🚀
-
 ## Prerequisites
 
-## Usage
+- [yarn](https://classic.yarnpkg.com/en/docs/getting-started)
+## Running
 
-From one console typing :
+Run the following commands in your console :
 ```sh
 yarn install
 yarn start
@@ -20,6 +19,6 @@ yarn start
 
 then open browser [here](http://localhost:1234/index.html?p=12345)
 
-it's all rights you will see something like that 👍
+You should now see something like the following 👍
 
 ![](./doc/2020-11-20-18-45-33.png)
