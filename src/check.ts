@@ -1,10 +1,6 @@
-import Tingle from 'tingle.js';
-import { getUrlParameter } from './js/urlUtilities';
-import { setTranslateBtns } from './js/translateui';
+import CreditCard from 'card-validator';
 import { userSession } from './js/sessiondata';
-import { modalWindows, getModals } from './js/modals';
-
-const CreditCard = require('card-validator');
+import { modalWindows } from './js/modals';
 
 document.addEventListener('DOMContentLoaded', function () {
     userSession();
@@ -35,14 +31,21 @@ document.addEventListener('DOMContentLoaded', function () {
         circuitCustomEl?.classList.remove('d-none');
         circuitDefaultEl?.classList.add('d-none');
         const circuitCustomUrl = circuitCustomTypeHref?.replace('#icons-visa', `#icons-${creditcardcircuit}`);
-        circuitCustomType?.setAttribute('href', circuitCustomUrl);
+
+        circuitCustomType?.setAttribute('href', circuitCustomUrl || '');
     }
 
-    const creditcardnumberMasked = creditcardnumber.slice(creditcardnumber.length - 3, creditcardnumber.length);
+    const creditcardnumberMasked = creditcardnumber?.slice(creditcardnumber.length - 3, creditcardnumber.length);
 
-    checkTotamount.innerText = `€ ${Intl.NumberFormat('it-IT').format(amount)}`;
-    checkTotamountButton.innerText = `€ ${Intl.NumberFormat('it-IT').format(amount)}`;
-    checkCreditcardname.innerText = creditcardname;
-    checkCreditcardexpirationdate.innerText = creditcardexpirationdate;
-    checkCreditcardnumber.innerText = '****' + creditcardnumberMasked;
+    checkTotamount?.setAttribute('innerText', `€ ${Intl.NumberFormat('it-IT').format(+(amount || '0'))}`);
+    checkTotamountButton?.setAttribute('innerText', `€ ${Intl.NumberFormat('it-IT').format(+(amount || '0'))}`);
+    checkCreditcardname?.setAttribute('innerText', creditcardname || '');
+    checkCreditcardexpirationdate?.setAttribute('innerText', creditcardexpirationdate || '');
+    checkCreditcardnumber?.setAttribute('innerText', '****' + (creditcardnumberMasked || ''));
+
+    // checkTotamount.innerText = `€ ${Intl.NumberFormat('it-IT').format(amount)}`;
+    // checkTotamountButton.innerText = `€ ${Intl.NumberFormat('it-IT').format(amount)}`;
+    // checkCreditcardname.innerText = creditcardname;
+    // checkCreditcardexpirationdate.innerText = creditcardexpirationdate;
+    // checkCreditcardnumber.innerText = '****' + creditcardnumberMasked;
 });
