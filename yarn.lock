@@ -1440,6 +1440,11 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
+"@types/tingle.js@^0.13.1":
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/@types/tingle.js/-/tingle.js-0.13.1.tgz#640ab7f89d401bafcbe9aa6a88964fbb211f9ae4"
+  integrity sha512-Ke2Aza6HGg1v3dessXdNogGhyHNzTeYKDNLzGks7L0WnO4bPtIjuhIw2+23FR+IFWNzehTgeeDYbfhslU9Izhg==
+
 "@types/yargs-parser@*":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-15.0.0.tgz#cb3f9f741869e20cce330ffbeb9271590483882d"
