@@ -3,3 +3,7 @@ node_modules
 
 # We should not lint assets
 assets
+
+.eslintrc.js
+cssnano.config.js
+jest.config.js
