@@ -23,15 +23,15 @@ import {
   TypeofApiParams
 } from "italia-ts-commons/lib/requests";
 import { Omit } from "italia-ts-commons/lib/types";
-import { BancomatCardsRequest } from "../../definitions/pagopa/walletv2/BancomatCardsRequest";
-import {
+// import { BancomatCardsRequest } from "../../definitions/pagopa/walletv2/BancomatCardsRequest";
+/* import {
   addWalletsBancomatCardUsingPOSTDecoder,
   getAbiListUsingGETDefaultDecoder,
   GetAbiListUsingGETT,
   getPansUsingGETDefaultDecoder,
   GetPansUsingGETT,
   getWalletsV2UsingGETDecoder
-} from "../../definitions/pagopa/walletv2/requestTypes";
+} from "../../definitions/pagopa/walletv2/requestTypes"; */
 import {
   addWalletCreditCardUsingPOSTDecoder,
   AddWalletCreditCardUsingPOSTT,
@@ -217,14 +217,15 @@ export type GetWalletsV2UsingGETTExtra = r.IGetApiRequestType<
   | r.IResponseType<401, undefined>
   | r.IResponseType<403, undefined>
   | r.IResponseType<404, undefined>
->;
+  >;
+/*
 const getWalletsV2: GetWalletsV2UsingGETTExtra = {
   method: "get",
   url: () => "/v2/wallet",
   query: () => ({}),
   headers: ParamAuthorizationBearerHeader,
   response_decoder: getWalletsV2UsingGETDecoder(PatchedWalletV2ListResponse)
-};
+}; */
 
 const checkPayment: CheckPaymentUsingGETT = {
   method: "get",
@@ -391,7 +392,9 @@ const deleteWallet: DeleteWalletUsingDELETET = {
   query: () => ({}),
   headers: ParamAuthorizationBearerHeader,
   response_decoder: constantEmptyDecoder
-};
+}
+
+/* BANCOMAT SUPPORt??
 
 const getAbi: GetAbiListUsingGETT = {
   method: "get",
@@ -439,6 +442,7 @@ const addPans: AddWalletsBancomatCardUsingPOSTTExtra = {
   )
 };
 
+*/
 const withPaymentManagerToken = <P extends { Bearer: string }, R>(
   f: (p: P) => Promise<R>
 ) => (token: PaymentManagerToken) => async (
@@ -468,9 +472,9 @@ export function PaymentManagerClient(
     getWallets: flip(
       withPaymentManagerToken(createFetchRequestForApi(getWallets, options))
     )({}),
-    getWalletsV2: flip(
+    /* getWalletsV2: flip(
       withPaymentManagerToken(createFetchRequestForApi(getWalletsV2, options))
-    )({}),
+    )({}), */
     getTransactions: (start: number) =>
       flip(
         withPaymentManagerToken(
@@ -594,6 +598,7 @@ export function PaymentManagerClient(
       )({
         id
       }),
+    /*
     getAbi: flip(
       withPaymentManagerToken(createFetchRequestForApi(getAbi, altOptions))
     )({}),
@@ -601,10 +606,10 @@ export function PaymentManagerClient(
       flip(
         withPaymentManagerToken(createFetchRequestForApi(getPans, altOptions))
       )({ abi }),
-    addPans: (cards: BancomatCardsRequest) =>
+     addPans: (cards: BancomatCardsRequest) =>
       flip(
         withPaymentManagerToken(createFetchRequestForApi(addPans, altOptions))
-      )({ bancomatCardsRequest: cards })
+      )({ bancomatCardsRequest: cards }) */
   };
 }
 
