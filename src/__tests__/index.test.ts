@@ -1,7 +1,7 @@
 describe('index', () => {
-    it('should work', () => {
-        pending('TODO');
-    });
+  it('should work', () => {
+    pending('TODO');
+  });
 });
 
 export {};

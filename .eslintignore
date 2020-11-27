@@ -1,9 +1,11 @@
-# never lint node_modules
+# Never lint node_modules
 node_modules
 
-# We should not lint assets
+# We shouldn't lint assets nor generated files
 assets
+generated
 
+# Don't lint conf files
 .eslintrc.js
 cssnano.config.js
 jest.config.js
