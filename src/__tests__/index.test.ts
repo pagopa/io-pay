@@ -3,3 +3,5 @@ describe('index', () => {
         pending('TODO');
     });
 });
+
+export {};
