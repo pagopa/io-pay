@@ -28,7 +28,10 @@ import { BPayInfo as BPayInfoPagoPa } from "../../definitions/pagopa/walletv2/BP
 import { CardInfo } from "../../definitions/pagopa/walletv2/CardInfo";
 import { SatispayInfo as SatispayInfoPagoPa } from "../../definitions/pagopa/walletv2/SatispayInfo";
 import { WalletTypeEnum } from "../../definitions/pagopa/walletv2/WalletV2";
-import { IndexedById } from "../store/helpers/indexer";
+// import { IndexedById } from "../store/helpers/indexer";
+import {
+  IndexedById
+} from "../utils/indexer";
 import {
   CreditCardCVC,
   CreditCardExpirationMonth,
