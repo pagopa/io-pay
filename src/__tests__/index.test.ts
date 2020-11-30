@@ -1,5 +1,7 @@
-describe("index", () => {
-  it("should work", () => {
-    pending("TODO");
+describe('index', () => {
+  it('should work', () => {
+    pending('TODO');
   });
 });
+
+export {};
