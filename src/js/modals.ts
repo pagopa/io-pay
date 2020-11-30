@@ -15,6 +15,7 @@ const modalWindows = () => {
     // eslint-disable-next-line functional/immutable-data
     modals[modalName] = new Tingle.modal({
       footer: true,
+      // TODO: this reference is used in a tricky way. refactor?
       /* onOpen: () => {
                 const customClose = this.modalBox.querySelector('.modalwindow__close');
                 if (customClose !== null) {
