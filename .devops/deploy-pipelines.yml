@@ -106,8 +106,6 @@ stages:
           - download: current
             artifact: Bundle
 
-          - script: echo $PWD && ls -lrt
-
           - task: AzureFileCopy@4
             inputs:
               sourcePath: '$(Pipeline.Workspace)/Bundle/*'
@@ -131,7 +129,7 @@ stages:
 
           - task: AzureFileCopy@4
             inputs:
-              sourcePath: '$(System.DefaultWorkingDirectory)/*'
+              sourcePath: '$(Pipeline.Workspace)/Bundle/*'
               azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
               destination: 'AzureBlob'
               storage: '$(PRODUCTION_STORAGE_ACCOUNT_NAME)'
