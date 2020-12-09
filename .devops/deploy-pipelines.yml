@@ -106,6 +106,8 @@ stages:
           - download: current
             artifact: Bundle
 
+          - script: echo $PWD && ls -lrt
+
           - task: AzureFileCopy@4
             inputs:
               sourcePath: '$(System.DefaultWorkingDirectory)/*'
