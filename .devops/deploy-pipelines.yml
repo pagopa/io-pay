@@ -110,11 +110,11 @@ stages:
 
           - task: AzureFileCopy@4
             inputs:
-              sourcePath: '$(System.DefaultWorkingDirectory)/*'
+              sourcePath: '$(Pipeline.Workspace)/Bundle/*'
               azureSubscription: '$(STAGING_AZURE_SUBSCRIPTION)'
               destination: 'AzureBlob'
               storage: '$(STAGING_STORAGE_ACCOUNT_NAME)'
-              containerName: 'xxx'
+              containerName: '$(BLOB_CONTAINER_NAME)'
             displayName: Deploy to container blob
 
   # Deploy bundle to the production container
