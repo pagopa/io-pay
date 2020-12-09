@@ -11,9 +11,9 @@
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "build": "npm-run-all -s build:*",
+    "build": "parcel build src/index.ts src/*.pug",
     "build:index": "parcel build src/index.ts ",
-    "buil:template": "parcel build src/*.pug",
+    "build:template": "parcel build src/*.pug",
     "start": "parcel src/*.pug",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md"
