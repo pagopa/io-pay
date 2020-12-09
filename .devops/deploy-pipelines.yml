@@ -101,6 +101,8 @@ stages:
     jobs:
       - job: 'deploy_to_container'
         steps:
+          - checkout: none
+
           - download: current
             artifact: Bundle
 
@@ -120,6 +122,8 @@ stages:
     jobs:
       - job: 'deploy_to_container'
         steps:
+          - checkout: none
+
           - download: current
             artifact: Bundle
 
