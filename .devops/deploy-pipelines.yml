@@ -125,7 +125,6 @@ stages:
           - template: templates/rest-healthcheck/template.yaml@pagopaCommons 
             parameters:
               azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
-              responseCheckString: 'version'
               endpoint: https://$(ENDPOINT_AZURE).azureedge.net/$(MY_INDEX)
               endpointType: 'public'
               appName: ''
