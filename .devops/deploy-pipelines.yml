@@ -127,11 +127,6 @@ stages:
               azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
               endpoint: 'https://$(ENDPOINT_AZURE).azureedge.net/$(MY_INDEX)'
               endpointType: 'public'
-              headers: 'no-headers'
-              appName: 'NONE'
-              containerInstanceResourceGroup: 'NONE'
-              containerInstanceVNet: 'NONE'
-              containerInstanceSubnet: 'NONE'
 
   # Deploy bundle to the production container
   - stage: Deploy_production
