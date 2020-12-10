@@ -127,6 +127,7 @@ stages:
               azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
               endpoint: https://$(ENDPOINT_AZURE).azureedge.net/$(MY_INDEX)
               endpointType: 'public'
+              headers: 'no-headers'
               appName: 'NONE'
               containerInstanceResourceGroup: 'NONE'
               containerInstanceVNet: 'NONE'
