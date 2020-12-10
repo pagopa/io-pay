@@ -113,7 +113,7 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 #purge everything
-                call az cdn endpoint purge -g $(RESOURCE_GROUP_AZURE) -n $(ENDPOINT_AZURE) --profile-name '$(STAGING_STORAGE_ACCOUNT_NAME)' --content-paths "/*"
+                call az cdn endpoint purge -g $(RESOURCE_GROUP_AZURE) -n $(ENDPOINT_AZURE) --profile-name $(STAGING_STORAGE_ACCOUNT_NAME) --content-paths "/*"
 
           - task: AzureFileCopy@4
             inputs:
