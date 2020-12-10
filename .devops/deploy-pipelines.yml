@@ -136,6 +136,10 @@ stages:
               responseCheckString: '$(IO_PAY_VERSION)'
               endpoint: https://$(ENDPOINT_AZURE).azureedge.net/$(MY_INDEX)
               endpointType: 'public'
+              appName: ''
+              containerInstanceResourceGroup: ''
+              containerInstanceVNet: ''
+              containerInstanceSubnet: ''
 
   # Deploy bundle to the production container
   - stage: Deploy_production
