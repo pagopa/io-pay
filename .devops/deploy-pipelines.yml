@@ -107,13 +107,13 @@ stages:
             artifact: Bundle
 
           - task: AzureCLI@1
-            displayName: 'Azure CLI: Purge CDN'
+            displayName: 'Purge CDN'
             inputs:
               azureSubscription: '$(STAGING_AZURE_SUBSCRIPTION)'
               scriptLocation: inlineScript
               inlineScript: |
                 #purge everything
-                call az cdn endpoint purge -g $(RESOURCE_GROUP_AZURE) -n $(ENDPOINT_AZURE) --profile-name $(STAGING_STORAGE_ACCOUNT_NAME) --content-paths "/*"
+                call az cdn endpoint purge -g $(RESOURCE_GROUP_AZURE) -n $(ENDPOINT_AZURE) --profile-name $(PROFILE_NAME_CDN_AZURE) --content-paths "/*"
 
           - task: AzureFileCopy@4
             inputs:
