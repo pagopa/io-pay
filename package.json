@@ -13,14 +13,20 @@
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "test": "jest",
-    "build": "parcel build src/index.ts",
-    "start": "parcel src/*.pug"
+    "test:coverage": "jest --coverage",
+    "build": "parcel build src/index.ts src/*.pug",
+    "build:index": "parcel build src/index.ts ",
+    "build:template": "parcel build src/*.pug",
+    "start": "parcel src/*.pug",
+    "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
+    "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md"
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
     "@types/tingle.js": "^0.13.1",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
+    "auto-changelog": "^2.2.1",
     "bootstrap-italia": "^1.4.1",
     "cssnano": "^4.1.10",
     "danger": "^10.5.3",
