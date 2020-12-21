@@ -14,8 +14,5 @@ export interface IndexedById<T> {
  * @param key   function to extract the key from T
  * @returns     indexed object (e.g. { 1: { id: 1, payload: "X" }, 42: { id: 42, payload: "Y" } } )
  */
-export const toIndexed = <T>(
-  lst: ReadonlyArray<T>,
-  key: (_: T) => string | number
-): IndexedById<T> =>
+export const toIndexed = <T>(lst: ReadonlyArray<T>, key: (_: T) => string | number): IndexedById<T> =>
   lst.reduce((o, obj) => ({ ...o, [key(obj)]: obj }), {} as IndexedById<T>);

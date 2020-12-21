@@ -1,4 +1,4 @@
-import { fromNullable } from "fp-ts/lib/Option";
+import { fromNullable } from 'fp-ts/lib/Option';
 import {
   isRawBancomat,
   isRawBPay,
@@ -6,23 +6,10 @@ import {
   isRawSatispay,
   RawBancomatPaymentMethod,
   RawCreditCardPaymentMethod,
-  RawPaymentMethod
-} from "../types/pagopa";
-import {
-  cardIcons,
-  getCardIconFromBrandLogo
-} from "../components/wallet/card/Logo";
-import pagoBancomatImage from "../../img/wallet/cards-icons/pagobancomat.png";
-import { IndexedById } from "../store/helpers/indexer";
-import { Abi } from "../../definitions/pagopa/walletv2/Abi";
-import I18n from "../i18n";
-import satispayImage from "../../img/wallet/cards-icons/satispay.png";
-import bPayImage from "../../img/wallet/cards-icons/bPay.png";
-import { FOUR_UNICODE_CIRCLES } from "./wallet";
+  RawPaymentMethod,
+} from '../types/pagopa';
 
-export const getPaymentMethodHash = (
-  pm: RawPaymentMethod
-): string | undefined => {
+export const getPaymentMethodHash = (pm: RawPaymentMethod): string | undefined => {
   if (isRawBancomat(pm)) {
     return pm.info.hashPan;
   }
@@ -61,24 +48,18 @@ export const getImageFromPaymentMethod = (paymentMethod: RawPaymentMethod) => {
   return cardIcons.UNKNOWN;
 };
 
-export const getTitleFromBancomat = (
-  bancomatInfo: RawBancomatPaymentMethod,
-  abiList: IndexedById<Abi>
-) =>
+export const getTitleFromBancomat = (bancomatInfo: RawBancomatPaymentMethod, abiList: IndexedById<Abi>) =>
   fromNullable(bancomatInfo.info.issuerAbiCode)
-    .chain(abiCode => fromNullable(abiList[abiCode]))
+    .chain((abiCode: string | number) => fromNullable(abiList[abiCode]))
     .chain(abi => fromNullable(abi.name))
-    .getOrElse(I18n.t("wallet.methods.bancomat.name"));
+    .getOrElse(I18n.t('wallet.methods.bancomat.name'));
 
 /**
  * Choose a textual representation for a {@link PatchedWalletV2}
  * @param paymentMethod
  * @param abiList
  */
-export const getTitleFromPaymentMethod = (
-  paymentMethod: RawPaymentMethod,
-  abiList: IndexedById<Abi>
-) => {
+export const getTitleFromPaymentMethod = (paymentMethod: RawPaymentMethod, abiList: IndexedById<Abi>) => {
   if (isRawCreditCard(paymentMethod)) {
     return getTitleFromCard(paymentMethod);
   }
@@ -86,13 +67,11 @@ export const getTitleFromPaymentMethod = (
     return getTitleFromBancomat(paymentMethod, abiList);
   }
   if (isRawSatispay(paymentMethod)) {
-    return I18n.t("wallet.methods.satispay.name");
+    return I18n.t('wallet.methods.satispay.name');
   }
   if (isRawBPay(paymentMethod)) {
     return (
-      paymentMethod.info.numberObfuscated?.replace(/\*/g, "●") ??
-      paymentMethod.info.bankName ??
-      FOUR_UNICODE_CIRCLES
+      paymentMethod.info.numberObfuscated?.replace(/\*/g, '●') ?? paymentMethod.info.bankName ?? FOUR_UNICODE_CIRCLES
     );
   }
   return FOUR_UNICODE_CIRCLES;

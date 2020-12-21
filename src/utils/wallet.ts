@@ -1,5 +1,4 @@
-import * as t from "io-ts";
-
+import * as t from 'io-ts';
 
 /**
  * it sanitizes psp tags avoiding no string value and string duplicates
@@ -8,8 +7,8 @@ import * as t from "io-ts";
 export const fixWalletPspTagsValues = (w: unknown) => {
   const decoder = t.interface({
     psp: t.interface({
-      tags: t.readonlyArray(t.unknown)
-    })
+      tags: t.readonlyArray(t.unknown),
+    }),
   });
   const decoded = decoder.decode(w);
   if (decoded.isLeft()) {
@@ -21,10 +20,7 @@ export const fixWalletPspTagsValues = (w: unknown) => {
     ...decoded.value,
     psp: {
       ...psp,
-      tags: tags.filter(
-        (item: any, idx: number) =>
-          typeof item === "string" && tags.indexOf(item) === idx
-      )
-    }
+      tags: tags.filter((item: any, idx: number) => typeof item === 'string' && tags.indexOf(item) === idx),
+    },
   };
 };

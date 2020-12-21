@@ -1,4 +1,4 @@
-export type Locales = "en" | "it";
+export type Locales = 'en' | 'it';
 
 // return the current locale set in the device (this could be different from the app supported languages)
 // export const getCurrentLocale = (): Locales => I18n.currentLocale();
@@ -9,4 +9,4 @@ export type Locales = "en" | "it";
  * the fallback will returned
  * @param fallback
  */
-export const getLocalePrimaryWithFallback = (fallback: Locales = "it") => fallback;
+export const getLocalePrimaryWithFallback = (fallback: Locales = 'it') => fallback;
