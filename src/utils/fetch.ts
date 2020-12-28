@@ -2,51 +2,59 @@
  * This module exports an instance of fetch augmented with
  * timeout and retries with exponential backoff.
  */
-import * as t from 'io-ts';
 
+import { debug as cdebug } from 'console';
 import { left, right } from 'fp-ts/lib/Either';
 import { fromEither, TaskEither } from 'fp-ts/lib/TaskEither';
 import { calculateExponentialBackoffInterval } from 'italia-ts-commons/lib/backoff';
 import { AbortableFetch, retriableFetch, setFetchTimeout, toFetch } from 'italia-ts-commons/lib/fetch';
 import { RetriableTask, TransientError, withRetries } from 'italia-ts-commons/lib/tasks';
+
 import { Millisecond } from 'italia-ts-commons/lib/units';
 // import { fetchMaxRetries, fetchTimeout } from "../config";
 
 const fetchMaxRetries = 5;
-const fetchTimeout: Millisecond = t.Integer.decode(parseInt('10000', 10)).getOrElse(1000) as Millisecond;
-/**
- * Returns a fetch wrapped with timeout and retry logic
- */
+const fetchTimeout: Millisecond = 1000 as Millisecond;
+
+//
+// Returns a fetch wrapped with timeout and retry logic
+//
+
 function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries: number): typeof fetch {
   // a fetch that can be aborted and that gets cancelled after fetchTimeoutMs
   const abortableFetch = AbortableFetch(fetchApi);
   const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
-
+  cdebug(timeoutFetch);
   // configure retry logic with default exponential backoff
   // @see https://github.com/pagopa/io-ts-commons/blob/master/src/backoff.ts
   const exponentialBackoff = calculateExponentialBackoffInterval();
   const retryLogic = withRetries<Error, Response>(maxRetries, exponentialBackoff);
-  const retryWithTransient429s = retryLogicForTransientResponseError(_ => _.status === 429, retryLogic);
+  const retryWithTransient429s = retryLogicForTransientResponseError((_: any) => _.status === 429, retryLogic);
   return retriableFetch(retryWithTransient429s)(timeoutFetch);
 }
 
-/**
- * Default fetch configured with a short timeout and an exponential backoff
- * retrying strategy - suitable for calling the backend APIs that are supposed
- * to respond quickly.
- */
+//
+// Default fetch configured with a short timeout and an exponential backoff
+// retrying strategy - suitable for calling the backend APIs that are supposed
+// to respond quickly.
+
 export function defaultRetryingFetch(timeout: Millisecond = fetchTimeout, maxRetries: number = fetchMaxRetries) {
   // Override default react-native fetch with whatwg's that supports aborting
-  // eslint-disable-next-line
-  (global as any).AbortController = require("abort-controller");
-  require('./whatwg-fetch');
+  // eslint-disable-next-line functional/immutable-data
+  (global as any).AbortController = require('abort-controller');
+  require('whatwg-fetch');
+  // After require, the following assert is true: [global.fetch is defined]
 
   return retryingFetch((global as any).fetch, timeout, maxRetries);
 }
 
-/**
- * Fetch with transient error handling. Handle error that occurs once or at unpredictable intervals.
- */
+//
+// Fetch with transient error handling. Handle error that occurs once or at unpredictable intervals.
+//
+
+//
+// Fetch with transient error handling. Handle error that occurs once or at unpredictable intervals.
+//
 export function retryLogicForTransientResponseError(
   p: (r: Response) => boolean,
   retryLogic: (
@@ -63,11 +71,10 @@ export function retryLogicForTransientResponseError(
     );
 }
 
-/**
- * This is a fetch with timeouts, constant backoff and with the logic
- * that handles 404s as transient errors, this "fetch" must be passed to
- * createFetchRequestForApi when creating "getPaymentId"
- */
+// This is a fetch with timeouts, constant backoff and with the logic
+// that handles 404s as transient errors, this "fetch" must be passed to
+// createFetchRequestForApi when creating "getPaymentId"
+
 export const constantPollingFetch = (
   shouldAbort: Promise<boolean>,
   retries: number,
@@ -76,7 +83,7 @@ export const constantPollingFetch = (
 ) => {
   // Override default react-native fetch with whatwg's that supports aborting
   // eslint-disable-next-line
-  (global as any).AbortController = require("abort-controller");
+  (global as any).AbortController = require('abort-controller');
   require('./whatwg-fetch');
 
   // fetch client that can be aborted for timeout

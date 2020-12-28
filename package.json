@@ -5,8 +5,7 @@
   "license": "MIT",
   "pagopa_api_walletv2": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/bonus/specs/bpd/pm/walletv2.json",
   "pagopa_api": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/pagopa/pm/spec.json",
-      "generate:pagopa-api-definitions": "rimraf definitions/pagopa && mkdir -p definitions/pagopa && gen-api-models --api-spec $npm_package_pagopa_api --out-dir ./definitions/pagopa --no-strict --request-types --response-decoders --default-error-type undefined",
-
+  "generate:pagopa-api-definitions": "rimraf definitions/pagopa && mkdir -p definitions/pagopa && gen-api-models --api-spec $npm_package_pagopa_api --out-dir ./definitions/pagopa --no-strict --request-types --response-decoders --default-error-type undefined",
   "scripts": {
     "generate": "npm-run-all generate:*",
     "generate:pagopa-api-definitions": "rimraf definitions/pagopa && mkdir -p definitions/pagopa && gen-api-models --api-spec $npm_package_pagopa_api --out-dir ./definitions/pagopa --no-strict --request-types --response-decoders --default-error-type undefined",
@@ -24,9 +23,12 @@
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
+    "@types/node-fetch": "^2.5.7",
     "@types/tingle.js": "^0.13.1",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
+    "abort-controller": "^3.0.0",
+    "abortcontroller-polyfill": "^1.5.0",
     "auto-changelog": "^2.2.1",
     "bootstrap-italia": "^1.4.1",
     "cssnano": "^4.1.10",
@@ -39,9 +41,12 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-sonarjs": "^0.5.0",
-    "italia-tslint-rules": "^1.1.3",
+    "io-ts": "^1.8.5",
+    "italia-ts-commons": "5.1.11",
     "italia-utils": "^4.1.1",
     "jest": "^25.2.7",
+    "mock-http-server": "^1.4.2",
+    "node-fetch": "^2.6.1",
     "npm-run-all": "^4.1.5",
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.2.0",
@@ -51,13 +56,14 @@
     "sass": "^1.27.0",
     "tingle.js": "^0.15.3",
     "ts-jest": "^25.3.1",
-    "tslint": "^5.1.0",
-    "typescript": "^4.1.2",
-    "whatwg-fetch": "^3.4.1"
+    "typescript": "^3.9.7",
+    "whatwg-fetch": "^3.5.0"
   },
   "dependencies": {
     "assets": "^3.0.1",
-    "card-validator": "^8.1.0",
-    "fp-ts": "^2.9.0"
+    "card-validator": "^8.1.0"
+  },
+  "resolutions": {
+    "fp-ts": "1.12.0"
   }
 }
