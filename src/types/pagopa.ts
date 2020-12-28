@@ -23,9 +23,9 @@ import { CardInfo } from '../../generated/definitions/pagopa/walletv2/CardInfo';
 import { SatispayInfo as SatispayInfoPagoPa } from '../../generated/definitions/pagopa/walletv2/SatispayInfo';
 import { WalletTypeEnum } from '../../generated/definitions/pagopa/walletv2/WalletV2';
 // import { IndexedById } from "../store/helpers/indexer";
-import { IndexedById } from '../utils/indexer';
+// import { IndexedById } from '../utils/indexer';
 import { CreditCardCVC, CreditCardExpirationMonth, CreditCardExpirationYear, CreditCardPan } from '../utils/input';
-import { getImageFromPaymentMethod, getTitleFromBancomat, getTitleFromPaymentMethod } from '../utils/paymentMethod';
+// import { getImageFromPaymentMethod, getTitleFromBancomat, getTitleFromPaymentMethod } from '../utils/paymentMethod';
 
 /**
  * Union of all possible credit card types
@@ -200,6 +200,8 @@ export const isCreditCard = (pm: PaymentMethod | undefined): pm is CreditCardPay
 export const isBPay = (pm: PaymentMethod | undefined): pm is BPayPaymentMethod =>
   pm === undefined ? false : pm.kind === 'BPay';
 
+/*
+
 export const enhanceBancomat = (
   bancomat: RawBancomatPaymentMethod,
   abiList: IndexedById<Abi>,
@@ -225,6 +227,8 @@ export const enhancePaymentMethod = (pm: RawPaymentMethod, abiList: IndexedById<
       };
   }
 };
+
+*/
 
 /**
  * A refined Wallet

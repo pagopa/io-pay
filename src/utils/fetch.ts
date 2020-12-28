@@ -3,7 +3,6 @@
  * timeout and retries with exponential backoff.
  */
 
-import { debug as cdebug } from 'console';
 import { left, right } from 'fp-ts/lib/Either';
 import { fromEither, TaskEither } from 'fp-ts/lib/TaskEither';
 import { calculateExponentialBackoffInterval } from 'italia-ts-commons/lib/backoff';
@@ -24,7 +23,6 @@ function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries:
   // a fetch that can be aborted and that gets cancelled after fetchTimeoutMs
   const abortableFetch = AbortableFetch(fetchApi);
   const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
-  cdebug(timeoutFetch);
   // configure retry logic with default exponential backoff
   // @see https://github.com/pagopa/io-ts-commons/blob/master/src/backoff.ts
   const exponentialBackoff = calculateExponentialBackoffInterval();
@@ -84,7 +82,7 @@ export const constantPollingFetch = (
   // Override default react-native fetch with whatwg's that supports aborting
   // eslint-disable-next-line
   (global as any).AbortController = require('abort-controller');
-  require('./whatwg-fetch');
+  require('whatwg-fetch');
 
   // fetch client that can be aborted for timeout
   const abortableFetch = AbortableFetch((global as any).fetch);
