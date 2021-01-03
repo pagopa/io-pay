@@ -4,7 +4,7 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 
 import ServerMock from 'mock-http-server';
 import nodeFetch from 'node-fetch';
-import { retryLogicForTransientResponseError } from '../fetch';
+import { retryLogicForTransientResponseError, defaultRetryingFetch } from '../fetch';
 
 const {
   AbortController,
@@ -82,5 +82,25 @@ describe('Fetch with transient error', () => {
     await fetchWithRetries(longDelayUrl);
 
     expect(server.requests().length).toEqual(1);
+  });
+
+  it('When calling transientConfigurableFetch should call global fetch maxRetries times', async () => {
+    // After a custom fetch instantiation, the 'global' var is guaranteed to have a fetch field
+    // which points to the whatwg.fetch. In this test suite the global fetch is overridden with
+    // node fetch. Despite the override it should be called a number of times equal to maxRetries
+    const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
+
+    // Set error 404 as transient error.
+    const fetchWithRetries = transientConfigurableFetch(3, 404);
+    await expect(fetchWithRetries(longDelayUrl)).rejects.toEqual('max-retries');
+    expect(mySpyGlobalFetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('Whean calling defaultRetryingFetch should call global fetch at least once', async () => {
+    const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
+
+    const fetchWithRetries = defaultRetryingFetch(200 as Millisecond, 3);
+    await expect(fetchWithRetries(longDelayUrl)).resolves.toHaveProperty('status');
+    expect(mySpyGlobalFetch).toHaveBeenCalled();
   });
 });

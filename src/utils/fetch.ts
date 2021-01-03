@@ -10,7 +10,10 @@ import { AbortableFetch, retriableFetch, setFetchTimeout, toFetch } from 'italia
 import { RetriableTask, TransientError, withRetries } from 'italia-ts-commons/lib/tasks';
 
 import { Millisecond } from 'italia-ts-commons/lib/units';
-// import { fetchMaxRetries, fetchTimeout } from "../config";
+import nodeFetch from 'node-fetch';
+
+// The old following import has been substituted by an explicit declaration
+// { fetchMaxRetries, fetchTimeout } from "../config";
 
 const fetchMaxRetries = 5;
 const fetchTimeout: Millisecond = 1000 as Millisecond;
@@ -38,10 +41,24 @@ function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries:
 
 export function defaultRetryingFetch(timeout: Millisecond = fetchTimeout, maxRetries: number = fetchMaxRetries) {
   // Override default react-native fetch with whatwg's that supports aborting
+
+  // NOTE: In fact, react-native supports Aborting Controller. Please check
+  // https://github.com/facebook/react-native/blob/5e36b0c6eb2494cefd11907673aa018831526750/RNTester/js/XHRExampleAbortController.js
+  // Despite being defined in whatwg specs, the abort controller is defined in a different package.
+  // As a result, the import of whatwg could be avoided
+
   // eslint-disable-next-line functional/immutable-data
   (global as any).AbortController = require('abort-controller');
-  require('whatwg-fetch');
-  // After require, the following assert is true: [global.fetch is defined]
+
+  // NOTE: I left the following line commented since loading the custom fetch module ./whatwg-fetch.js
+  // is the approach of the IO APP. The only benefit of the custom file is to bind the "global"
+  // variable, which is required by Typescript. The package node-fetch alreday resolves
+  // such issue, so I switched to it
+
+  // require('./whatwg-fetch');
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
+  (global as any).fetch = nodeFetch;
 
   return retryingFetch((global as any).fetch, timeout, maxRetries);
 }
@@ -82,7 +99,7 @@ export const constantPollingFetch = (
   // Override default react-native fetch with whatwg's that supports aborting
   // eslint-disable-next-line
   (global as any).AbortController = require('abort-controller');
-  require('whatwg-fetch');
+  require('./whatwg-fetch');
 
   // fetch client that can be aborted for timeout
   const abortableFetch = AbortableFetch((global as any).fetch);

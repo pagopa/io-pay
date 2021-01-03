@@ -2,6 +2,7 @@
  * pagoPA backend client, with functions
  * to call the different API available
  * >>> FROM IOAPP REPO <<<
+ * Removed wallet V2 dependencies
  */
 import { flip } from 'fp-ts/lib/function';
 
@@ -22,15 +23,7 @@ import {
   TypeofApiParams,
 } from 'italia-ts-commons/lib/requests';
 import { Omit } from 'italia-ts-commons/lib/types';
-// import { BancomatCardsRequest } from "../../definitions/pagopa/walletv2/BancomatCardsRequest";
-/* import {
-  addWalletsBancomatCardUsingPOSTDecoder,
-  getAbiListUsingGETDefaultDecoder,
-  GetAbiListUsingGETT,
-  getPansUsingGETDefaultDecoder,
-  GetPansUsingGETT,
-  getWalletsV2UsingGETDecoder
-} from "../../definitions/pagopa/walletv2/requestTypes"; */
+
 import {
   addWalletCreditCardUsingPOSTDecoder,
   AddWalletCreditCardUsingPOSTT,
@@ -58,6 +51,7 @@ import {
   updateWalletUsingPUTDecoder,
   UpdateWalletUsingPUTT,
 } from '../../generated/definitions/pagopa/requestTypes';
+
 import {
   NullableWallet,
   PagoPAErrorResponse,
@@ -349,7 +343,7 @@ const deleteWallet: DeleteWalletUsingDELETET = {
   response_decoder: constantEmptyDecoder,
 };
 
-/* BANCOMAT SUPPORt??
+/* BANCOMAT SUPPORT?? Should be included?
 
 const getAbi: GetAbiListUsingGETT = {
   method: "get",
@@ -503,7 +497,7 @@ export function PaymentManagerClient(
       flip(withPaymentManagerToken(createFetchRequestForApi(deleteWallet, options)))({
         id,
       }),
-    /*
+    /* Bancomat Support? Should be included?
     getAbi: flip(
       withPaymentManagerToken(createFetchRequestForApi(getAbi, altOptions))
     )({}),
