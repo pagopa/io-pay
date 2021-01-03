@@ -60,7 +60,7 @@ describe('Weak Test Suite', () => {
     try {
       const responseP = await paymentManagerClient.getSession('ZXCVBNM098876543');
       expect(responseP.isRight()).toBeTruthy();
-      expect(responseP.map(myRes => myRes.status).getOrElse(404)).toEqual(200);
+      expect(responseP.map((myRes: any) => myRes.status).getOrElse(404)).toEqual(200);
       expect(mySpyCustomFetch).toHaveBeenCalled();
       // Please note this assert is different from the one in raw fetch test
       expect(mySpyGlobalFetch).not.toHaveBeenCalled();
@@ -89,11 +89,11 @@ describe('Weak Test Suite', () => {
     const responseP = await paymentManagerClient.getSession('ZXCVBNM098876543');
     expect(responseP.isRight()).toBeTruthy();
 
-    expect(responseP.map(myRes => myRes.status).getOrElse(404)).toEqual(200);
-
     // Please note the custom fetch gets called, but the global fetch doesn't
     expect(mySpyCustomFetch).toHaveBeenCalled();
     // Please note this assert is different from the one in raw fetch test
     expect(mySpyGlobalFetch).not.toHaveBeenCalled();
+
+    expect(responseP.map((myRes: any) => myRes.status).getOrElse(404)).toEqual(200);
   });
 });
