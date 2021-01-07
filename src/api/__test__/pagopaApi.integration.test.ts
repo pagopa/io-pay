@@ -4,7 +4,7 @@ import { defaultRetryingFetch } from '../../utils/fetch';
 import * as myFetch from '../../utils/fetch';
 
 // Client for the PagoPA PaymentManager
-describe('Weak Test Suite', () => {
+describe('Integration Test Suite for Payment Manager Client', () => {
   it('When invoking getSession should call defaultRetryingFetch', async () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'defaultRetryingFetch');
 
