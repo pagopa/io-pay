@@ -7,7 +7,7 @@ import * as myFetch from '../../utils/fetch';
 import pm from './pm';
 
 // Client for the PagoPA PaymentManager
-describe('Weak Test Suite', () => {
+describe('Unit Test suite for Payment Manager Client', () => {
   // eslint-disable-next-line functional/no-let
   let pmMockServer: Server = {} as Server;
 
