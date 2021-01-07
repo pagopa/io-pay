@@ -12,11 +12,8 @@ import { RetriableTask, TransientError, withRetries } from 'italia-ts-commons/li
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import nodeFetch from 'node-fetch';
 
-// The old following import has been substituted by an explicit declaration
-// { fetchMaxRetries, fetchTimeout } from "../config";
-
-const fetchMaxRetries = 5;
-const fetchTimeout: Millisecond = 1000 as Millisecond;
+// const fetchMaxRetries = 5;
+// const fetchTimeout: Millisecond = 1000 as Millisecond;
 
 //
 // Returns a fetch wrapped with timeout and retry logic
@@ -39,7 +36,7 @@ function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries:
 // retrying strategy - suitable for calling the backend APIs that are supposed
 // to respond quickly.
 
-export function defaultRetryingFetch(timeout: Millisecond = fetchTimeout, maxRetries: number = fetchMaxRetries) {
+export function defaultRetryingFetch(timeout: Millisecond, maxRetries: number) {
   // Override default react-native fetch with whatwg's that supports aborting
 
   // NOTE: In fact, react-native supports Aborting Controller. Please check
