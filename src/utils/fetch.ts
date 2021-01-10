@@ -2,18 +2,13 @@
  * This module exports an instance of fetch augmented with
  * timeout and retries with exponential backoff.
  */
-
+// import { debug as cdebug } from 'console';
 import { left, right } from 'fp-ts/lib/Either';
 import { fromEither, TaskEither } from 'fp-ts/lib/TaskEither';
 import { calculateExponentialBackoffInterval } from 'italia-ts-commons/lib/backoff';
 import { AbortableFetch, retriableFetch, setFetchTimeout, toFetch } from 'italia-ts-commons/lib/fetch';
 import { RetriableTask, TransientError, withRetries } from 'italia-ts-commons/lib/tasks';
-
 import { Millisecond } from 'italia-ts-commons/lib/units';
-import nodeFetch from 'node-fetch';
-
-// The old following import has been substituted by an explicit declaration
-// { fetchMaxRetries, fetchTimeout } from "../config";
 
 const fetchMaxRetries = 5;
 const fetchTimeout: Millisecond = 1000 as Millisecond;
@@ -39,33 +34,14 @@ function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries:
 // retrying strategy - suitable for calling the backend APIs that are supposed
 // to respond quickly.
 
-export function defaultRetryingFetch(timeout: Millisecond = fetchTimeout, maxRetries: number = fetchMaxRetries) {
-  // Override default react-native fetch with whatwg's that supports aborting
-
-  // NOTE: In fact, react-native supports Aborting Controller. Please check
-  // https://github.com/facebook/react-native/blob/5e36b0c6eb2494cefd11907673aa018831526750/RNTester/js/XHRExampleAbortController.js
-  // Despite being defined in whatwg specs, the abort controller is defined in a different package.
-  // As a result, the import of whatwg could be avoided
-
-  // eslint-disable-next-line functional/immutable-data
-  (global as any).AbortController = require('abort-controller');
-
-  // NOTE: I left the following line commented since loading the custom fetch module ./whatwg-fetch.js
-  // is the approach of the IO APP. The only benefit of the custom file is to bind the "global"
-  // variable, which is required by Typescript. The package node-fetch alreday resolves
-  // such issue, so I switched to it
-
-  // require('./whatwg-fetch');
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
-  (global as any).fetch = nodeFetch;
-
-  return retryingFetch((global as any).fetch, timeout, maxRetries);
+export function defaultRetryingFetch(
+  myFetch: typeof fetch,
+  timeout: Millisecond = fetchTimeout,
+  maxRetries: number = fetchMaxRetries,
+) {
+  const abortableFetch = AbortableFetch(myFetch); // works only in browser environment
+  return retryingFetch(toFetch(abortableFetch), timeout, maxRetries);
 }
-
-//
-// Fetch with transient error handling. Handle error that occurs once or at unpredictable intervals.
-//
 
 //
 // Fetch with transient error handling. Handle error that occurs once or at unpredictable intervals.
@@ -114,4 +90,17 @@ export const constantPollingFetch = (
 
   // TODO: remove the cast once we upgrade to tsc >= 3.1 (https://www.pivotaltracker.com/story/show/170819445)
   return retriableFetch(retryWithTransient404s, shouldAbort)(timeoutFetch as typeof fetch);
+};
+
+export const transientConfigurableFetch = (myFetch: typeof fetch, retries: number, httpErrorCode: number) => {
+  const delay = 10 as Millisecond;
+  const timeout: Millisecond = 1000 as Millisecond;
+  const abortableFetch = AbortableFetch(myFetch);
+  const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
+  const constantBackoff = () => delay;
+  const retryLogic = withRetries<Error, Response>(retries, constantBackoff);
+  // makes the retry logic map specific http error code to transient errors (by default only
+  // timeouts are transient)
+  const retryWithTransientError = retryLogicForTransientResponseError(_ => _.status === httpErrorCode, retryLogic);
+  return retriableFetch(retryWithTransientError)(timeoutFetch as typeof fetch);
 };

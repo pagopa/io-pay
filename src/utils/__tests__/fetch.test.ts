@@ -1,20 +1,15 @@
-import { AbortableFetch, retriableFetch, setFetchTimeout, toFetch } from 'italia-ts-commons/lib/fetch';
-import { MaxRetries, withRetries } from 'italia-ts-commons/lib/tasks';
+import { MaxRetries } from 'italia-ts-commons/lib/tasks';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 
 import ServerMock from 'mock-http-server';
 import nodeFetch from 'node-fetch';
-import { retryLogicForTransientResponseError, defaultRetryingFetch } from '../fetch';
+import { defaultRetryingFetch, transientConfigurableFetch } from '../fetch';
 
 const {
   AbortController,
   // eslint-disable-next-line @typescript-eslint/no-var-requires
 } = require('abortcontroller-polyfill/dist/cjs-ponyfill');
 
-//
-// We need to override the global fetch and AbortController to make the tests
-// compatible with node-fetch
-//
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
@@ -41,19 +36,6 @@ function createServerMock(): any {
 
 const longDelayUrl = `http://${TEST_HOST}:${TEST_PORT}/${TEST_PATH}`;
 
-export const transientConfigurableFetch = (retries: number, httpErrorCode: number) => {
-  const delay = 10 as Millisecond;
-  const timeout: Millisecond = 1000 as Millisecond;
-  const abortableFetch = AbortableFetch(fetch);
-  const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
-  const constantBackoff = () => delay;
-  const retryLogic = withRetries<Error, Response>(retries, constantBackoff);
-  // makes the retry logic map specific http error code to transient errors (by default only
-  // timeouts are transient)
-  const retryWithTransientError = retryLogicForTransientResponseError(_ => _.status === httpErrorCode, retryLogic);
-  return retriableFetch(retryWithTransientError)(timeoutFetch as typeof fetch);
-};
-
 describe('Fetch with transient error', () => {
   const server = createServerMock();
 
@@ -62,7 +44,7 @@ describe('Fetch with transient error', () => {
 
   it('Fetch should reach max retry on transient error', async () => {
     // Set error 404 as transient error.
-    const fetchWithRetries = transientConfigurableFetch(3, 404);
+    const fetchWithRetries = transientConfigurableFetch(fetch, 3, 404);
     try {
       // start the fetch request
       await fetchWithRetries(longDelayUrl);
@@ -76,7 +58,7 @@ describe('Fetch with transient error', () => {
   it('Fetch one time retry', async () => {
     // Set error 401 as transient error, the server response is 404.
     // In this case no other retry are performed.
-    const fetchWithRetries = transientConfigurableFetch(3, 401);
+    const fetchWithRetries = transientConfigurableFetch(fetch, 3, 401);
 
     // start the fetch request
     await fetchWithRetries(longDelayUrl);
@@ -91,7 +73,7 @@ describe('Fetch with transient error', () => {
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
     // Set error 404 as transient error.
-    const fetchWithRetries = transientConfigurableFetch(3, 404);
+    const fetchWithRetries = transientConfigurableFetch(fetch, 3, 404);
     await expect(fetchWithRetries(longDelayUrl)).rejects.toEqual('max-retries');
     expect(mySpyGlobalFetch).toHaveBeenCalledTimes(3);
   });
@@ -99,7 +81,7 @@ describe('Fetch with transient error', () => {
   it('Whean calling defaultRetryingFetch should call global fetch at least once', async () => {
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
-    const fetchWithRetries = defaultRetryingFetch(200 as Millisecond, 3);
+    const fetchWithRetries = defaultRetryingFetch(fetch, 200 as Millisecond, 3);
     await expect(fetchWithRetries(longDelayUrl)).resolves.toHaveProperty('status');
     expect(mySpyGlobalFetch).toHaveBeenCalled();
   });
