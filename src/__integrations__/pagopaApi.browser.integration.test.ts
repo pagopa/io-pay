@@ -112,7 +112,7 @@ describe('Custom Fetches test in browser environment', () => {
     await Promise.all([stubServerTerminator.terminate(), myBrowser.close()]);
   });
 
-  it('When the bad endpoint of the server stub is called via a defaultRetryingFetch,, it should return 404', async () => {
+  it('When the bad endpoint of the server stub is called via retryingFetch, it should return 404', async () => {
     // Start server
     const myStubServer: Server = stubServer.listen(PORT, HOST);
     const stubServerTerminator = createHttpTerminator({ server: myStubServer });
@@ -127,7 +127,7 @@ describe('Custom Fetches test in browser environment', () => {
         response =>
           response.url() === `http://${HOST}:${PORT}/transient-error` && response.request().method() === 'GET',
       ),
-      page.addScriptTag({ path: './testCases/defaultRetryingFetch.js' }),
+      page.addScriptTag({ path: './testCases/retryingFetch.js' }),
     ]);
 
     // The GET in test case defaultRetryingFetch is repeated 3 times, but this behaviour

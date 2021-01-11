@@ -3,7 +3,7 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 
 import ServerMock from 'mock-http-server';
 import nodeFetch from 'node-fetch';
-import { defaultRetryingFetch, transientConfigurableFetch } from '../fetch';
+import { retryingFetch, transientConfigurableFetch } from '../fetch';
 
 const {
   AbortController,
@@ -81,7 +81,7 @@ describe('Fetch with transient error', () => {
   it('Whean calling defaultRetryingFetch should call global fetch at least once', async () => {
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
-    const fetchWithRetries = defaultRetryingFetch(fetch, 200 as Millisecond, 3);
+    const fetchWithRetries = retryingFetch(fetch, 200 as Millisecond, 3);
     await expect(fetchWithRetries(longDelayUrl)).resolves.toHaveProperty('status');
     expect(mySpyGlobalFetch).toHaveBeenCalled();
   });

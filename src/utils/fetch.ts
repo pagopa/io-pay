@@ -14,10 +14,10 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 // Returns a fetch wrapped with timeout and retry logic
 //
 
-function retryingFetch(
+export function retryingFetch(
   fetchApi: typeof fetch,
   timeout: Millisecond = 1000 as Millisecond,
-  maxRetries: number = 5,
+  maxRetries: number = 3,
 ): typeof fetch {
   // a fetch that can be aborted and that gets cancelled after fetchTimeoutMs
   const abortableFetch = AbortableFetch(fetchApi);
@@ -36,12 +36,11 @@ function retryingFetch(
 // to respond quickly.
 
 export function defaultRetryingFetch(
-  myFetch: typeof fetch,
+  fetchApi: typeof fetch,
   timeout: Millisecond = 1000 as Millisecond,
   maxRetries: number = 3,
-) {
-  const abortableFetch = AbortableFetch(myFetch);
-  return retryingFetch(toFetch(abortableFetch), timeout, maxRetries);
+): typeof fetch {
+  return retryingFetch(fetchApi, timeout, maxRetries);
 }
 
 //
