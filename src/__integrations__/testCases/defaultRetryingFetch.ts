@@ -3,7 +3,7 @@ import { fetch as polyfilledFetch } from 'whatwg-fetch';
 import { defaultRetryingFetch } from '../../utils/fetch';
 
 function defaultRetryingFetchTest() {
-  // If the environment has an abortable fetch use the default
+  // If the environment doesn't have an abort controller load a polyfill
   if (!globalThis.AbortController) {
     require('abortcontroller-polyfill/dist/abortcontroller-polyfill-only');
   }

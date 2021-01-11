@@ -10,14 +10,15 @@ import { AbortableFetch, retriableFetch, setFetchTimeout, toFetch } from 'italia
 import { RetriableTask, TransientError, withRetries } from 'italia-ts-commons/lib/tasks';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 
-const fetchMaxRetries = 5;
-const fetchTimeout: Millisecond = 1000 as Millisecond;
-
 //
 // Returns a fetch wrapped with timeout and retry logic
 //
 
-function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries: number): typeof fetch {
+function retryingFetch(
+  fetchApi: typeof fetch,
+  timeout: Millisecond = 1000 as Millisecond,
+  maxRetries: number = 5,
+): typeof fetch {
   // a fetch that can be aborted and that gets cancelled after fetchTimeoutMs
   const abortableFetch = AbortableFetch(fetchApi);
   const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
@@ -36,10 +37,10 @@ function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries:
 
 export function defaultRetryingFetch(
   myFetch: typeof fetch,
-  timeout: Millisecond = fetchTimeout,
-  maxRetries: number = fetchMaxRetries,
+  timeout: Millisecond = 1000 as Millisecond,
+  maxRetries: number = 3,
 ) {
-  const abortableFetch = AbortableFetch(myFetch); // works only in browser environment
+  const abortableFetch = AbortableFetch(myFetch);
   return retryingFetch(toFetch(abortableFetch), timeout, maxRetries);
 }
 

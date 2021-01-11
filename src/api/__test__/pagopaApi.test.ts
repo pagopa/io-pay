@@ -1,13 +1,23 @@
 import { Server } from 'http';
 import { Millisecond } from 'italia-ts-commons/lib/units';
+import nodeFetch from 'node-fetch';
 import { PaymentManagerClient } from '../pagopa';
 import { defaultRetryingFetch } from '../../utils/fetch';
 import * as myFetch from '../../utils/fetch';
-
 import pm from './pm';
 
+const {
+  AbortController,
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+} = require('abortcontroller-polyfill/dist/cjs-ponyfill');
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
+(global as any).fetch = nodeFetch;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
+(global as any).AbortController = AbortController;
+
 // Client for the PagoPA PaymentManager
-describe('Weak Test Suite', () => {
+describe('PM Test Suite', () => {
   // eslint-disable-next-line functional/no-let
   let pmMockServer: Server = {} as Server;
 
@@ -23,13 +33,11 @@ describe('Weak Test Suite', () => {
     const paymentManagerClient = PaymentManagerClient(
       'http://127.0.0.1:5000',
       'ZXCVBNM098876543',
-      defaultRetryingFetch(2000 as Millisecond, 0),
-      defaultRetryingFetch(2000 as Millisecond, 0),
+      defaultRetryingFetch(fetch, 2000 as Millisecond, 0),
+      defaultRetryingFetch(fetch, 2000 as Millisecond, 0),
     );
 
     expect(paymentManagerClient).toBeTruthy();
-    expect(global.fetch).toBeTruthy();
-    expect(global.AbortController).toBeTruthy();
 
     // After PM client instantiation, the 'global' var is guaranteed to have a fetch field
     // which points to the node-fetch. Let's spy on it to check if it gets called

@@ -35,7 +35,6 @@ describe('Custom Fetches test in browser environment', () => {
     const myBrowser: Browser = await launch();
     const page = await myBrowser.newPage();
 
-    // page.goto doesn't throw (different behaviour from fetch or page.evaluate)
     const serverResponseKO = await page.goto(`http://${HOST}:${PORT}/transient-error`);
     expect(serverResponseKO).toBeTruthy();
     expect(serverResponseKO?.status()).toEqual(404);
@@ -52,7 +51,6 @@ describe('Custom Fetches test in browser environment', () => {
     const myBrowser: Browser = await launch();
     const page = await myBrowser.newPage();
 
-    // page.goto doesn't throw (different behaviour from fetch or page.evaluate)
     const serverResponse = await page.goto(`http://${HOST}:${PORT}/good-response`);
 
     expect(serverResponse).toBeTruthy();
@@ -109,7 +107,7 @@ describe('Custom Fetches test in browser environment', () => {
 
     // The GET in test case transientConfigurableFetch is repeated 3 times, but this behaviour
     // is already unit tested, so for the purpose of this integration test it is sufficient
-    // to assert that the custom fetch gets called and the server returns 404
+    // to assert that the custom fetch gets called just once and the server returns 404
     expect(serverResponse?.status()).toEqual(404);
     await Promise.all([stubServerTerminator.terminate(), myBrowser.close()]);
   });
@@ -134,7 +132,7 @@ describe('Custom Fetches test in browser environment', () => {
 
     // The GET in test case defaultRetryingFetch is repeated 3 times, but this behaviour
     // is already unit tested, so for the purpose of this integration test it is sufficient
-    // to assert that the custom fetch gets called and the server returns 404
+    // to assert that the custom fetch gets called just once and the server returns 404
     expect(serverResponse?.status()).toEqual(404);
     await Promise.all([stubServerTerminator.terminate(), myBrowser.close()]);
   });
