@@ -1,8 +1,8 @@
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import nodeFetch from 'node-fetch';
-import { PaymentManagerClient } from '../pagopa';
-import { defaultRetryingFetch } from '../../utils/fetch';
-import * as myFetch from '../../utils/fetch';
+import { PaymentManagerClient } from '../api/pagopa';
+import { defaultRetryingFetch } from '../utils/fetch';
+import * as myFetch from '../utils/fetch';
 
 // Test in node environment
 
