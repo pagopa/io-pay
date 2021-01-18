@@ -22,10 +22,7 @@ import { BPayInfo as BPayInfoPagoPa } from '../../generated/definitions/pagopa/w
 import { CardInfo } from '../../generated/definitions/pagopa/walletv2/CardInfo';
 import { SatispayInfo as SatispayInfoPagoPa } from '../../generated/definitions/pagopa/walletv2/SatispayInfo';
 import { WalletTypeEnum } from '../../generated/definitions/pagopa/walletv2/WalletV2';
-// import { IndexedById } from "../store/helpers/indexer";
-// import { IndexedById } from '../utils/indexer';
 import { CreditCardCVC, CreditCardExpirationMonth, CreditCardExpirationYear, CreditCardPan } from '../utils/input';
-// import { getImageFromPaymentMethod, getTitleFromBancomat, getTitleFromPaymentMethod } from '../utils/paymentMethod';
 
 /**
  * Union of all possible credit card types
@@ -245,7 +242,7 @@ export type Wallet = t.TypeOf<typeof Wallet> & {
 };
 
 /**
- * A Wallet that has not being saved yet
+ * A Wallet that has not being saved yet.
  */
 export type NullableWallet = ReplaceProp1<Wallet, 'idWallet', undefined>;
 
@@ -308,14 +305,14 @@ export const TransactionListResponse = repP(
 export type TransactionListResponse = t.TypeOf<typeof TransactionListResponse>;
 
 /**
- * A refined WalletListResponse
+ * A refined WalletListResponse.
  */
 export const WalletListResponse = repP(WalletListResponsePagoPA, 'data', t.readonlyArray(Wallet), 'WalletListResponse');
 
 export type WalletListResponse = t.TypeOf<typeof WalletListResponse>;
 
 /**
- * A tagged string type for the PagoPA SessionToken
+ * A tagged string type for the PagoPA SessionToken.
  */
 
 interface IPaymentManagerTokenTag {
@@ -333,21 +330,21 @@ export const Session = repP(reqP(SessionPagoPA, 'sessionToken'), 'sessionToken',
 export type Session = t.TypeOf<typeof Session>;
 
 /**
- * A refined SessionResponse
+ * A refined SessionResponse.
  */
 export const SessionResponse = repP(SessionResponsePagoPA, 'data', Session, 'SessionResponse');
 
 export type SessionResponse = t.TypeOf<typeof SessionResponse>;
 
 /**
- * A refined PspListResponse
+ * A refined PspListResponse.
  */
 export const PspListResponse = repP(PspListResponsePagoPA, 'data', t.readonlyArray(Psp), 'PspListResponse');
 
 export type PspListResponse = t.TypeOf<typeof PspListResponse>;
 
 /**
- * A refined WalletResponse
+ * A refined WalletResponse.
  */
 export const WalletResponse = repP(WalletResponsePagoPA, 'data', Wallet, 'WalletResponse');
 
@@ -361,7 +358,7 @@ export const TransactionResponse = repP(TransactionResponsePagoPA, 'data', Trans
 export type TransactionResponse = t.TypeOf<typeof TransactionResponse>;
 
 /**
- * A refined PspResponse
+ * A refined PspResponse.
  */
 export const PspResponse = repP(PspResponsePagoPA, 'data', Psp, 'PspResponse');
 
@@ -387,17 +384,3 @@ export const PagoPAErrorResponse = t.type({
 });
 
 export type PagoPAErrorResponse = t.TypeOf<typeof PagoPAErrorResponse>;
-
-const WalletV2ListResponseR = t.interface({});
-
-// optional attributes
-const WalletV2ListResponseO = t.partial({
-  data: t.readonlyArray(PatchedWalletV2, 'array of PatchedWalletV2'),
-});
-
-export const PatchedWalletV2ListResponse = t.intersection(
-  [WalletV2ListResponseR, WalletV2ListResponseO],
-  'WalletV2ListResponse',
-);
-
-export type PatchedWalletV2ListResponse = t.TypeOf<typeof PatchedWalletV2ListResponse>;

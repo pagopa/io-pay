@@ -29,7 +29,6 @@ export function retryingFetch(
   return retriableFetch(retryWithTransient429s)(timeoutFetch);
 }
 
-//
 // Default fetch configured with a short timeout and an exponential backoff
 // retrying strategy - suitable for calling the backend APIs that are supposed
 // to respond quickly.
