@@ -55,7 +55,6 @@ import {
 import {
   NullableWallet,
   PagoPAErrorResponse,
-  PatchedWalletV2ListResponse,
   PaymentManagerToken,
   PspListResponse,
   PspResponse,
@@ -175,7 +174,7 @@ const getWallets: GetWalletsUsingGETExtraT = {
   headers: ParamAuthorizationBearerHeader,
   response_decoder: getPatchedWalletsUsingGETDecoder(WalletListResponse),
 };
-
+/*
 export type GetWalletsV2UsingGETTExtra = r.IGetApiRequestType<
   { readonly Bearer: string },
   'Authorization',
@@ -184,7 +183,7 @@ export type GetWalletsV2UsingGETTExtra = r.IGetApiRequestType<
   | r.IResponseType<401, undefined>
   | r.IResponseType<403, undefined>
   | r.IResponseType<404, undefined>
->;
+>; */
 /*
 const getWalletsV2: GetWalletsV2UsingGETTExtra = {
   method: "get",
