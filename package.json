@@ -20,7 +20,7 @@
     "test": "yarn test:unit && yarn test:integration",
     "test:coverage": "yarn test:coverage-unit && yarn test:coverage-int",
     "build": "parcel build src/index.ts src/*.pug",
-    "build:test-cases": "parcel build src/__integrations__/testCases/*.ts --out-dir testCases",
+    "build:test-cases": "rm -r ./testCases/ && mkdir ./testCases && parcel build src/__integrations__/testCases/*.ts --out-dir ./testCases",
     "build:index": "parcel build src/index.ts ",
     "build:template": "parcel build src/*.pug",
     "start": "parcel src/*.pug",
