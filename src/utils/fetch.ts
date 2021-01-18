@@ -2,7 +2,6 @@
  * This module exports an instance of fetch augmented with
  * timeout and retries with exponential backoff.
  */
-// import { debug as cdebug } from 'console';
 import { left, right } from 'fp-ts/lib/Either';
 import { fromEither, TaskEither } from 'fp-ts/lib/TaskEither';
 import { calculateExponentialBackoffInterval } from 'italia-ts-commons/lib/backoff';

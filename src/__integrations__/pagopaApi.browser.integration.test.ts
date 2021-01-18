@@ -4,24 +4,6 @@ import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator } from 'http-terminator';
 import stubServer from './stubServer';
 
-describe('Test the browser test environment', () => {
-  it('Puppeteer should work', async () => {
-    const myBrowser: Browser = await launch();
-    const page = await myBrowser.newPage();
-    const [result] = await Promise.all([
-      page.waitForResponse(response => response.url() === 'https://api.ratesapi.io/api/latest'),
-      page.evaluate(() =>
-        fetch('https://api.ratesapi.io/api/latest', {
-          headers: {},
-          method: 'GET',
-        }),
-      ),
-    ]);
-    await expect(result.json()).resolves.toHaveProperty('base');
-    await myBrowser.close();
-  });
-});
-
 describe('Custom Fetches test in browser environment', () => {
   const PORT = 5000;
   const HOST = 'localhost';

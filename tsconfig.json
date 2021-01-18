@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
 
-    "target": "es2019",
+    "target": "ES2019",
     "module": "commonjs",
-    "lib": ["es6", "dom"],
+    "lib": ["ES6", "DOM"],
+
     "allowJs": false,
     "jsx": "react",
     "noEmit": true,
@@ -11,7 +12,7 @@
     "isolatedModules": true,
 
     "strict": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictFunctionTypes": true,
 
     "noUnusedLocals": true,
