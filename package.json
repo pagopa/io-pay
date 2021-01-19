@@ -40,7 +40,6 @@
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "abort-controller": "^3.0.0",
-    "abortcontroller-polyfill": "^1.7.1",
     "auto-changelog": "^2.2.1",
     "bootstrap-italia": "^1.4.1",
     "cors": "^2.8.5",

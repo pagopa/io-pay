@@ -25,20 +25,8 @@ export function retryingFetch(
   // @see https://github.com/pagopa/io-ts-commons/blob/master/src/backoff.ts
   const exponentialBackoff = calculateExponentialBackoffInterval();
   const retryLogic = withRetries<Error, Response>(maxRetries, exponentialBackoff);
-  const retryWithTransient429s = retryLogicForTransientResponseError((_: any) => _.status === 429, retryLogic);
+  const retryWithTransient429s = retryLogicForTransientResponseError((_: Response) => _.status === 429, retryLogic);
   return retriableFetch(retryWithTransient429s)(timeoutFetch);
-}
-
-// Default fetch configured with a short timeout and an exponential backoff
-// retrying strategy - suitable for calling the backend APIs that are supposed
-// to respond quickly.
-
-export function defaultRetryingFetch(
-  fetchApi: typeof fetch,
-  timeout: Millisecond = 1000 as Millisecond,
-  maxRetries: number = 3,
-): typeof fetch {
-  return retryingFetch(fetchApi, timeout, maxRetries);
 }
 
 //

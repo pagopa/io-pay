@@ -1,19 +1,13 @@
 import { MaxRetries } from 'italia-ts-commons/lib/tasks';
 import { Millisecond } from 'italia-ts-commons/lib/units';
-
+// // Needed to patch the globals
+import 'abort-controller/polyfill';
 import ServerMock from 'mock-http-server';
 import nodeFetch from 'node-fetch';
 import { retryingFetch, transientConfigurableFetch } from '../fetch';
 
-const {
-  AbortController,
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-} = require('abortcontroller-polyfill/dist/cjs-ponyfill');
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
-(global as any).AbortController = AbortController;
 
 const TEST_PATH = 'transient-error';
 const TEST_HOST = 'localhost';
@@ -66,10 +60,7 @@ describe('Fetch with transient error', () => {
     expect(server.requests().length).toEqual(1);
   });
 
-  it('When calling transientConfigurableFetch should call global fetch maxRetries times', async () => {
-    // After a custom fetch instantiation, the 'global' var is guaranteed to have a fetch field
-    // which points to the whatwg.fetch. In this test suite the global fetch is overridden with
-    // node fetch. Despite the override it should be called a number of times equal to maxRetries
+  it('transientConfigurableFetch should call global fetch maxRetries times', async () => {
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
     // Set error 404 as transient error.
@@ -78,11 +69,12 @@ describe('Fetch with transient error', () => {
     expect(mySpyGlobalFetch).toHaveBeenCalledTimes(3);
   });
 
-  it('Whean calling defaultRetryingFetch should call global fetch at least once', async () => {
+  it('retryingFetch should call global fetch at least once', async () => {
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
     const fetchWithRetries = retryingFetch(fetch, 200 as Millisecond, 3);
     await expect(fetchWithRetries(longDelayUrl)).resolves.toHaveProperty('status');
+    // when resolves global fetch gets called maxRetries + 1
     expect(mySpyGlobalFetch).toHaveBeenCalled();
   });
 });
