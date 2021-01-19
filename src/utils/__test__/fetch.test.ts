@@ -4,7 +4,7 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
 import ServerMock from 'mock-http-server';
 import nodeFetch from 'node-fetch';
-import { retryingFetch, transientConfigurableFetch } from '../fetch';
+import { retryingFetch, transientConfigurableFetch, ITransientFetchOpts } from '../fetch';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
@@ -38,7 +38,13 @@ describe('Fetch with transient error', () => {
 
   it('Fetch should reach max retry on transient error', async () => {
     // Set error 404 as transient error.
-    const fetchWithRetries = transientConfigurableFetch(fetch, 3, 404);
+    const transientFetchOptions: ITransientFetchOpts = {
+      numberOfRetries: 3,
+      httpCodeMapToTransient: 404,
+      delay: 10 as Millisecond,
+      timeout: 1000 as Millisecond,
+    };
+    const fetchWithRetries = transientConfigurableFetch(fetch, transientFetchOptions);
     try {
       // start the fetch request
       await fetchWithRetries(longDelayUrl);
@@ -49,10 +55,16 @@ describe('Fetch with transient error', () => {
     }
   });
 
-  it('Fetch one time retry', async () => {
+  it('transientConfigurableFetch should retry once, when the httpCodeMapToTransient is not equal to the one returned by the server', async () => {
     // Set error 401 as transient error, the server response is 404.
     // In this case no other retry are performed.
-    const fetchWithRetries = transientConfigurableFetch(fetch, 3, 401);
+    const transientFetchOptions: ITransientFetchOpts = {
+      numberOfRetries: 3,
+      httpCodeMapToTransient: 401,
+      delay: 10 as Millisecond,
+      timeout: 1000 as Millisecond,
+    };
+    const fetchWithRetries = transientConfigurableFetch(fetch, transientFetchOptions);
 
     // start the fetch request
     await fetchWithRetries(longDelayUrl);
@@ -64,7 +76,13 @@ describe('Fetch with transient error', () => {
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
     // Set error 404 as transient error.
-    const fetchWithRetries = transientConfigurableFetch(fetch, 3, 404);
+    const transientFetchOptions: ITransientFetchOpts = {
+      numberOfRetries: 3,
+      httpCodeMapToTransient: 404,
+      delay: 10 as Millisecond,
+      timeout: 1000 as Millisecond,
+    };
+    const fetchWithRetries = transientConfigurableFetch(fetch, transientFetchOptions);
     await expect(fetchWithRetries(longDelayUrl)).rejects.toEqual('max-retries');
     expect(mySpyGlobalFetch).toHaveBeenCalledTimes(3);
   });

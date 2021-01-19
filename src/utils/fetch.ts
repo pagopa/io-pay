@@ -78,15 +78,31 @@ export const constantPollingFetch = (
   return retriableFetch(retryWithTransient404s, shouldAbort)(timeoutFetch as typeof fetch);
 };
 
-export const transientConfigurableFetch = (myFetch: typeof fetch, retries: number, httpErrorCode: number) => {
-  const delay = 10 as Millisecond;
-  const timeout: Millisecond = 1000 as Millisecond;
+export interface ITransientFetchOpts {
+  numberOfRetries: number;
+  httpCodeMapToTransient: number;
+  delay: Millisecond;
+  timeout: Millisecond;
+}
+
+export const transientConfigurableFetch = (
+  myFetch: typeof fetch,
+  options: ITransientFetchOpts = {
+    numberOfRetries: 3,
+    httpCodeMapToTransient: 429,
+    delay: 10 as Millisecond,
+    timeout: 1000 as Millisecond,
+  },
+) => {
   const abortableFetch = AbortableFetch(myFetch);
-  const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
-  const constantBackoff = () => delay;
-  const retryLogic = withRetries<Error, Response>(retries, constantBackoff);
+  const timeoutFetch = toFetch(setFetchTimeout(options.timeout, abortableFetch));
+  const constantBackoff = () => options.delay;
+  const retryLogic = withRetries<Error, Response>(options.numberOfRetries, constantBackoff);
   // makes the retry logic map specific http error code to transient errors (by default only
   // timeouts are transient)
-  const retryWithTransientError = retryLogicForTransientResponseError(_ => _.status === httpErrorCode, retryLogic);
+  const retryWithTransientError = retryLogicForTransientResponseError(
+    _ => _.status === options.httpCodeMapToTransient,
+    retryLogic,
+  );
   return retriableFetch(retryWithTransientError)(timeoutFetch as typeof fetch);
 };

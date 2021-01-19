@@ -14,7 +14,7 @@ import pm from './pm';
 
 // Client for the PagoPA PaymentManager
 describe('Integration Test Suite for Payment Manager Client', () => {
-  it('It should call defaultRetryingFetch when invoking getSession endpoint of PM test server', async () => {
+  it('should call defaultRetryingFetch when invoking getSession endpoint of PM test server', async () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
 
     const paymentManagerClient = PaymentManagerClient(
@@ -40,7 +40,7 @@ describe('Integration Test Suite for Payment Manager Client', () => {
     }
   });
 
-  it('It should call defaultRetryingFetch when invoking getSession endpoint of local dev server for IO APP', async () => {
+  it('should call defaultRetryingFetch when invoking getSession endpoint of local dev server for IO APP', async () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
     const paymentManagerClient = PaymentManagerClient(
       'http://localhost:3000/wallet',
@@ -69,7 +69,7 @@ describe('Integration Test Suite for Payment Manager Client', () => {
     }
   });
 
-  it('It should call defaultRetryingFetch when getSession endpoint of local stub of PM is invoked', async () => {
+  it('should call defaultRetryingFetch when getSession endpoint of local stub of PM is invoked', async () => {
     const pmMockServer = pm.listen(50000, 'localhost');
     const stubServerTerminator = createHttpTerminator({ server: pmMockServer });
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
