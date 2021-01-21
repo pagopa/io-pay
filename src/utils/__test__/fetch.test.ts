@@ -30,13 +30,13 @@ function createServerMock(): any {
 
 const longDelayUrl = `http://${TEST_HOST}:${TEST_PORT}/${TEST_PATH}`;
 
-describe('Fetch with transient error', () => {
+describe('transientConfigurableFetch', () => {
   const server = createServerMock();
 
   beforeEach(server.start);
   afterEach(server.stop);
 
-  it('Fetch should reach max retry on transient error', async () => {
+  it('should reach max retries on transient error', async () => {
     // Set error 404 as transient error.
     const transientFetchOptions: ITransientFetchOpts = {
       numberOfRetries: 3,
@@ -55,7 +55,7 @@ describe('Fetch with transient error', () => {
     }
   });
 
-  it('transientConfigurableFetch should retry once, when the httpCodeMapToTransient is not equal to the one returned by the server', async () => {
+  it('should retry once, when httpCodeMapToTransient is set as transient error', async () => {
     // Set error 401 as transient error, the server response is 404.
     // In this case no other retry are performed.
     const transientFetchOptions: ITransientFetchOpts = {
@@ -72,7 +72,7 @@ describe('Fetch with transient error', () => {
     expect(server.requests().length).toEqual(1);
   });
 
-  it('transientConfigurableFetch should call global fetch maxRetries times', async () => {
+  it('should call global fetch maxRetries times', async () => {
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
     // Set error 404 as transient error.
@@ -86,8 +86,14 @@ describe('Fetch with transient error', () => {
     await expect(fetchWithRetries(longDelayUrl)).rejects.toEqual('max-retries');
     expect(mySpyGlobalFetch).toHaveBeenCalledTimes(3);
   });
+});
 
-  it('retryingFetch should call global fetch at least once', async () => {
+describe('retryingFetch', () => {
+  const server = createServerMock();
+
+  beforeEach(server.start);
+  afterEach(server.stop);
+  it('should call global fetch at least once', async () => {
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
     const fetchWithRetries = retryingFetch(fetch, 200 as Millisecond, 3);
