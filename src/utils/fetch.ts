@@ -2,21 +2,22 @@
  * This module exports an instance of fetch augmented with
  * timeout and retries with exponential backoff.
  */
-
 import { left, right } from 'fp-ts/lib/Either';
 import { fromEither, TaskEither } from 'fp-ts/lib/TaskEither';
 import { calculateExponentialBackoffInterval } from 'italia-ts-commons/lib/backoff';
 import { AbortableFetch, retriableFetch, setFetchTimeout, toFetch } from 'italia-ts-commons/lib/fetch';
 import { RetriableTask, TransientError, withRetries } from 'italia-ts-commons/lib/tasks';
-
 import { Millisecond } from 'italia-ts-commons/lib/units';
-import nodeFetch from 'node-fetch';
 
 //
 // Returns a fetch wrapped with timeout and retry logic
 //
 
-function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries: number): typeof fetch {
+export function retryingFetch(
+  fetchApi: typeof fetch,
+  timeout: Millisecond = 1000 as Millisecond,
+  maxRetries: number = 3,
+): typeof fetch {
   // a fetch that can be aborted and that gets cancelled after fetchTimeoutMs
   const abortableFetch = AbortableFetch(fetchApi);
   const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
@@ -24,22 +25,8 @@ function retryingFetch(fetchApi: typeof fetch, timeout: Millisecond, maxRetries:
   // @see https://github.com/pagopa/io-ts-commons/blob/master/src/backoff.ts
   const exponentialBackoff = calculateExponentialBackoffInterval();
   const retryLogic = withRetries<Error, Response>(maxRetries, exponentialBackoff);
-  const retryWithTransient429s = retryLogicForTransientResponseError((_: any) => _.status === 429, retryLogic);
+  const retryWithTransient429s = retryLogicForTransientResponseError((_: Response) => _.status === 429, retryLogic);
   return retriableFetch(retryWithTransient429s)(timeoutFetch);
-}
-
-// Default fetch configured with a short timeout and an exponential backoff
-// retrying strategy - suitable for calling the backend APIs that are supposed
-// to respond quickly.
-
-export function defaultRetryingFetch(timeout: Millisecond, maxRetries: number) {
-  // eslint-disable-next-line functional/immutable-data
-  (global as any).AbortController = require('abort-controller');
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
-  (global as any).fetch = nodeFetch;
-
-  return retryingFetch((global as any).fetch, timeout, maxRetries);
 }
 
 //
@@ -89,4 +76,33 @@ export const constantPollingFetch = (
 
   // TODO: remove the cast once we upgrade to tsc >= 3.1 (https://www.pivotaltracker.com/story/show/170819445)
   return retriableFetch(retryWithTransient404s, shouldAbort)(timeoutFetch as typeof fetch);
+};
+
+export interface ITransientFetchOpts {
+  numberOfRetries: number;
+  httpCodeMapToTransient: number;
+  delay: Millisecond;
+  timeout: Millisecond;
+}
+
+export const transientConfigurableFetch = (
+  myFetch: typeof fetch,
+  options: ITransientFetchOpts = {
+    numberOfRetries: 3,
+    httpCodeMapToTransient: 429,
+    delay: 10 as Millisecond,
+    timeout: 1000 as Millisecond,
+  },
+) => {
+  const abortableFetch = AbortableFetch(myFetch);
+  const timeoutFetch = toFetch(setFetchTimeout(options.timeout, abortableFetch));
+  const constantBackoff = () => options.delay;
+  const retryLogic = withRetries<Error, Response>(options.numberOfRetries, constantBackoff);
+  // makes the retry logic map specific http error code to transient errors (by default only
+  // timeouts are transient)
+  const retryWithTransientError = retryLogicForTransientResponseError(
+    _ => _.status === options.httpCodeMapToTransient,
+    retryLogic,
+  );
+  return retriableFetch(retryWithTransientError)(timeoutFetch as typeof fetch);
 };
