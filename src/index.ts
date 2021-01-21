@@ -3,9 +3,12 @@ import { getUrlParameter } from './js/urlUtilities';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
 import { userSession } from './js/sessiondata';
+import { PaymentManagerClient } from './api/pagopa';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
+  const pmClient = PaymentManagerClient('http://localhost:3000', '', fetch, fetch);
+
   const paymentID = getUrlParameter('p');
 
   const dropdownElements = document.querySelectorAll('.btn-dropdown');
@@ -151,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   creditcardformSubmit?.addEventListener('click', function (e) {
     e.preventDefault();
+    void pmClient.getSession('ZXCVBNM098876543');
 
     creditcardformInputs?.forEach(el => {
       sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
