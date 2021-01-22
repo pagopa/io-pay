@@ -1,13 +1,17 @@
 import CreditCard from 'card-validator';
+import { createClient } from '../generated/definitions/pagopa_live/client';
+import { OsEnum, StatusEnum } from '../generated/definitions/pagopa_live/Device';
 import { getUrlParameter } from './js/urlUtilities';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
 import { userSession } from './js/sessiondata';
-import { PaymentManagerClient } from './api/pagopa';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
-  const pmClient = PaymentManagerClient('http://localhost:3000', '', fetch, fetch);
+  const pmClient = createClient({
+    baseUrl: 'http://localhost:8080',
+    fetchApi: fetch,
+  });
 
   const paymentID = getUrlParameter('p');
 
@@ -154,7 +158,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   creditcardformSubmit?.addEventListener('click', function (e) {
     e.preventDefault();
-    void pmClient.getSession('ZXCVBNM098876543');
+    void pmClient.startSessionUsingPOST({
+      startSessionRequest: {
+        data: {
+          device: {
+            idDevice: 0,
+            idNotificationConfig: 'string',
+            idUser: 0,
+            os: OsEnum.ANDROID,
+            scale: 0,
+            status: StatusEnum.ACTIVE,
+            token: 'sssss',
+            userAgent: 'mozilla',
+          },
+          email: 'pippo@pluto.com',
+          fiscalCode: 'HBBJUU78U89R556T',
+          idPayment: '12345',
+        },
+      },
+    });
 
     creditcardformInputs?.forEach(el => {
       sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
