@@ -158,25 +158,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   creditcardformSubmit?.addEventListener('click', function (e) {
     e.preventDefault();
-    void pmClient.startSessionUsingPOST({
-      startSessionRequest: {
+
+    void fetch('https://localhost:8080/pp-restapi/v3/users/actions/start-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         data: {
-          device: {
-            idDevice: 0,
-            idNotificationConfig: 'string',
-            idUser: 0,
-            os: OsEnum.ANDROID,
-            scale: 0,
-            status: StatusEnum.ACTIVE,
-            token: 'sssss',
-            userAgent: 'mozilla',
-          },
-          email: 'pippo@pluto.com',
+          email: 'pippo111111111@pluto.com',
           fiscalCode: 'HBBJUU78U89R556T',
           idPayment: '12345',
         },
-      },
+      }),
     });
+
+    // void pmClient.startSessionUsingPOST({
+    //   startSessionRequest: {
+    //     data: {
+    //       // device: {
+    //       //   idDevice: 0,
+    //       //   idNotificationConfig: 'string',
+    //       //   idUser: 0,
+    //       //   os: OsEnum.ANDROID,
+    //       //   scale: 0,
+    //       //   status: StatusEnum.ACTIVE,
+    //       //   token: 'sssss',
+    //       //   userAgent: 'mozilla',
+    //       // },
+    //       email: 'pippo@pluto.com',
+    //       fiscalCode: 'HBBJUU78U89R556T',
+    //       idPayment: '12345',
+    //     },
+    //   },
+    // });
 
     creditcardformInputs?.forEach(el => {
       sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);

@@ -9,10 +9,14 @@ const pm: Application = express();
 
 // Use router to keep the express app extensible
 const walletRouter = Router();
-walletRouter.get('/v1/users/actions/start-session', function (_, res) {
+walletRouter.post('/v1/users/actions/start-session', function (_, res) {
   res.json({
     data: {
       sessionToken: myFake.random.alphaNumeric(128),
+      user: {
+        email: 'pippo@pluto.com',
+        status: 'ANONYMOUS',
+      },
     },
   });
 });
