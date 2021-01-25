@@ -4,11 +4,11 @@ import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator } from 'http-terminator';
 import stubServer from './stubServer';
 
-describe('Custom Fetches test in browser environment', () => {
+describe('Local server stub', () => {
   const PORT = 5000;
   const HOST = 'localhost';
 
-  it('When the user navigate to the bad endpoint of the local server, it should respond 404', async () => {
+  it('should respond 404, when the user navigates to the bad endpoint', async () => {
     // Start server
     const myStubServer: Server = stubServer.listen(PORT, HOST);
     const stubServerTerminator = createHttpTerminator({ server: myStubServer });
@@ -24,7 +24,7 @@ describe('Custom Fetches test in browser environment', () => {
     await Promise.all([stubServerTerminator.terminate(), myBrowser.close()]);
   });
 
-  it('When the user navigate to the good endpoint of local server, it should respond 200', async () => {
+  it('should respond 200, when the user navigates to the good endpoint', async () => {
     // Start server
     const myStubServer: Server = stubServer.listen(PORT, HOST);
     const stubServerTerminator = createHttpTerminator({ server: myStubServer });
@@ -43,7 +43,7 @@ describe('Custom Fetches test in browser environment', () => {
     await stubServerTerminator.terminate();
   });
 
-  it('When the good endpoint of the server stub is called with the browser standard fetch, it should respond 200', async () => {
+  it('should respond 200, when the good endpoint is called with the browser standard fetch', async () => {
     // Start server
     const myStubServer: Server = stubServer.listen(PORT, HOST);
     const stubServerTerminator = createHttpTerminator({ server: myStubServer });
@@ -69,7 +69,7 @@ describe('Custom Fetches test in browser environment', () => {
     await Promise.all([stubServerTerminator.terminate(), myBrowser.close()]);
   });
 
-  it('When the bad endpoint of the server stub is called via a transientConfigurableFetch, it should return 404', async () => {
+  it('should return 404, when the bad endpoint is called via a transientConfigurableFetch', async () => {
     // Start server
     const myStubServer: Server = stubServer.listen(PORT, HOST);
     const stubServerTerminator = createHttpTerminator({ server: myStubServer });
@@ -94,7 +94,7 @@ describe('Custom Fetches test in browser environment', () => {
     await Promise.all([stubServerTerminator.terminate(), myBrowser.close()]);
   });
 
-  it('When the bad endpoint of the server stub is called via retryingFetch, it should return 404', async () => {
+  it('should return 404, when the bad endpoint is called via a retryingFetch', async () => {
     // Start server
     const myStubServer: Server = stubServer.listen(PORT, HOST);
     const stubServerTerminator = createHttpTerminator({ server: myStubServer });

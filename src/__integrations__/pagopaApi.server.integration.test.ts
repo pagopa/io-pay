@@ -13,7 +13,7 @@ import pm from './pm';
 (global as any).fetch = nodeFetch;
 
 // Client for the PagoPA PaymentManager
-describe('Integration Test Suite for Payment Manager Client', () => {
+describe('Payment Manager Client', () => {
   it('should call defaultRetryingFetch when invoking getSession endpoint of PM test server', async () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
 
