@@ -1604,6 +1604,13 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
+"@types/parcel-bundler@^1.12.3":
+  version "1.12.3"
+  resolved "https://registry.yarnpkg.com/@types/parcel-bundler/-/parcel-bundler-1.12.3.tgz#29512506ac6db43351e8dc8c019d30342088cecc"
+  integrity sha512-ogGPp2RMVgNBGl/swDtKS954VG2SbWJfSL22sgNg42QH8dTS6uvQHPquodkHjl8nvPuq0FC71bGIl/MKIwEkaw==
+  dependencies:
+    "@types/express-serve-static-core" "*"
+
 "@types/prettier@^2.0.0":
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.1.6.tgz#f4b1efa784e8db479cdb8b14403e2144b1e9ff03"
