@@ -1,11 +1,6 @@
 import express from 'express';
-import Bundler from 'parcel-bundler';
 
 const app = express();
 
-const entry = 'src/*.pug';
-const bundle = new Bundler(entry, { watch: false });
-
-app.use(bundle.middleware());
-
+app.use('/', express.static('dist'));
 export default app;

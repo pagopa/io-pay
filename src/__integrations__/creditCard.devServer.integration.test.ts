@@ -6,7 +6,7 @@ import { createHttpTerminator } from 'http-terminator';
 import devServer from './devServer';
 
 describe('Credit Card Field', () => {
-  const PORT = 3000;
+  const PORT = 40000;
   const HOST = 'localhost';
 
   it('should show a warning text when the credit card number is wrong', async () => {
