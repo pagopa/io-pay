@@ -1,6 +1,5 @@
 import CreditCard from 'card-validator';
 import { createClient } from '../generated/definitions/pagopa_live/client';
-import { OsEnum, StatusEnum } from '../generated/definitions/pagopa_live/Device';
 import { getUrlParameter } from './js/urlUtilities';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
@@ -156,38 +155,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  creditcardformSubmit?.addEventListener('click', function (e) {
-    e.preventDefault();
-
-    /* await fetch('https://localhost:8080/pp-restapi/v3/users/actions/start-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        data: {
-          email: 'pippo111111111@pluto.com',
-          fiscalCode: 'HBBJUU78U89R556T',
-          idPayment: '12345',
+  creditcardformSubmit?.addEventListener(
+    'click',
+    async function (e) {
+      e.preventDefault();
+      const result = await pmClient.startSessionUsingPOST({
+        startSessionRequest: {
+          data: {
+            email: 'pippo@pluto.com',
+            fiscalCode: 'HBBJUU78U89R556T',
+            idPayment: '12345',
+          },
         },
-      }),
-    }); */
+      });
 
-    creditcardformInputs?.forEach(el => {
-      sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
-    });
-    /*
-    await pmClient.startSessionUsingPOST({
-      startSessionRequest: {
-        data: {
-          email: 'pippo@pluto.com',
-          fiscalCode: 'HBBJUU78U89R556T',
-          idPayment: '12345',
-        },
-      },
-    }); */
-    window.location.replace('check.html');
-  });
+      if (result.isRight()) {
+        creditcardformInputs?.forEach(el => {
+          sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
+        });
+        window.location.replace('check.html');
+      }
+    },
+    false,
+  );
 
   // VALIDATIONS --------------------------
   // Name Surname (at least two words)

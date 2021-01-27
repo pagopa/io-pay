@@ -6,7 +6,7 @@ import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import devServer from './devServer';
 
 describe('Data Submission Form', () => {
-  const PORT = 5000;
+  const PORT = 1234;
   const HOST = 'localhost';
 
   // eslint-disable-next-line functional/no-let
@@ -27,7 +27,7 @@ describe('Data Submission Form', () => {
   });
 
   beforeEach(async () => {
-    myBrowser = await launch({ headless: false });
+    myBrowser = await launch({ headless: true });
     // Health check
     const page = await myBrowser.newPage();
     const serverResponse = await page.goto(`http://${HOST}:${PORT}/health-check`);
@@ -40,10 +40,19 @@ describe('Data Submission Form', () => {
   });
 
   it('should call start session, when Continua is pressed', async () => {
-    // Start the browser environment
+    // PRECONDITIONS
+    const pmTab = await myBrowser.newPage();
+    const [pmResponseApiDocs] = await Promise.all([
+      pmTab.waitForResponse(response => response.request().method() === 'GET'),
+      await pmTab.goto('http://localhost:8080/pp-restapi/v2/api-docs'),
+    ]);
+
+    expect(pmResponseApiDocs?.status()).toEqual(200);
+    await pmTab.close();
+
     const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
+    await page.goto(`http://${HOST}:${PORT}/index.html?p=6666`);
     await page.setViewport({ width: 1200, height: 907 });
 
     // Fill the form
@@ -72,9 +81,16 @@ describe('Data Submission Form', () => {
     await page.click(privacyToggleS);
 
     const buttonS = '#creditcardform > .windowcont__bottom > .container > .windowcont__bottom__wrap > .btn-primary';
-
     await page.waitForSelector(buttonS);
-    await page.click(buttonS);
+
+    const serverResponse = await Promise.all([
+      page.waitForResponse(response => response.request().method() === 'OPTIONS'),
+      page.waitForResponse(response => response.request().method() === 'POST'),
+      page.click(buttonS),
+    ]);
+
+    expect(serverResponse[0]?.headers()['access-control-allow-origin']).toEqual(`http://${HOST}:${PORT}`);
+    await expect(serverResponse[1]?.json()).resolves.toMatchObject({ data: { user: { email: 'pippo@pluto.com' } } });
 
     await page.close();
   });
