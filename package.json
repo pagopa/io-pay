@@ -5,13 +5,12 @@
   "license": "MIT",
   "pagopa_api_walletv2": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/bonus/specs/bpd/pm/walletv2.json",
   "pagopa_api": "https://raw.githubusercontent.com/pagopa/io-services-metadata/master/pagopa/pm/spec.json",
-  "pagopa_api_live" : "api.yml",
-
+  "pagopa_api_live": "api.yml",
   "scripts": {
     "generate": "npm-run-all generate:*",
     "generate:pagopa-api-definitions": "rimraf generated/definitions/pagopa && mkdir -p generated/definitions/pagopa && gen-api-models --api-spec $npm_package_pagopa_api --out-dir ./generated/definitions/pagopa --no-strict --request-types --response-decoders --default-error-type undefined",
     "generate:pagopa-api-walletv2": "rimraf generated/definitions/pagopa/walletv2 && mkdir -p generated/definitions/pagopa/walletv2  && gen-api-models --api-spec $npm_package_pagopa_api_walletv2 --out-dir ./generated/definitions/pagopa/walletv2 --no-strict --request-types --response-decoders",
-    "generate:pagopa-api-live-client": "rimraf generated/definitions/pagopa_live && mkdir -p generated/definitions/pagopa_live && gen-api-models --api-spec $npm_package_pagopa_api_live --out-dir ./generated/definitions/pagopa_live --no-strict --request-types --response-decoders --client",    
+    "generate:pagopa-api-live-client": "rimraf generated/definitions/pagopa_live && mkdir -p generated/definitions/pagopa_live && gen-api-models --api-spec $npm_package_pagopa_api_live --out-dir ./generated/definitions/pagopa_live --no-strict --request-types --response-decoders --client",
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "pretest:integration": "yarn build:test-cases",
@@ -22,11 +21,11 @@
     "test:coverage-int": "jest -c jest.config.integration.js --detectOpenHandles --runInBand --coverage",
     "test": "yarn test:unit && yarn test:integration",
     "test:coverage": "yarn test:coverage-unit && yarn test:coverage-int",
-    "build": "parcel build src/index.ts src/*.pug",
-    "build:test-cases": "parcel build src/__integrations__/testCases/*.ts --out-dir testCases",
-    "build:index": "parcel build src/index.ts ",
-    "build:template": "parcel build src/*.pug",
-    "start": "parcel src/*.pug",
+    "build": "parcel --no-cache build src/index.ts src/*.pug",
+    "build:test-cases": "parcel --no-cache build src/__integrations__/testCases/*.ts --out-dir testCases",
+    "build:index": "parcel --no-cache build src/index.ts ",
+    "build:template": "parcel --no-cache build src/*.pug",
+    "start": "parcel --no-cache src/*.pug",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md"
   },
@@ -85,5 +84,8 @@
   },
   "resolutions": {
     "fp-ts": "1.17.4"
-  }
+  },
+  "browserslist": [
+    "> 1%"
+  ]
 }
