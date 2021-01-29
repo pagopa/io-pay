@@ -9,7 +9,7 @@ const pm: Application = express();
 
 // Use router to keep the express app extensible
 const walletRouter = Router();
-walletRouter.post('/v3/users/actions/start-session', function (_, res) {
+walletRouter.post('/pp-restapi/v3/users/actions/start-session', function (_, res) {
   res.json({
     data: {
       sessionToken: myFake.random.alphaNumeric(128),

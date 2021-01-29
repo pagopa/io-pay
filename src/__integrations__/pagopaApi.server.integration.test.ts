@@ -8,7 +8,7 @@ import * as myFetch from '../utils/fetch';
 
 import { createClient } from '../../generated/definitions/pagopa_live/client';
 
-import pm from '../__integrations__/pm';
+import pm from './pm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
