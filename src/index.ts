@@ -60,11 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function fillFieldsBySessionStorage() {
     Object.keys(window.sessionStorage).map(function (k) {
-      // const fillValue = window.sessionStorage.getItem(k);
+      const fillValue = window.sessionStorage.getItem(k);
       const el = document.querySelector(`[name="${k}"]`) || null;
-      if (el !== null) {
-        // eslint-disable-next-line functional/immutable-data
-        // el.setAttribute('value', fillValue);
+      if (el !== null && fillValue) {
+        el.setAttribute('value', fillValue);
         el.setAttribute('data-checked', '1'); // TODO: should be bool not string
         if (el.getAttribute('type') === 'checkbox') {
           el.setAttribute('checked', '1');
@@ -155,8 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  creditcardformSubmit?.addEventListener(
-    'click',
+  creditcardform?.addEventListener(
+    'submit',
     async function (e) {
       e.preventDefault();
       const result = await pmClient.startSessionUsingPOST({
