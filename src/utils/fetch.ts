@@ -101,7 +101,7 @@ export const transientConfigurableFetch = (
   // makes the retry logic map specific http error code to transient errors (by default only
   // timeouts are transient)
   const retryWithTransientError = retryLogicForTransientResponseError(
-    _ => _.status === options.httpCodeMapToTransient,
+    response => response.status === options.httpCodeMapToTransient,
     retryLogic,
   );
   return retriableFetch(retryWithTransientError)(timeoutFetch as typeof fetch);
