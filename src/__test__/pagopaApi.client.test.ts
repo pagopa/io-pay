@@ -19,7 +19,7 @@ describe('Payment Manager Client', () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
 
     const paymentManagerClient = createClient({
-      baseUrl: 'https://acardste.vaservices.eu:443/pp-restapi-CD',
+      baseUrl: 'https://acardste.vaservices.eu:443/pp-restapi',
       fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
     });
 
