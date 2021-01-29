@@ -84,7 +84,7 @@ describe('Local server stub', () => {
         response =>
           response.url() === `http://${HOST}:${PORT}/transient-error` && response.request().method() === 'GET',
       ),
-      page.addScriptTag({ path: 'testCases/transientConfigurableFetch.js' }),
+      page.addScriptTag({ path: 'distTest/transientConfigurableFetch.js' }),
     ]);
 
     // The GET in test case transientConfigurableFetch is repeated 3 times, but this behaviour
@@ -109,7 +109,7 @@ describe('Local server stub', () => {
         response =>
           response.url() === `http://${HOST}:${PORT}/transient-error` && response.request().method() === 'GET',
       ),
-      page.addScriptTag({ path: 'testCases/retryingFetch.js' }),
+      page.addScriptTag({ path: 'distTest/retryingFetch.js' }),
     ]);
 
     // The GET in test case defaultRetryingFetch is repeated 3 times, but this behaviour

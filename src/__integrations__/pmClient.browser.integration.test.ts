@@ -33,7 +33,7 @@ describe('PM Client', () => {
 
   beforeAll(() => {
     // Start server
-    const myServer = express().use('/', express.static('testCases'));
+    const myServer = express().use('/', express.static('distTest'));
     myDevServer = myServer.listen(PORT, HOST);
     devServerTerminator = createHttpTerminator({ server: myDevServer });
 
