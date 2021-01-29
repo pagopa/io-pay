@@ -57,7 +57,7 @@ describe('Credit Card Field', () => {
     await page.close();
   });
 
-  it('should handle Mastercard cards', async () => {
+  it('should handle Mastercard cards, when the PAN is valid', async () => {
     const page = await myBrowser.newPage();
 
     await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
@@ -71,7 +71,7 @@ describe('Credit Card Field', () => {
     expect(checked).toMatch(/1/);
   });
 
-  it('should handle Visa cards', async () => {
+  it('should handle Visa cards, when the PAN is valid', async () => {
     const page = await myBrowser.newPage();
 
     await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
@@ -86,7 +86,7 @@ describe('Credit Card Field', () => {
     await page.close();
   });
 
-  it('should handle Maestro cards', async () => {
+  it('should handle Maestro cards, when the PAN is valid', async () => {
     // Start the browser environment
     const page = await myBrowser.newPage();
 
@@ -110,7 +110,7 @@ describe('Credit Card Field', () => {
     await page.close();
   });
 
-  it('should handle American Express cards', async () => {
+  it('should handle American Express cards, when the PAN is valid', async () => {
     const page = await myBrowser.newPage();
 
     await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
@@ -124,7 +124,7 @@ describe('Credit Card Field', () => {
     await page.close();
   });
 
-  it('should remove data-checked attribute when the card number is removed', async () => {
+  it('should remove data-checked attribute, when the card number is removed', async () => {
     const page = await myBrowser.newPage();
 
     await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
