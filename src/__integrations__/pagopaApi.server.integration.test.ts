@@ -6,7 +6,7 @@ import { createHttpTerminator } from 'http-terminator';
 import { retryingFetch } from '../utils/fetch';
 import * as myFetch from '../utils/fetch';
 
-import { createClient } from '../../generated/definitions/pagopa_live/client';
+import { createClient } from '../../generated/definitions/pagopa/client';
 
 import pm from './pm';
 

@@ -1,5 +1,5 @@
 import CreditCard from 'card-validator';
-import { createClient } from '../generated/definitions/pagopa_live/client';
+import { createClient } from '../generated/definitions/pagopa/client';
 import { getUrlParameter } from './js/urlUtilities';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';

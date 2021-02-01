@@ -1,5 +1,5 @@
 import { Millisecond } from 'italia-ts-commons/lib/units';
-import { createClient } from '../../../generated/definitions/pagopa_live/client';
+import { createClient } from '../../../generated/definitions/pagopa/client';
 import { transientConfigurableFetch } from '../../utils/fetch';
 
 document.addEventListener('DOMContentLoaded', async () => {
