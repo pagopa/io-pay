@@ -16,8 +16,11 @@ import pmBad from './pmBad';
  * start-session many times. That way also the retryable fetch gets tested
  */
 describe('PM Client', () => {
-  const PORT = 1235;
-  const HOST = 'localhost';
+  const SRV_PORT = process.env.IOPAY_DEV_SERVER_PORT ? parseInt(process.env.IOPAY_DEV_SERVER_PORT, 10) : 1234;
+  const SRV_HOST = process.env.IOPAY_DEV_SERVER_HOST as string;
+
+  const PM_PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
+  const PM_HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
 
   // eslint-disable-next-line functional/no-let
   let myDevServer: Server;
@@ -34,10 +37,10 @@ describe('PM Client', () => {
   beforeAll(() => {
     // Start server
     const myServer = express().use('/', express.static('distTest'));
-    myDevServer = myServer.listen(PORT, HOST);
+    myDevServer = myServer.listen(SRV_PORT, SRV_HOST);
     devServerTerminator = createHttpTerminator({ server: myDevServer });
 
-    pmBadServer = pmBad.listen(9666, 'localhost');
+    pmBadServer = pmBad.listen(PM_PORT, PM_HOST);
     pmBadTerminator = createHttpTerminator({ server: pmBadServer });
   });
 
@@ -68,7 +71,7 @@ describe('PM Client', () => {
       await request.continue();
     });
 
-    const serverResponse = await pmTab.goto('http://localhost:1235/index.html');
+    const serverResponse = await pmTab.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html`);
 
     await new Promise(resolve => setTimeout(resolve, 4000));
 

@@ -1,12 +1,13 @@
 import { Server } from 'http';
-
 import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator } from 'http-terminator';
 import stubServer from './stubServer';
 
 describe('Local server stub', () => {
-  const PORT = 5000;
-  const HOST = 'localhost';
+  const PORT = process.env.FETCH_STUB_SRV_PORT ? parseInt(process.env.FETCH_STUB_SRV_PORT, 10) : 50000;
+  const HOST = process.env.FETCH_STUB_SRV_HOST as string;
+  const goodUrl = `http://${HOST}:${PORT}/good-response`;
+  const badUrl = `http://${HOST}:${PORT}/transient-error`;
 
   it('should respond 404, when the user navigates to the bad endpoint', async () => {
     // Start server
@@ -17,7 +18,7 @@ describe('Local server stub', () => {
     const myBrowser: Browser = await launch();
     const page = await myBrowser.newPage();
 
-    const serverResponseKO = await page.goto(`http://${HOST}:${PORT}/transient-error`);
+    const serverResponseKO = await page.goto(badUrl);
     expect(serverResponseKO).toBeTruthy();
     expect(serverResponseKO?.status()).toEqual(404);
 
@@ -33,14 +34,13 @@ describe('Local server stub', () => {
     const myBrowser: Browser = await launch();
     const page = await myBrowser.newPage();
 
-    const serverResponse = await page.goto(`http://${HOST}:${PORT}/good-response`);
+    const serverResponse = await page.goto(goodUrl);
 
     expect(serverResponse).toBeTruthy();
     await expect(serverResponse?.json()).resolves.toEqual({ msg: 'Hello World' });
     expect(serverResponse?.status()).toEqual(200);
 
-    await myBrowser.close();
-    await stubServerTerminator.terminate();
+    await Promise.all([stubServerTerminator.terminate(), myBrowser.close()]);
   });
 
   it('should respond 200, when the good endpoint is called with the browser standard fetch', async () => {
@@ -54,12 +54,13 @@ describe('Local server stub', () => {
 
     const [serverResponse] = await Promise.all([
       page.waitForResponse(response => response.request().method() === 'GET'),
-      page.evaluate(() =>
-        // Can't use the variables HOST and PORT since the string is computed in the context of the browser
-        fetch(`http://localhost:5000/good-response`, {
-          headers: { 'upgrade-insecure-requests': '1' },
-          method: 'GET',
-        }),
+      page.evaluate(
+        url =>
+          fetch(url, {
+            headers: { 'upgrade-insecure-requests': '1' },
+            method: 'GET',
+          }),
+        goodUrl,
       ),
     ]);
 
@@ -80,10 +81,7 @@ describe('Local server stub', () => {
     await page.setBypassCSP(true);
 
     const [serverResponse] = await Promise.all([
-      page.waitForResponse(
-        response =>
-          response.url() === `http://${HOST}:${PORT}/transient-error` && response.request().method() === 'GET',
-      ),
+      page.waitForResponse(response => response.url() === badUrl && response.request().method() === 'GET'),
       page.addScriptTag({ path: 'distTest/transientConfigurableFetch.js' }),
     ]);
 
@@ -105,10 +103,7 @@ describe('Local server stub', () => {
     await page.setBypassCSP(true);
 
     const [serverResponse] = await Promise.all([
-      page.waitForResponse(
-        response =>
-          response.url() === `http://${HOST}:${PORT}/transient-error` && response.request().method() === 'GET',
-      ),
+      page.waitForResponse(response => response.url() === badUrl && response.request().method() === 'GET'),
       page.addScriptTag({ path: 'distTest/retryingFetch.js' }),
     ]);
 

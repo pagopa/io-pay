@@ -4,7 +4,7 @@ import { transientConfigurableFetch } from '../../utils/fetch';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const pmClient = createClient({
-    baseUrl: 'http://localhost:9666',
+    baseUrl: 'http://localhost:5000',
     fetchApi: transientConfigurableFetch(fetch, {
       numberOfRetries: 3,
       httpCodeMapToTransient: 429,

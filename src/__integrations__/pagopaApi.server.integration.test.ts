@@ -19,7 +19,7 @@ describe('Payment Manager Client', () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
 
     const paymentManagerClient = createClient({
-      baseUrl: 'https://acardste.vaservices.eu:443/pp-restapi',
+      baseUrl: process.env.PAYMENT_MANAGER_TEST as string,
       fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
     });
 
@@ -49,8 +49,10 @@ describe('Payment Manager Client', () => {
 
   it('should call defaultRetryingFetch when invoking getSession endpoint of local dev server for IO APP', async () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
+    const HOST = process.env.IOAPP_DEV_SERVER_HOST as string;
+    const PORT = process.env.IOAPP_DEV_SERVER_PORT as string;
     const paymentManagerClient = createClient({
-      baseUrl: 'http://localhost:3000/wallet',
+      baseUrl: `http://${HOST}:${PORT}/wallet`,
       fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
     });
 
@@ -83,11 +85,13 @@ describe('Payment Manager Client', () => {
   });
 
   it('should call defaultRetryingFetch when getSession endpoint of local stub of PM is invoked', async () => {
-    const pmMockServer = pm.listen(50000, 'localhost');
+    const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+    const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
+    const pmMockServer = pm.listen(PORT, HOST);
     const stubServerTerminator = createHttpTerminator({ server: pmMockServer });
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
     const paymentManagerClient = createClient({
-      baseUrl: 'http://localhost:50000',
+      baseUrl: `http://${HOST}:${PORT}`,
       fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
     });
 

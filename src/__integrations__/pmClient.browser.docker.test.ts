@@ -5,8 +5,12 @@ import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import express from 'express';
 
 describe('Data Submission Form', () => {
-  const PORT = 1234;
-  const HOST = 'localhost';
+  const SRV_PORT = process.env.IOPAY_DEV_SERVER_PORT ? parseInt(process.env.IOPAY_DEV_SERVER_PORT, 10) : 1234;
+  const SRV_HOST = process.env.IOPAY_DEV_SERVER_HOST as string;
+  const PM_DOCK_PORT = process.env.PAYMENT_MANAGER_DOCKER_PORT
+    ? parseInt(process.env.PAYMENT_MANAGER_DOCKER_PORT, 10)
+    : 1234;
+  const PM_DOCK_HOST = process.env.PAYMENT_MANAGER_DOCKER_HOST as string;
 
   // eslint-disable-next-line functional/no-let
   let myDevServer: Server;
@@ -21,7 +25,7 @@ describe('Data Submission Form', () => {
     myServer.get('/health-check', function (_, res) {
       res.sendStatus(200);
     });
-    myDevServer = myServer.listen(PORT, HOST);
+    myDevServer = myServer.listen(SRV_PORT, SRV_HOST);
     devServerTerminator = createHttpTerminator({ server: myDevServer });
   });
 
@@ -33,7 +37,7 @@ describe('Data Submission Form', () => {
     myBrowser = await launch({ headless: true });
     // Health check
     const page = await myBrowser.newPage();
-    const serverResponse = await page.goto(`http://${HOST}:${PORT}/health-check`);
+    const serverResponse = await page.goto(`http://${SRV_HOST}:${SRV_PORT}/health-check`);
     expect(serverResponse?.status()).toEqual(200);
     await page.close();
   });
@@ -47,7 +51,7 @@ describe('Data Submission Form', () => {
     const pmTab = await myBrowser.newPage();
     const [pmResponseApiDocs] = await Promise.all([
       pmTab.waitForResponse(response => response.request().method() === 'GET'),
-      await pmTab.goto('http://localhost:8080/pp-restapi/v2/api-docs'),
+      await pmTab.goto(`http://${PM_DOCK_HOST}:${PM_DOCK_PORT}/pp-restapi/v2/api-docs`),
     ]);
 
     expect(pmResponseApiDocs?.status()).toEqual(200);
@@ -55,7 +59,7 @@ describe('Data Submission Form', () => {
 
     const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=6666`);
+    await page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=6666`);
     await page.setViewport({ width: 1200, height: 907 });
 
     // Fill the form
@@ -92,7 +96,7 @@ describe('Data Submission Form', () => {
       page.click(buttonS),
     ]);
 
-    expect(serverResponse[0]?.headers()['access-control-allow-origin']).toEqual(`http://${HOST}:${PORT}`);
+    expect(serverResponse[0]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
     await expect(serverResponse[1]?.json()).resolves.toMatchObject({ data: { user: { email: 'pippo@pluto.com' } } });
 
     await page.close();
