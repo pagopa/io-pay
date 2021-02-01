@@ -158,6 +158,27 @@ document.addEventListener('DOMContentLoaded', () => {
     'submit',
     async function (e) {
       e.preventDefault();
+      (
+        await pmClient.startSessionUsingPOST({
+          startSessionRequest: {
+            data: {
+              email: 'pippo@pluto.com',
+              fiscalCode: 'HBBJUU78U89R556T',
+              idPayment: '12345',
+            },
+          },
+        })
+      ).fold(
+        () => undefined, // to be replaced with logic to handle failures
+        () => {
+          creditcardformInputs?.forEach(el => {
+            sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
+          });
+          window.location.replace('check.html');
+        },
+      );
+      /*
+      e.preventDefault();
       const result = await pmClient.startSessionUsingPOST({
         startSessionRequest: {
           data: {
@@ -173,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
           sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
         });
         window.location.replace('check.html');
-      }
+      } */
     },
     false,
   );
