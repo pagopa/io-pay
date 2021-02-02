@@ -8,6 +8,7 @@ import * as myFetch from '../utils/fetch';
 
 import { createClient } from '../../generated/definitions/pagopa/client';
 
+import { OsEnum } from '../../generated/definitions/pagopa/Device';
 import pm from './pm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
@@ -84,7 +85,7 @@ describe('Payment Manager Client', () => {
     }
   });
 
-  it('should call defaultRetryingFetch when getSession endpoint of local stub of PM is invoked', async () => {
+  it('should call defaultRetryingFetch when start-session endpoint of local stub of PM is invoked', async () => {
     const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
     const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
     const pmMockServer = pm.listen(PORT, HOST);
@@ -104,7 +105,7 @@ describe('Payment Manager Client', () => {
       startSessionRequest: {
         data: {
           email: 'pippo@pluto.com',
-          fiscalCode: 'HBBJUU78U89R556T',
+          fiscalCode: 'HBBJUU78U89R556T', // optional
           idPayment: '12345',
         },
       },
@@ -118,5 +119,117 @@ describe('Payment Manager Client', () => {
 
     expect(responseP.map((myRes: any) => myRes.status).getOrElse(404)).toEqual(200);
     await stubServerTerminator.terminate();
+  });
+
+  it('should return a left either (error 422) when start-session is called with a void payload', async () => {
+    /* const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+    const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
+    const pmMockServer = pm.listen(PORT, HOST);
+    const stubServerTerminator = createHttpTerminator({ server: pmMockServer }); */
+
+    const HOST = 'localhost';
+    const PORT = 8080;
+
+    const paymentManagerClient = createClient({
+      baseUrl: `http://${HOST}:${PORT}`,
+      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+    });
+
+    // When startSessionRequest in the payload is void, get 500
+    expect(
+      (
+        await paymentManagerClient.startSessionUsingPOST({
+          startSessionRequest: {},
+        })
+      ).fold(
+        err => (err.pop()?.value as Response).status,
+        myRes => myRes.status,
+      ),
+    ).toEqual(500);
+
+    expect(
+      (
+        await paymentManagerClient.startSessionUsingPOST({
+          startSessionRequest: {
+            data: {},
+          },
+        })
+      ).fold(
+        err => (err.pop()?.value as Response).status,
+        myRes => myRes.status,
+      ),
+    ).toEqual(422);
+
+    const pmResponse = await paymentManagerClient.startSessionUsingPOST({
+      startSessionRequest: {
+        data: {
+          email: 'nunzia.ross@example.com',
+          fiscalCode: 'UQNSFM56P12T733D', // seems to be ignored by PM
+          idPayment: '12345', // seems to be ignored by PM
+        },
+      },
+    });
+
+    const pmResponseWithDevice = await paymentManagerClient.startSessionUsingPOST({
+      startSessionRequest: {
+        data: {
+          email: 'nunzia.ross@example.com',
+          idPayment: '12345', // seems to be ignored by PM
+          device: {
+            os: 'ANDROID' as OsEnum,
+          },
+        },
+      },
+    });
+
+    expect(
+      pmResponse.fold(
+        () => undefined,
+        myRes => myRes.value?.data?.user,
+      ),
+    ).toEqual(
+      pmResponseWithDevice.fold(
+        () => undefined,
+        myRes => myRes.value?.data?.user,
+      ),
+    );
+
+    expect(
+      pmResponse.fold(
+        () => undefined,
+        myRes => myRes.value?.data?.user?.status,
+      ),
+    ).toEqual('ANONYMOUS');
+
+    expect(
+      pmResponse.fold(
+        () => undefined,
+        myRes => myRes.value?.data?.sessionToken,
+      ),
+    ).toMatch(/[\d\w]{128}/i);
+
+    expect(
+      pmResponse.fold(
+        () => undefined,
+        myRes => myRes.value?.data?.sessionToken,
+      ),
+    ).not.toMatch(/[\d\w]{129}/i);
+
+    expect(
+      (
+        await paymentManagerClient.startSessionUsingPOST({
+          startSessionRequest: {
+            data: {
+              fiscalCode: 'UQNSFM56P12T733D',
+            },
+          },
+        })
+      ).fold(
+        err => (err.pop()?.value as Response).status,
+        () => undefined,
+      ),
+    ).toEqual(500);
+
+    // await stubServerTerminator.terminate();
   });
 });
