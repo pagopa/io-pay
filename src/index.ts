@@ -1,13 +1,13 @@
 import CreditCard from 'card-validator';
+import { fromNullable } from 'fp-ts/lib/Option';
 import { createClient } from '../generated/definitions/pagopa/client';
 import { getUrlParameter } from './js/urlUtilities';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
 import { userSession } from './js/sessiondata';
-import { fromNullable } from 'fp-ts/lib/Option';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const pmClient = createClient({
     baseUrl: 'http://localhost:8080',
     fetchApi: fetch,
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   modalWindows();
 
   // init payment data
-  checkPaymentFromIdPayment(paymentID);
+  await checkPaymentFromIdPayment(paymentID);
 
   fillFieldsBySessionStorage();
 

@@ -140,8 +140,9 @@ describe('Data Submission Form', () => {
       ],
     };
 
-    let form_data = new FormData();
+    const form_data = new FormData();
 
+    // eslint-disable-next-line guard-for-in, no-var
     for (var key in body) {
       form_data.append(key, body[key]);
     }

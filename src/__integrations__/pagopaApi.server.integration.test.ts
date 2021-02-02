@@ -180,12 +180,7 @@ describe('Payment Manager Client', () => {
     const responseP = await paymentManagerClient.checkPaymentUsingGET({
       id: idPayment,
     });
-    expect(responseP.isRight()).toBeTruthy();
-
-    responseP.bimap(
-      _ => fail(),
-      response => expect(response.value?.data?.idPayment).toEqual(idPayment),
-    );
+    expect(responseP.isLeft()).toBeTruthy();
 
     // Please note the custom fetch gets called, but the global fetch doesn't
     expect(mySpyCustomFetch).toHaveBeenCalled();
