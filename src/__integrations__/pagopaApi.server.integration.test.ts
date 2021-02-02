@@ -122,13 +122,15 @@ describe('Payment Manager Client', () => {
   });
 
   it('should return a left either (error 422) when start-session is called with a void payload', async () => {
-    /* const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+    const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
     const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
     const pmMockServer = pm.listen(PORT, HOST);
-    const stubServerTerminator = createHttpTerminator({ server: pmMockServer }); */
+    const stubServerTerminator = createHttpTerminator({ server: pmMockServer });
 
+    /*
     const HOST = 'localhost';
     const PORT = 8080;
+    */
 
     const paymentManagerClient = createClient({
       baseUrl: `http://${HOST}:${PORT}`,
@@ -225,11 +227,11 @@ describe('Payment Manager Client', () => {
           },
         })
       ).fold(
-        err => (err.pop()?.value as Response).status,
         () => undefined,
+        myRes => myRes.status,
       ),
     ).toEqual(500);
 
-    // await stubServerTerminator.terminate();
+    await stubServerTerminator.terminate();
   });
 });
