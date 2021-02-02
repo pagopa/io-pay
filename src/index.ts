@@ -4,6 +4,7 @@ import { getUrlParameter } from './js/urlUtilities';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
 import { userSession } from './js/sessiondata';
+import { fromNullable } from 'fp-ts/lib/Option';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -73,6 +74,22 @@ document.addEventListener('DOMContentLoaded', () => {
     fieldsCheck();
   }
 
+  async function checkPaymentFromIdPayment(idPayment: string) {
+    (await pmClient.checkPaymentUsingGET({ id: idPayment })).fold(
+      () => {
+        throw new Error('TODO Handle!');
+      }, // to be replaced with logic to handle failures
+      response => {
+        const payment = fromNullable(response.value).getOrElseL(() => {
+          throw new Error('TODO Handle!'); // to be replaced with logic to handle failures
+        });
+        sessionStorage.setItem('idPayment', payment.data.idPayment);
+        sessionStorage.setItem('amount', JSON.stringify(payment.data.amount));
+        fromNullable(payment.data.email).map(email => sessionStorage.setItem('email', email));
+      },
+    );
+  }
+
   // init translations
   setTranslateBtns();
 
@@ -81,6 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // init modals
   modalWindows();
+
+  // init payment data
+  checkPaymentFromIdPayment(paymentID);
 
   fillFieldsBySessionStorage();
 

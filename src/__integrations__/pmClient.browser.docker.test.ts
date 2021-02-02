@@ -101,4 +101,65 @@ describe('Data Submission Form', () => {
 
     await page.close();
   });
+
+  it('should call start check payment, when app is loaded', async () => {
+    // PRECONDITIONS
+    const pmTab = await myBrowser.newPage();
+    const [pmResponseApiDocs] = await Promise.all([
+      pmTab.waitForResponse(response => response.request().method() === 'GET'),
+      await pmTab.goto(`http://${PM_DOCK_HOST}:${PM_DOCK_PORT}/pp-restapi/v2/api-docs`),
+    ]);
+
+    expect(pmResponseApiDocs?.status()).toEqual(200);
+    await pmTab.close();
+
+    const page = await myBrowser.newPage();
+
+    const body = {
+      importoTotale: '95354.24',
+      email: 'test.test@example.com',
+      ragioneSociale: 'PagoPa',
+      oggettoPagamento: 'Pagamento',
+      bolloDigitale: 'false',
+      codiceFiscale: 'OVYUIW25N63T952W',
+      idCarrello: 'hx0gPsvSiIZy15L',
+      iban: 'IT80W0990817267H5TMU57XNTJ3',
+      language: '',
+      idLogo: '',
+      dettagli: [
+        {
+          iuv: 'iuv_qDkbzGEQjbFScXl',
+          ccp: 'ccp_erCpMFWQYzpgXGV',
+          idDominio: 'idD_obEpmnWaxGHrFSh',
+          enteBeneficiario: 'Ironston TAFE',
+          importo: '95354.24',
+          tipoPagatore: 'F',
+          codicePagatore: 'LHOXYX10Y50H466C',
+          nomePagatore: 'Sabino Fior',
+        },
+      ],
+    };
+
+    let form_data = new FormData();
+
+    for (var key in body) {
+      form_data.append(key, body[key]);
+    }
+
+    const response = await fetch(`http://${PM_DOCK_HOST}:8081/pa/send/rpt`, {
+      method: 'PUT',
+      body: form_data,
+    });
+
+    const idPayment = (await response.json()).idPayment;
+
+    await page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=${idPayment}`);
+    await page.setViewport({ width: 1200, height: 907 });
+
+    await Promise.all([page.waitForResponse(response => response.request().method() === 'GET')]);
+
+    expect(sessionStorage.getItem('idPayment')).toEqual(idPayment);
+
+    await page.close();
+  });
 });

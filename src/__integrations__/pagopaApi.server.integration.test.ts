@@ -119,4 +119,80 @@ describe('Payment Manager Client', () => {
     expect(responseP.map((myRes: any) => myRes.status).getOrElse(404)).toEqual(200);
     await stubServerTerminator.terminate();
   });
+
+  it('should call defaultRetryingFetch when checkPayment endpoint of local stub of PM is invoked with successful response', async () => {
+    const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+    const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
+    const pmMockServer = pm.listen(PORT, HOST);
+
+    const idPayment = '8fa64d75-acb4-4a74-a87c-32f348a6a95f';
+
+    const stubServerTerminator = createHttpTerminator({ server: pmMockServer });
+    const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
+    const paymentManagerClient = createClient({
+      baseUrl: `http://${HOST}:${PORT}`,
+      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+    });
+
+    expect(paymentManagerClient).toBeTruthy();
+
+    // Spy on th global fetch to check if it gets called
+    const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
+
+    const responseP = await paymentManagerClient.checkPaymentUsingGET({
+      id: idPayment,
+    });
+    expect(responseP.isRight()).toBeTruthy();
+
+    responseP.bimap(
+      _ => fail(),
+      response => expect(response.value?.data?.idPayment).toEqual(idPayment),
+    );
+
+    // Please note the custom fetch gets called, but the global fetch doesn't
+    expect(mySpyCustomFetch).toHaveBeenCalled();
+    // Please note this assert is different from the one in raw fetch test
+    expect(mySpyGlobalFetch).toHaveBeenCalledTimes(3);
+
+    expect(responseP.map((myRes: any) => myRes.status).getOrElse(404)).toEqual(200);
+    await stubServerTerminator.terminate();
+  });
+
+  it('should call defaultRetryingFetch when checkPayment endpoint of local stub of PM is invoked with 422 error response', async () => {
+    const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+    const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
+    const pmMockServer = pm.listen(PORT, HOST);
+
+    const idPayment = 'ca41570b-8c03-496b-9192-9284dec646d2';
+
+    const stubServerTerminator = createHttpTerminator({ server: pmMockServer });
+    const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
+    const paymentManagerClient = createClient({
+      baseUrl: `http://${HOST}:${PORT}`,
+      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+    });
+
+    expect(paymentManagerClient).toBeTruthy();
+
+    // Spy on th global fetch to check if it gets called
+    const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
+
+    const responseP = await paymentManagerClient.checkPaymentUsingGET({
+      id: idPayment,
+    });
+    expect(responseP.isRight()).toBeTruthy();
+
+    responseP.bimap(
+      _ => fail(),
+      response => expect(response.value?.data?.idPayment).toEqual(idPayment),
+    );
+
+    // Please note the custom fetch gets called, but the global fetch doesn't
+    expect(mySpyCustomFetch).toHaveBeenCalled();
+    // Please note this assert is different from the one in raw fetch test
+    expect(mySpyGlobalFetch).toHaveBeenCalledTimes(4);
+
+    expect(responseP.map((myRes: any) => myRes.status).getOrElse(404)).toEqual(200);
+    await stubServerTerminator.terminate();
+  });
 });
