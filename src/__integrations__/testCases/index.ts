@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await pmClient.startSessionUsingPOST({
     startSessionRequest: {
       data: {
-        email: 'pippo@pluto.com',
+        // on this email PM Stub returns 429
+        email: 'tooManyRequests@pm.com',
         fiscalCode: 'HBBJUU78U89R556T',
         idPayment: '12345',
       },
