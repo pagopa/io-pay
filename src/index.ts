@@ -1,4 +1,5 @@
 import CreditCard from 'card-validator';
+import { createClient } from '../generated/definitions/pagopa/client';
 import { getUrlParameter } from './js/urlUtilities';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
@@ -6,6 +7,11 @@ import { userSession } from './js/sessiondata';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
+  const pmClient = createClient({
+    baseUrl: 'http://localhost:8080',
+    fetchApi: fetch,
+  });
+
   const paymentID = getUrlParameter('p');
 
   const dropdownElements = document.querySelectorAll('.btn-dropdown');
@@ -54,11 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function fillFieldsBySessionStorage() {
     Object.keys(window.sessionStorage).map(function (k) {
-      // const fillValue = window.sessionStorage.getItem(k);
+      const fillValue = window.sessionStorage.getItem(k);
       const el = document.querySelector(`[name="${k}"]`) || null;
-      if (el !== null) {
-        // eslint-disable-next-line functional/immutable-data
-        // el.setAttribute('value', fillValue);
+      if (el !== null && fillValue) {
+        el.setAttribute('value', fillValue);
         el.setAttribute('data-checked', '1'); // TODO: should be bool not string
         if (el.getAttribute('type') === 'checkbox') {
           el.setAttribute('checked', '1');
@@ -149,14 +154,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  creditcardformSubmit?.addEventListener('click', function (e) {
-    e.preventDefault();
+  creditcardform?.addEventListener(
+    'submit',
+    async function (e) {
+      e.preventDefault();
+      (
+        await pmClient.startSessionUsingPOST({
+          startSessionRequest: {
+            data: {
+              email: 'pippo@pluto.com',
+              fiscalCode: 'HBBJUU78U89R556T',
+              idPayment: '12345',
+            },
+          },
+        })
+      ).fold(
+        () => undefined, // to be replaced with logic to handle failures
+        () => {
+          creditcardformInputs?.forEach(el => {
+            sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
+          });
+          window.location.replace('check.html');
+        },
+      );
+      /*
+      e.preventDefault();
+      const result = await pmClient.startSessionUsingPOST({
+        startSessionRequest: {
+          data: {
+            email: 'pippo@pluto.com',
+            fiscalCode: 'HBBJUU78U89R556T',
+            idPayment: '12345',
+          },
+        },
+      });
 
-    creditcardformInputs?.forEach(el => {
-      sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
-    });
-    window.location.replace('check.html');
-  });
+      if (result.isRight()) {
+        creditcardformInputs?.forEach(el => {
+          sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
+        });
+        window.location.replace('check.html');
+      } */
+    },
+    false,
+  );
 
   // VALIDATIONS --------------------------
   // Name Surname (at least two words)

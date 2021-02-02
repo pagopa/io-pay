@@ -1,6 +1,9 @@
 # Azure DevOps pipeline template used to build bundle.
 
 steps:
-- bash: |
-    yarn build
-  displayName: 'Build files'
+  - script: |
+      yarn generate
+    displayName: 'Generate definitions'
+  - bash: |
+      yarn build
+    displayName: 'Build files'

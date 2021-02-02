@@ -11,7 +11,7 @@ function transientConfigurableFetchTest() {
     timeout: 1000 as Millisecond,
   };
   const myFetch = transientConfigurableFetch(polyfilledFetch, transientFetchOptions);
-  void myFetch('http://localhost:5000/transient-error', {
+  void myFetch('http://localhost:50000/transient-error', {
     headers: { 'upgrade-insecure-requests': '1' },
     method: 'GET',
   });

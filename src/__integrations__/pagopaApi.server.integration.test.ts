@@ -3,9 +3,10 @@ import nodeFetch from 'node-fetch';
 // Needed to patch the globals
 import 'abort-controller/polyfill';
 import { createHttpTerminator } from 'http-terminator';
-import { PaymentManagerClient } from '../api/pagopa';
 import { retryingFetch } from '../utils/fetch';
 import * as myFetch from '../utils/fetch';
+
+import { createClient } from '../../generated/definitions/pagopa/client';
 
 import pm from './pm';
 
@@ -17,12 +18,10 @@ describe('Payment Manager Client', () => {
   it('should call defaultRetryingFetch when invoking getSession endpoint of PM test server', async () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
 
-    const paymentManagerClient = PaymentManagerClient(
-      'https://acardste.vaservices.eu:443/pp-restapi-CD',
-      'ZXCVBNM098876543',
-      retryingFetch(fetch, 5000 as Millisecond, 5),
-      retryingFetch(fetch, 20000 as Millisecond, 0),
-    );
+    const paymentManagerClient = createClient({
+      baseUrl: process.env.PAYMENT_MANAGER_TEST as string,
+      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+    });
 
     // Spy on th global fetch to check if it gets called
 
@@ -30,7 +29,15 @@ describe('Payment Manager Client', () => {
     expect(paymentManagerClient).toBeTruthy();
 
     try {
-      const responseP = await paymentManagerClient.getSession('ZXCVBNM098876543');
+      const responseP = await paymentManagerClient.startSessionUsingPOST({
+        startSessionRequest: {
+          data: {
+            email: 'pippo@pluto.com',
+            fiscalCode: 'HBBJUU78U89R556T',
+            idPayment: '12345',
+          },
+        },
+      });
       expect(responseP.isLeft()).toBeTruthy();
       // Please note this assert is different from the one in raw fetch test
       expect(mySpyGlobalFetch).not.toHaveBeenCalled();
@@ -42,12 +49,12 @@ describe('Payment Manager Client', () => {
 
   it('should call defaultRetryingFetch when invoking getSession endpoint of local dev server for IO APP', async () => {
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
-    const paymentManagerClient = PaymentManagerClient(
-      'http://localhost:3000/wallet',
-      'ZXCVBNM098876543',
-      retryingFetch(fetch, 2000 as Millisecond, 0),
-      retryingFetch(fetch, 2000 as Millisecond, 0),
-    );
+    const HOST = process.env.IOAPP_DEV_SERVER_HOST as string;
+    const PORT = process.env.IOAPP_DEV_SERVER_PORT as string;
+    const paymentManagerClient = createClient({
+      baseUrl: `http://${HOST}:${PORT}/wallet`,
+      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+    });
 
     expect(paymentManagerClient).toBeTruthy();
 
@@ -58,7 +65,15 @@ describe('Payment Manager Client', () => {
     // Pass the test even though the getSession rejects (usually due to the fact that
     // the dev server is down)
     try {
-      const responseP = await paymentManagerClient.getSession('ZXCVBNM098876543');
+      const responseP = await paymentManagerClient.startSessionUsingPOST({
+        startSessionRequest: {
+          data: {
+            email: 'pippo@pluto.com',
+            fiscalCode: 'HBBJUU78U89R556T',
+            idPayment: '12345',
+          },
+        },
+      });
       expect(responseP.isRight()).toBeTruthy();
       expect(responseP.map((myRes: any) => myRes.status).getOrElse(404)).toEqual(200);
       expect(mySpyCustomFetch).toHaveBeenCalled();
@@ -70,22 +85,30 @@ describe('Payment Manager Client', () => {
   });
 
   it('should call defaultRetryingFetch when getSession endpoint of local stub of PM is invoked', async () => {
-    const pmMockServer = pm.listen(50000, 'localhost');
+    const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+    const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
+    const pmMockServer = pm.listen(PORT, HOST);
     const stubServerTerminator = createHttpTerminator({ server: pmMockServer });
     const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
-    const paymentManagerClient = PaymentManagerClient(
-      'http://localhost:50000',
-      'ZXCVBNM098876543',
-      retryingFetch(fetch, 3000 as Millisecond, 3),
-      retryingFetch(fetch, 3000 as Millisecond, 3),
-    );
+    const paymentManagerClient = createClient({
+      baseUrl: `http://${HOST}:${PORT}`,
+      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+    });
 
     expect(paymentManagerClient).toBeTruthy();
 
     // Spy on th global fetch to check if it gets called
     const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
 
-    const responseP = await paymentManagerClient.getSession('ZXCVBNM098876543');
+    const responseP = await paymentManagerClient.startSessionUsingPOST({
+      startSessionRequest: {
+        data: {
+          email: 'pippo@pluto.com',
+          fiscalCode: 'HBBJUU78U89R556T',
+          idPayment: '12345',
+        },
+      },
+    });
     expect(responseP.isRight()).toBeTruthy();
 
     // Please note the custom fetch gets called, but the global fetch doesn't

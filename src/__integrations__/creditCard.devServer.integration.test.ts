@@ -2,11 +2,11 @@ import { Server } from 'http';
 
 import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
-import devServer from './devServer';
+import express from 'express';
 
 describe('Credit Card Field', () => {
-  const PORT = 40000;
-  const HOST = 'localhost';
+  const PORT = process.env.IOPAY_DEV_SERVER_PORT ? parseInt(process.env.IOPAY_DEV_SERVER_PORT, 10) : 1234;
+  const HOST = process.env.IOPAY_DEV_SERVER_HOST as string;
 
   // eslint-disable-next-line functional/no-let
   let myDevServer: Server;
@@ -17,7 +17,8 @@ describe('Credit Card Field', () => {
 
   beforeAll(() => {
     // Start server
-    myDevServer = devServer.listen(PORT, HOST);
+    const myServer = express().use('/', express.static('dist'));
+    myDevServer = myServer.listen(PORT, HOST);
     devServerTerminator = createHttpTerminator({ server: myDevServer });
   });
 
@@ -27,11 +28,6 @@ describe('Credit Card Field', () => {
 
   beforeEach(async () => {
     myBrowser = await launch({ headless: true });
-    // Health check
-    const page = await myBrowser.newPage();
-    const serverResponse = await page.goto(`http://${HOST}:${PORT}/health-check`);
-    expect(serverResponse?.status()).toEqual(200);
-    await page.close();
   });
 
   afterEach(async () => {
