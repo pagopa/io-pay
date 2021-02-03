@@ -169,14 +169,12 @@ describe('Payment Manager Client', () => {
 
     const idPayment = 'ca41570b-8c03-496b-9192-9284dec646d2';
 
-    const response = await paymentManagerClient.checkPaymentUsingGET({
-      id: idPayment,
-    });
-
-    expect(response.isLeft()).toBeTruthy();
-
     expect(
-      response.fold(
+      (
+        await paymentManagerClient.checkPaymentUsingGET({
+          id: idPayment,
+        })
+      ).fold(
         _ => fail(),
         response => response.status,
       ),
@@ -198,14 +196,12 @@ describe('Payment Manager Client', () => {
 
     const idPayment = 'bn41570b-8c03-5432-9192-4444dec646d2';
 
-    const response = await paymentManagerClient.checkPaymentUsingGET({
-      id: idPayment,
-    });
-
-    expect(response.isLeft()).toBeTruthy();
-
     expect(
-      response.fold(
+      (
+        await paymentManagerClient.checkPaymentUsingGET({
+          id: idPayment,
+        })
+      ).fold(
         _ => fail(),
         response => response.status,
       ),
@@ -227,14 +223,12 @@ describe('Payment Manager Client', () => {
 
     const idPayment = 'ba41570b-77c03-496b-9192-9284dec646d2';
 
-    const response = await paymentManagerClient.checkPaymentUsingGET({
-      id: idPayment,
-    });
-
-    expect(response.isLeft()).toBeTruthy();
-
     expect(
-      response.fold(
+      (
+        await paymentManagerClient.checkPaymentUsingGET({
+          id: idPayment,
+        })
+      ).fold(
         _ => fail(),
         response => response.status,
       ),

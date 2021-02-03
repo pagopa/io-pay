@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
   modalWindows();
 
   // init payment data
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   checkPaymentFromIdPayment(paymentID);
 
   fillFieldsBySessionStorage();
