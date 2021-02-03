@@ -8,7 +8,13 @@ import * as myFetch from '../utils/fetch';
 
 import { createClient } from '../../generated/definitions/pagopa/client';
 
-import { approveTermsResponse, httpResponseStatus, sessionToken } from '../__mocks__/mocks';
+import {
+  approveTermsResponse,
+  httpResponseStatus,
+  sessionToken,
+  sessionTokenInternalException,
+  sessionTokenUnprocessableEntity,
+} from '../__mocks__/mocks';
 
 import pm from './pm';
 
@@ -122,7 +128,7 @@ describe('Payment Manager Client', () => {
     await stubServerTerminator.terminate();
   });
 
-  it('p7b#1 should return a approve-terms 200 OK response', async () => {
+  it('should return a approve-terms 200 OK response', async () => {
     const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
     const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
     const pmMockServer = pm.listen(PORT, HOST);
@@ -151,7 +157,7 @@ describe('Payment Manager Client', () => {
     await stubServerTerminator.terminate();
   });
 
-  it('p7b#2 should return a approve-terms 200 OK response and correct payload data', async () => {
+  it('should return a approve-terms 200 OK response and correct payload data', async () => {
     const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
     const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
     const pmMockServer = pm.listen(PORT, HOST);
@@ -190,7 +196,7 @@ describe('Payment Manager Client', () => {
     await stubServerTerminator.terminate();
   });
 
-  it('p7b#3 should return a approve-terms NOK responses', async () => {
+  it('should return a approve-terms NOK responses', async () => {
     const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
     const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
     const pmMockServer = pm.listen(PORT, HOST);
@@ -219,7 +225,7 @@ describe('Payment Manager Client', () => {
         err => (err.pop()?.value as Response).status,
         myRes => myRes.status,
       ),
-    ).toEqual(httpResponseStatus.HTTP_422);
+    ).toEqual(httpResponseStatus.HTTP_401);
 
     // privacy doesn't set or terms doesn't accept : 400 bad request
     // TODO
@@ -240,7 +246,43 @@ describe('Payment Manager Client', () => {
         err => (err.pop()?.value as Response).status,
         myRes => myRes.status,
       ),
+    ).toEqual(httpResponseStatus.HTTP_401);
+
+    // RestApiUnprocessableEntityException check
+    expect(
+      (
+        await paymentManagerClient.approveTermsUsingPOST({
+          Bearer: sessionTokenUnprocessableEntity,
+          approveTermsRequest: {
+            data: {
+              terms: true,
+              privacy: false,
+            },
+          },
+        })
+      ).fold(
+        err => (err.pop()?.value as Response).status,
+        myRes => myRes.status,
+      ),
     ).toEqual(httpResponseStatus.HTTP_422);
+
+    // RestAPIInternalException check
+    expect(
+      (
+        await paymentManagerClient.approveTermsUsingPOST({
+          Bearer: sessionTokenInternalException,
+          approveTermsRequest: {
+            data: {
+              terms: true,
+              privacy: false,
+            },
+          },
+        })
+      ).fold(
+        err => (err.pop()?.value as Response).status,
+        myRes => myRes.status,
+      ),
+    ).toEqual(httpResponseStatus.HTTP_500);
 
     await stubServerTerminator.terminate();
   });

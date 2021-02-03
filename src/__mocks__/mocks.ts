@@ -1,5 +1,7 @@
 export const sessionToken =
   '2b0Q9t7i6A9c7w3B2b2i2H8o9q2O0t8a5U9y4w9A1g0k8T0l7y6F2a0e1R6h5b1W6i7d0U2e9q0E9l6d4P5q4c5K0j4g6O4h7n7U6v1c9Q4w1o2D3o9a5I5v7z9N5h6b';
+export const sessionTokenUnprocessableEntity = 'UnprocessableEntity';
+export const sessionTokenInternalException = 'InternalException';
 
 export const approveTermsResponse = {
   email: 'pippo@pluto.com',
