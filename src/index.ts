@@ -7,7 +7,7 @@ import { modalWindows } from './js/modals';
 import { userSession } from './js/sessiondata';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   const pmClient = createClient({
     baseUrl: 'http://localhost:8080',
     fetchApi: fetch,
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   modalWindows();
 
   // init payment data
-  await checkPaymentFromIdPayment(paymentID);
+  checkPaymentFromIdPayment(paymentID);
 
   fillFieldsBySessionStorage();
 
