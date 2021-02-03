@@ -1,0 +1,124 @@
+doctype html
+html(lang='it')
+    - var languages = [{'label':'IT', 'full':'Italiano'},{'label':'EN', 'full':'English'}];
+    - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'american-express'}];
+    head
+        title WISP Light
+        link(href="scss/style.scss",rel="stylesheet")
+        script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
+        script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
+        script(src="../node_modules/abort-controller/dist/abort-controller.umd.js")
+        script(src="inputcard.ts")
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+        meta(version=version)
+    body.page--inputcard
+        .main-wrapper.d-flex.flex-column
+            // HEADER
+            include includes/header.pug
+            .main.flex-fill.container
+                .row.justify-content-md-center
+                    .windowcont.px-4.px-md-0
+                        .d-flex.mt-2.mt-md-0
+                            .windowcont__accepted(data-lang="text.label.acceptedCards") Circuiti accettati:
+                            .dropdown.lang.ml-auto
+                                a.btn.btn-dropdown.text-primary(href="#",role="button",data-target="langList", aria-expanded="false")
+                                    span.lang__current IT
+                                    svg.icon-expand.icon.icon-sm.icon-primary
+                                        use(href="/assets/icons/sprite.svg#it-expand")
+                                .dropdown-mask.d-md-none &nbsp;
+                                .dropdown-menu(id="langList")
+                                    .lang__select
+                                        span Seleziona una lingua:
+                                        svg.float-right.icon-expand.icon.icon-secondary
+                                            use(href="/assets/icons/sprite.svg#it-close")
+                                        
+                                    .link-list-wrapper
+                                        ul.link-list
+                                            each l, index in languages
+                                                li.list-item.d-none.d-md-block
+                                                    a.langSelector(href="#", data-langselect=l.label.toLowerCase(), title=l.label.toLowerCase())=l.label
+                                            each l, index in languages
+                                                li.list-item.d-block.d-md-none
+                                                    a.langSelector(href="#", data-langselect=l.label.toLowerCase(), title=l.label.toLowerCase())=l.full
+                            // CARDS' LIST
+                        include includes/cards.pug
+                        .creditform
+                            form.my-5(id="creditcardform")
+                                .form-group.mb-2.mb-md-4
+                                    .input-group.mt-2.mt-md-4
+                                        .input-group-prepend
+                                            .input-group-text
+                                                svg.icon.icon-sm
+                                                    use(href="/assets/icons/sprite.svg#it-user")
+                                        label.sr-only(for="creditcardname", data-lang="textField.name.label") nome e cognome
+                                        input.form-control(type="text", placeholder="Mario Rossi", name="creditcardname",  id="creditcardname", maxlength="42", required)
+                                        .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.name.label") nome e cognome
+                                        .reset-flex-flow.text-muted.mt-1.custom-label--error Attenzione, scrivere almeno due parole
+                                    .input-group.mt-2.mt-md-4
+                                        .input-group-prepend
+                                            .input-group-text
+                                                svg.icon.icon-sm(id="creditcardholdericon")
+                                                    title= "Carta di credito"
+                                                    use(href="/assets/icons/sprite.svg#it-card", class="ccicon")
+                                                    each obj, index in cards
+                                                        use(href="/assets/icons/app.svg#icons-" + obj.name +"-mini", class="ccicon--custom " + obj.name)
+
+                                        label.sr-only(for="numerocarta", data-lang="textField.pan.label") numero della carta
+                                        input.form-control(type="text", placeholder="0000 0000 0000 0000", maxlength="20", name="creditcardnumber", id="creditcardnumber", required)
+                                        .input-group-append
+                                            .input-group-text
+                                                svg.icon.icon-primary.icon-sm(class="obscureToggler",data-obscuretarget="creditcardnumber")
+                                                    title Mostra / Nascondi
+                                                    use(href="/assets/icons/sprite.svg#it-password-invisible", class="hidecontent")
+                                                    use(href="/assets/icons/sprite.svg#it-password-visible", class="showcontent")
+                                        .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.pan.label") numero della carta
+                                        .reset-flex-flow.text-muted.mt-1.custom-label--error Inserisci un numero valido
+                                    .form-row.mt-2.mt-md-4
+                                        .col-6
+                                            .input-group
+                                                .input-group-prepend
+                                                    .input-group-text
+                                                        svg.icon.icon-sm
+                                                            use(href="/assets/icons/sprite.svg#it-calendar")
+                                                label.sr-only(for="creditcardexpirationdate", data-lang="textField.expireDate.label") scadenza
+                                                input.form-control(type="text", placeholder="mm/aa", maxlength="5", name="creditcardexpirationdate", id="creditcardexpirationdate" required)
+                                                .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.expireDate.label") scadenza
+                                                .reset-flex-flow.text-muted.mt-1.custom-label--error Atteso formato mm/aa
+                                        .col-6
+                                            .input-group
+                                                .input-group-prepend
+                                                    .input-group-text
+                                                        svg.icon.icon-sm
+                                                            use(href="/assets/icons/sprite.svg#it-locked")
+                                                label.sr-only(for="creditcardsecurcode", data-lang="textField.cvc.label") codice di sicurezza
+                                                input.form-control(type="password", placeholder="123", maxlength="4", name="securcode", id="creditcardsecurcode", autocomplete="off", required)
+                                                .input-group-append
+                                                    .input-group-text
+                                                        svg.icon.icon-primary.icon-sm(class="obscureToggler",data-obscuretarget="creditcardsecurcode", data-obscured)
+                                                            title Mostra / Nascondi
+                                                            use(href="/assets/icons/sprite.svg#it-password-invisible", class="hidecontent")
+                                                            use(href="/assets/icons/sprite.svg#it-password-visible", class="showcontent")
+                                                .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.cvc.label") codice di sicurezza
+                                                .reset-flex-flow.text-muted.mt-1.custom-label--error Non valido
+                                .mt-4.pt-4.border-top.border-top-gray
+                                    .toggles.reset-font-size
+                                        label.font-weight-normal(for="privacypol")
+                                            input(name="privacypol", type="checkbox", id="privacyTogglerInput", required)
+                                            span.lever.float-left.ml-0(id="privacyToggler")
+                                            span(data-lang="text.label.accept", class="mr-2") Accetto la
+                                            a(href="#", data-lang="text.label.privacyPolicy") privacy policy
+                                .mt-4.reset-font-size
+                                    a.text-decoration-none.font-weight-normal(href="#", data-modal="#modal-securecode", data-modal-buttons="close") Dove trovo il codice di sicurezza? Manca traduzione
+                                .windowcont__bottom
+                                    .container
+                                        .windowcont__bottom__wrap.d-flex
+                                            a.btn.btn-outline-primary.mr-2.js-modal-trigger(data-custom-open="modal-1", href="#", data-lang="cta.cancel") Annulla
+                                            button.btn.btn-primary.flex-grow-1(type="submit", data-lang="cta.continue", disabled) Continua
+                                        
+
+                                        
+
+            // FOOTER
+            include includes/footer.pug
+            include includes/modal/securecode.pug
