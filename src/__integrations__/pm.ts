@@ -65,6 +65,8 @@ walletRouter.get('/pp-restapi/v3/payments/:id/actions/check', function (req, res
     });
   } else if (req.params.id === 'ca41570b-8c03-496b-9192-9284dec646d2') {
     res.status(422);
+  } else if (req.params.id === 'bn41570b-8c03-5432-9192-4444dec646d2') {
+    res.status(404);
   } else {
     res.status(500);
   }

@@ -138,13 +138,25 @@ describe('Payment Manager Client', () => {
     });
 
     expect(response.isRight()).toBeTruthy();
-    expect(response.map(myRes => myRes.status).getOrElse(404)).toEqual(200);
-    expect(response.map(myRes => myRes.value?.data?.idPayment)).toEqual(idPayment);
+
+    expect(
+      response.fold(
+        _ => fail(),
+        response => response.status,
+      ),
+    ).toEqual(200);
+
+    expect(
+      response.fold(
+        _ => fail(),
+        response => response.value?.data?.idPayment,
+      ),
+    ).toEqual(idPayment);
 
     await stubServerTerminator.terminate();
   });
 
-  it('should call defaultRetryingFetch when checkPayment endpoint of local stub of PM is invoked with 422 error response', async () => {
+  it('should return UnprocessableEntity error (422) when checkPayment endpoint is invoked with idPayment already retrived', async () => {
     const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
     const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
     const pmMockServer = pm.listen(PORT, HOST);
@@ -162,7 +174,71 @@ describe('Payment Manager Client', () => {
     });
 
     expect(response.isLeft()).toBeTruthy();
-    expect(response.map((myRes: any) => myRes.status).getOrElse(404)).toEqual(422);
+
+    expect(
+      response.fold(
+        _ => fail(),
+        response => response.status,
+      ),
+    ).toEqual(422);
+
+    await stubServerTerminator.terminate();
+  });
+
+  it('should return not found error (404) when checkPayment endpoint is invoked with idPayment not found', async () => {
+    const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+    const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
+    const pmMockServer = pm.listen(PORT, HOST);
+
+    const stubServerTerminator = createHttpTerminator({ server: pmMockServer });
+    const paymentManagerClient = createClient({
+      baseUrl: `http://${HOST}:${PORT}`,
+      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+    });
+
+    const idPayment = 'ba41570b-77c03-496b-9192-9284dec646d2';
+
+    const response = await paymentManagerClient.checkPaymentUsingGET({
+      id: idPayment,
+    });
+
+    expect(response.isLeft()).toBeTruthy();
+
+    expect(
+      response.fold(
+        _ => fail(),
+        response => response.status,
+      ),
+    ).toEqual(500);
+
+    await stubServerTerminator.terminate();
+  });
+
+  it('should return generic error (500) when checkPayment endpoint fails with generic error', async () => {
+    const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+    const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
+    const pmMockServer = pm.listen(PORT, HOST);
+
+    const stubServerTerminator = createHttpTerminator({ server: pmMockServer });
+    const paymentManagerClient = createClient({
+      baseUrl: `http://${HOST}:${PORT}`,
+      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+    });
+
+    const idPayment = 'ba41570b-77c03-496b-9192-9284dec646d2';
+
+    const response = await paymentManagerClient.checkPaymentUsingGET({
+      id: idPayment,
+    });
+
+    expect(response.isLeft()).toBeTruthy();
+
+    expect(
+      response.fold(
+        _ => fail(),
+        response => response.status,
+      ),
+    ).toEqual(500);
 
     await stubServerTerminator.terminate();
   });
