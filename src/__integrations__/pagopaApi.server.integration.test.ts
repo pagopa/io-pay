@@ -196,7 +196,7 @@ describe('Payment Manager Client', () => {
       fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
     });
 
-    const idPayment = 'ba41570b-77c03-496b-9192-9284dec646d2';
+    const idPayment = 'bn41570b-8c03-5432-9192-4444dec646d2';
 
     const response = await paymentManagerClient.checkPaymentUsingGET({
       id: idPayment,
@@ -209,7 +209,7 @@ describe('Payment Manager Client', () => {
         _ => fail(),
         response => response.status,
       ),
-    ).toEqual(500);
+    ).toEqual(404);
 
     await stubServerTerminator.terminate();
   });
