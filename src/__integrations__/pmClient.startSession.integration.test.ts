@@ -7,8 +7,8 @@ import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { createClient } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
-import pm from './pm';
 import { OsEnum } from '../../generated/definitions/pagopa/Device';
+import pm from './pm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
