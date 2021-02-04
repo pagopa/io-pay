@@ -7,9 +7,8 @@ import cors from 'cors';
 import * as myFake from 'faker/locale/it';
 import { fromNullable } from 'fp-ts/lib/Option';
 import {
-  approveTermsResponse,
+  approveTermsResponseAccepted,
   httpResponseStatus,
-  sessionToken,
   sessionTokenInternalException,
   sessionTokenUnprocessableEntity,
 } from '../__mocks__/mocks';
@@ -41,16 +40,16 @@ walletRouter.post('/pp-restapi/v3/users/actions/start-session', function (req, r
 walletRouter.post('/pp-restapi/v3/users/actions/approve-terms', function (req, res) {
   fromNullable(req.header('Authorization')) // iif not null Authorization header
     .map(authHd => {
-      if (authHd === sessionToken) {
+      if (req.headers.authorization?.match(/[\d\w]{128}/)) {
         res.json({
           data: {
-            email: approveTermsResponse.email,
-            status: approveTermsResponse.status,
+            email: approveTermsResponseAccepted.email,
+            status: approveTermsResponseAccepted.status,
             acceptTerms: req.body.data?.terms && req.body.data?.privacy,
-            notificationEmail: approveTermsResponse.notificationEmail,
-            fiscalCode: approveTermsResponse.fiscalCode,
-            emailVerified: approveTermsResponse.emailVerified,
-            cellphoneVerified: approveTermsResponse.cellphoneVerified,
+            notificationEmail: approveTermsResponseAccepted.notificationEmail,
+            fiscalCode: approveTermsResponseAccepted.fiscalCode,
+            emailVerified: approveTermsResponseAccepted.emailVerified,
+            cellphoneVerified: approveTermsResponseAccepted.cellphoneVerified,
           },
         });
       } else {
