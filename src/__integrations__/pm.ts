@@ -49,7 +49,9 @@ walletRouter.post('/pp-restapi/v3/wallet', function (req, res) {
       } else if (!Object.prototype.hasOwnProperty.call(decodedReq.data, 'idPagamentoFromEC')) {
         return res.sendStatus(500);
       } else {
-        const myPan = fromNullable(decodedReq.data?.creditCard?.pan).getOrElse('4444444444444444');
+        const obscuredPan = fromNullable(decodedReq.data?.creditCard?.pan as string)
+          .map(myPan => '*'.repeat(myPan?.length - 4) + myPan?.substr(myPan.length - 4))
+          .getOrElse('************4444');
         return res.json({
           data: {
             idWallet: 40,
@@ -58,7 +60,7 @@ walletRouter.post('/pp-restapi/v3/wallet', function (req, res) {
             creditCard: {
               id: 48,
               holder: decodedReq.data?.creditCard?.holder,
-              pan: '*'.repeat(myPan?.length - 4) + myPan?.substr(myPan.length - 4),
+              pan: obscuredPan,
               expireMonth: decodedReq.data?.creditCard?.expireMonth,
               expireYear: decodedReq.data?.creditCard?.expireYear,
               brandLogo: 'http://localhost:8080/wallet/assets/img/creditcard/generic.png',
