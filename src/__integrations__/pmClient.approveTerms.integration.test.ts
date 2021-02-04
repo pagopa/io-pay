@@ -71,7 +71,7 @@ describe('Endpoint approveTermsUsingPOST', () => {
     expect(
       (
         await pmClient.approveTermsUsingPOST({
-          Bearer: sessionToken,
+          Bearer: `Bearer ${sessionToken}`,
           approveTermsRequest: {
             data: {
               terms: true,
@@ -90,7 +90,7 @@ describe('Endpoint approveTermsUsingPOST', () => {
     expect(
       (
         await pmClient.approveTermsUsingPOST({
-          Bearer: sessionToken,
+          Bearer: `Bearer ${sessionToken}`,
           approveTermsRequest: {
             data: {
               terms: true,
@@ -109,7 +109,7 @@ describe('Endpoint approveTermsUsingPOST', () => {
     expect(
       (
         await pmClient.approveTermsUsingPOST({
-          Bearer: sessionToken,
+          Bearer: `Bearer ${sessionToken}`,
           approveTermsRequest: {
             data: {
               terms: false,
@@ -128,7 +128,7 @@ describe('Endpoint approveTermsUsingPOST', () => {
     expect(
       (
         await pmClient.approveTermsUsingPOST({
-          Bearer: sessionToken,
+          Bearer: `Bearer ${sessionToken}`,
           approveTermsRequest: {
             data: {
               terms: true,

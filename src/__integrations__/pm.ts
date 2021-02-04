@@ -40,7 +40,7 @@ walletRouter.post('/pp-restapi/v3/users/actions/start-session', function (req, r
 walletRouter.post('/pp-restapi/v3/users/actions/approve-terms', function (req, res) {
   fromNullable(req.header('Authorization')) // iif not null Authorization header
     .map(authHd => {
-      if (req.headers.authorization?.match(/[\d\w]{128}/)) {
+      if (req.headers.authorization?.match(/Bearer [\d\w]{128}/)) {
         res.json({
           data: {
             email: approveTermsResponseAccepted.email,
