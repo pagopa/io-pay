@@ -1,8 +1,9 @@
 import CreditCard from 'card-validator';
 import { createClient } from '../generated/definitions/pagopa/client';
-import { getUrlParameter } from './js/urlUtilities';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
+import { initHeader } from './js/header';
+import idpayguard from './js/idpayguard';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,6 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     fieldsCheck();
   }
+  // idpayguard
+  idpayguard();
+
+  // initHeader
+  initHeader();
 
   // init translations
   setTranslateBtns();

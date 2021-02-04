@@ -38,7 +38,7 @@ describe('Credit Card Field', () => {
     // Start the browser environment
     const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
+    await page.goto(`http://${HOST}:${PORT}/inputcard.html`);
     await page.setViewport({ width: 1200, height: 907 });
 
     const creditCardFieldS = '#creditcardnumber';
@@ -56,7 +56,7 @@ describe('Credit Card Field', () => {
   it('should handle Mastercard cards, when the PAN is valid', async () => {
     const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
+    await page.goto(`http://${HOST}:${PORT}/inputcard.html`);
     await page.setViewport({ width: 1200, height: 907 });
 
     const creditCardFieldS = '#creditcardnumber';
@@ -70,7 +70,7 @@ describe('Credit Card Field', () => {
   it('should handle Visa cards, when the PAN is valid', async () => {
     const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
+    await page.goto(`http://${HOST}:${PORT}/inputcard.html`);
     await page.setViewport({ width: 1200, height: 907 });
 
     const creditCardFieldS = '#creditcardnumber';
@@ -86,7 +86,7 @@ describe('Credit Card Field', () => {
     // Start the browser environment
     const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
+    await page.goto(`http://${HOST}:${PORT}/inputcard.html`);
     await page.setViewport({ width: 1200, height: 907 });
 
     const creditCardFieldS = '#creditcardnumber';
@@ -109,7 +109,7 @@ describe('Credit Card Field', () => {
   it('should handle American Express cards, when the PAN is valid', async () => {
     const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
+    await page.goto(`http://${HOST}:${PORT}/inputcard.html`);
     await page.setViewport({ width: 1200, height: 907 });
 
     const creditCardFieldS = '#creditcardnumber';
@@ -123,7 +123,7 @@ describe('Credit Card Field', () => {
   it('should remove data-checked attribute, when the card number is removed', async () => {
     const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
+    await page.goto(`http://${HOST}:${PORT}/inputcard.html`);
     await page.setViewport({ width: 1200, height: 907 });
 
     const creditCardFieldS = '#creditcardnumber';
