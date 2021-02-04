@@ -1,29 +1,28 @@
-// import { debug } from 'console';
-// import { Server } from 'http';
+import { Server } from 'http';
 
 import nodeFetch from 'node-fetch';
 // Needed to patch the globals
 import 'abort-controller/polyfill';
-// import { createHttpTerminator, HttpTerminator } from 'http-terminator';
+import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { createClient } from '../../generated/definitions/pagopa/client';
 import { TypeEnum } from '../../generated/definitions/pagopa/Wallet';
 import { retryingFetch } from '../utils/fetch';
-// import pm from './pm';
+import pm from './pm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
 
 describe('Endpoint addWalletUsingPOST', () => {
-  const PORT = process.env.PAYMENT_MANAGER_DOCKER_PORT ? parseInt(process.env.PAYMENT_MANAGER_DOCKER_PORT, 10) : 8080;
-  const HOST = process.env.PAYMENT_MANAGER_DOCKER_HOST as string;
+  const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 8080;
+  const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
 
   // eslint-disable-next-line functional/no-let
-  // let pmServer: Server;
+  let pmServer: Server;
 
   // eslint-disable-next-line functional/no-let
-  // let pmServerTerminator: HttpTerminator;
+  let pmServerTerminator: HttpTerminator;
 
   // eslint-disable-next-line functional/no-let
   let pmClient;
@@ -33,8 +32,8 @@ describe('Endpoint addWalletUsingPOST', () => {
 
   beforeAll(async () => {
     // Start server
-    // pmServer = pm.listen(PORT, HOST);
-    // pmServerTerminator = createHttpTerminator({ server: pmServer });
+    pmServer = pm.listen(PORT, HOST);
+    pmServerTerminator = createHttpTerminator({ server: pmServer });
     // Start client
     pmClient = createClient({
       baseUrl: `http://${HOST}:${PORT}`,
@@ -56,11 +55,11 @@ describe('Endpoint addWalletUsingPOST', () => {
       myRes => fromNullable(myRes.value.data.sessionToken).getOrElse('wrong_token'),
     );
   });
-  /*
+
   afterAll(async () => {
     await pmServerTerminator.terminate();
   });
-*/
+
   it('should return 401 when the session token is wrong', async () => {
     expect(
       (
@@ -125,7 +124,7 @@ describe('Endpoint addWalletUsingPOST', () => {
                 securityCode: '666',
               },
               favourite: true,
-              idPagamentoFromEC: '2a4afce9-40e5-4be7-885b-a5223ff73e9a', // need to exist
+              idPagamentoFromEC: '2a4afce9-40e5-4be7-885b-a5223ff73e9a', // needs to exist
             },
           },
           language: 'it',
@@ -151,7 +150,7 @@ describe('Endpoint addWalletUsingPOST', () => {
                 holder: 'Ciccio Mio',
                 pan: '4024007182788397',
               },
-              idPagamentoFromEC: '2a4afce9-40e5-4be7-885b-a5223ff73e9a', // need to exist
+              idPagamentoFromEC: '', // needs to exist
             },
           },
           language: 'it',
@@ -161,5 +160,31 @@ describe('Endpoint addWalletUsingPOST', () => {
         myRes => myRes.status,
       ),
     ).toEqual(200);
+  });
+
+  it('should return 422 when the credit card expiring year is encoded with 4 digits', async () => {
+    expect(
+      (
+        await pmClient.addWalletUsingPOST({
+          Bearer: 'Bearer ' + sessionToken,
+          walletRequest: {
+            data: {
+              type: TypeEnum.CREDIT_CARD,
+              creditCard: {
+                expireMonth: '03',
+                expireYear: '2025', // year must be encoded with two digits
+                holder: 'Ciccio Mio',
+                pan: '4024007182788397',
+              },
+              idPagamentoFromEC: '2a4afce9-40e5-4be7-885b-a5223ff73e9a', // needs to exist
+            },
+          },
+          language: 'it',
+        })
+      ).fold(
+        err => (err.pop()?.value as Response).status,
+        () => undefined,
+      ),
+    ).toEqual(422);
   });
 });
