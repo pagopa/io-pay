@@ -1,0 +1,30 @@
+{
+  "id": 2,
+  "idPayment": "8fa64d75-acb4-4a74-a87c-32f348a6a95f",
+  "amount": {
+    "currency": "EUR",
+    "amount": "6248175",
+    "decimalDigits": 2
+  },
+  "subject": "Pagamento",
+  "receiver": "PagoPa",
+  "urlRedirectEc": "http://localhost:8081/pa/ec?paymentId=8fa64d75-acb4-4a74-a87c-32f348a6a95f",
+  "isCancelled": false,
+  "bolloDigitale": false,
+  "fiscalCode": "EBTSXF80K80O236Y",
+  "origin": "WALLET_APP",
+  "idCarrello": "HLKhX74Hs10alLP",
+  "detailsList": [
+    {
+      "IUV": "iuv_sALhaTPOXEuOtev",
+      "CCP": "ccp_zWsYypbFbtCmGdk",
+      "idDominio": "idD_dlukWMxHQADVNZT",
+      "enteBeneficiario": "Bluemeadow TAFE",
+      "importo": "62481.75",
+      "tipoPagatore": "F",
+      "codicePagatore": "EZWYAN18K87Z388V",
+      "nomePagatore": "Sig. Romolo Bellini"
+    }
+  ],
+  "iban": "IT09J1599878743S611F1PY9R92"
+}
