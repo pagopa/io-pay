@@ -1,35 +1,20 @@
-import userSessionData from '../assets/json/userSession.json';
+import checkdata from '../assets/json/check.json';
 import { getUrlParameter } from './urlUtilities';
 
-export function userSession() {
+export function actionsCheck(): void {
   document.body.classList.add('loading');
 
-  const paymentIDStored = sessionStorage.getItem('paymentID');
-  const paymentByQS = getUrlParameter('p') !== '' ? getUrlParameter('p') : null;
-  const paymentID = paymentIDStored != null ? paymentIDStored : paymentByQS;
-  if (paymentID == null) {
-    return false;
-  }
+  // TO-DO: implement call to endpoint
+  const checkData = checkdata;
 
-  // eslint-disable-next-line radix
-  const amountPrettified = parseInt(userSessionData.data.payment.amount.amount.toString()) / 100;
-  sessionStorage.setItem('amount', amountPrettified.toString());
+  const paymentIDStored: string | null = sessionStorage.getItem('paymentID');
+  const paymentByQS: string | null = getUrlParameter('p') !== '' ? getUrlParameter('p') : null;
+  const paymentID: string | null = paymentIDStored != null ? paymentIDStored : paymentByQS;
 
-  // FAKE IMPLEMENTATION
-  const enteBeneficiario = document.querySelector("[data-sessiondata='enteBeneficiario']");
-  const subject = document.querySelector("[data-sessiondata='subject']");
-  const importo = document.querySelector("[data-sessiondata='importo']");
-
-  const importoValue = userSessionData.data.payment.detailsList[0].importo;
-
-  // eslint-disable-next-line functional/immutable-data
-  enteBeneficiario?.setAttribute('innerText', userSessionData.data.payment.detailsList[0].enteBeneficiario);
-  subject?.setAttribute('innerText', userSessionData.data.payment.subject);
-  importo?.setAttribute('innerText', `€ ${Intl.NumberFormat('it-IT').format(importoValue)}`);
-
-  if (paymentIDStored == null) {
+  if (paymentIDStored == null && paymentID) {
     sessionStorage.setItem('paymentID', paymentID);
   }
 
+  sessionStorage.setItem('checkData', JSON.stringify(checkData));
   document.body.classList.remove('loading');
 }
