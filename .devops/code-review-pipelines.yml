@@ -43,8 +43,7 @@ stages:
       
       - job: validate_api_specification     
         steps:
-        - script: |
-            yarn lint-api
+        - script: yarn lint-api
           displayName: 'Validate API specification'
 
       - job: danger
