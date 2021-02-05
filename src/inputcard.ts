@@ -56,20 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function fillFieldsBySessionStorage() {
-    Object.keys(window.sessionStorage).map(function (k) {
-      const fillValue = window.sessionStorage.getItem(k);
-      const el = document.querySelector(`[name="${k}"]`) || null;
-      if (el !== null && fillValue) {
-        el.setAttribute('value', fillValue);
-        el.setAttribute('data-checked', '1'); // TODO: should be bool not string
-        if (el.getAttribute('type') === 'checkbox') {
-          el.setAttribute('checked', '1');
-        }
-      }
-    });
-    fieldsCheck();
-  }
   // idpayguard
   idpayguard();
 
@@ -81,8 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // init modals
   modalWindows();
-
-  fillFieldsBySessionStorage();
 
   // dropdown
   dropdownElements.forEach(el => {
@@ -171,9 +155,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ).fold(
         () => undefined, // to be replaced with logic to handle failures
         () => {
-          creditcardformInputs?.forEach(el => {
-            sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
-          });
           window.location.replace('check.html');
         },
       );
