@@ -43,7 +43,7 @@ stages:
       
       - job: validate_api_specification     
         steps:
-        - script: yarn lint-api
+        - script: npx oval validate -p openapi/api.yml
           displayName: 'Validate API specification'
 
       - job: danger
