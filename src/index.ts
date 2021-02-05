@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
       el.parentElement?.classList.add('is-valid');
       el.classList.remove('is-invalid');
       el.classList.add('is-valid');
-      el.setAttribute('data-checked', 1);
+      el.setAttribute('data-checked', '1');
     } else {
       el.parentElement?.classList.remove('is-valid');
       el.parentElement?.classList.add('is-invalid');
