@@ -1011,6 +1011,10 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Generic Error
   '/v3/users/actions/validate-bo-reset-password/{id}':
     get:
       tags:
@@ -2334,6 +2338,8 @@ definitions:
     title: StartSessionDto
   StartSessionRequest:
     type: object
+    required:
+      - email
     properties:
       data:
         $ref: '#/definitions/StartSession'

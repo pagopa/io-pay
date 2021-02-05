@@ -84,7 +84,7 @@ describe('Payment Manager Client', () => {
     }
   });
 
-  it('should call defaultRetryingFetch when getSession endpoint of local stub of PM is invoked', async () => {
+  it('should call defaultRetryingFetch when start-session endpoint of local stub of PM is invoked', async () => {
     const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
     const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 5000;
     const pmMockServer = pm.listen(PORT, HOST);
@@ -104,7 +104,7 @@ describe('Payment Manager Client', () => {
       startSessionRequest: {
         data: {
           email: 'pippo@pluto.com',
-          fiscalCode: 'HBBJUU78U89R556T',
+          fiscalCode: 'HBBJUU78U89R556T', // optional
           idPayment: '12345',
         },
       },
