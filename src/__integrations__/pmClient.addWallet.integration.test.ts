@@ -1,3 +1,4 @@
+// import { debug } from 'console';
 import { Server } from 'http';
 
 import nodeFetch from 'node-fetch';
@@ -108,32 +109,41 @@ describe('Endpoint addWalletUsingPOST', () => {
   });
 
   it('should return 200 when the walletRequest reflects the inputs collected during the payment flow', async () => {
-    expect(
-      (
-        await pmClient.addWalletUsingPOST({
-          Bearer: 'Bearer ' + sessionToken,
-          walletRequest: {
-            data: {
-              type: TypeEnum.CREDIT_CARD,
-              creditCard: {
-                brand: 'VISA',
-                expireMonth: '03',
-                expireYear: '25',
-                holder: 'Ciccio Mio',
-                pan: '4024007182788397',
-                securityCode: '666',
-              },
-              favourite: true,
-              idPagamentoFromEC: '2a4afce9-40e5-4be7-885b-a5223ff73e9a', // needs to exist
-            },
+    /* */
+
+    const pmResponse = await pmClient.addWalletUsingPOST({
+      Bearer: 'Bearer ' + sessionToken,
+      walletRequest: {
+        data: {
+          type: TypeEnum.CREDIT_CARD,
+          creditCard: {
+            brand: 'VISA',
+            expireMonth: '03',
+            expireYear: '25',
+            holder: 'Ciccio Mio',
+            pan: '4024007182788397',
+            securityCode: '666',
           },
-          language: 'it',
-        })
-      ).fold(
+          favourite: true,
+          idPagamentoFromEC: '2a4afce9-40e5-4be7-885b-a5223ff73e9a', // needs to exist
+        },
+      },
+      language: 'it',
+    });
+
+    expect(
+      pmResponse.fold(
         err => (err.pop()?.value as Response).status,
         myRes => myRes.status,
       ),
     ).toEqual(200);
+
+    expect(
+      pmResponse.fold(
+        () => undefined,
+        myRes => myRes.value.data.creditCard.pan,
+      ),
+    ).toEqual('************8397');
   });
 
   it('should return 200 when the walletRequest contains the bare minimum fields', async () => {

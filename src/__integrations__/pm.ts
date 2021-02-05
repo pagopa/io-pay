@@ -4,6 +4,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import * as myFake from 'faker/locale/it';
 import { fromNullable } from 'fp-ts/lib/Option';
+import { fromPredicate } from 'fp-ts/lib/Either';
+import { identity } from 'fp-ts/lib/function';
 import { WalletRequest } from '../../generated/definitions/pagopa/WalletRequest';
 import { StartSessionRequest } from '../../generated/definitions/pagopa/StartSessionRequest';
 import {
@@ -12,6 +14,7 @@ import {
   sessionTokenInternalException,
   sessionTokenUnprocessableEntity,
 } from '../__mocks__/mocks';
+// import { identity } from 'fp-ts/lib/function';
 
 // create express server
 const pm: Application = express();
@@ -125,75 +128,81 @@ walletRouter.get('/pp-restapi/v3/payments/:id/actions/check', function (req, res
 });
 
 walletRouter.post('/pp-restapi/v3/wallet', function (req, res) {
-  WalletRequest.decode(req.body).fold(
-    () => res.sendStatus(500),
-    decodedReq => {
-      if (!req.headers.authorization?.match(/Bearer [\d\w]{128}/)) {
-        return res.sendStatus(401);
-      } else if (
-        // request id {}
-        Object.keys(decodedReq).length === 0
-      ) {
-        return res.sendStatus(500);
-      } else if (decodedReq.data && Object.keys(decodedReq.data).length === 0) {
-        return res.sendStatus(422);
-      } else if (decodedReq.data?.creditCard?.expireYear?.match(/(\d\d.+)|[^\d]+/)) {
-        return res.sendStatus(422);
-      } else if (!Object.prototype.hasOwnProperty.call(decodedReq.data, 'idPagamentoFromEC')) {
-        return res.sendStatus(500);
-      } else {
-        const obscuredPan = fromNullable(decodedReq.data?.creditCard?.pan as string)
-          .map(myPan => '*'.repeat(myPan?.length - 4) + myPan?.substr(myPan.length - 4))
-          .getOrElse('************4444');
-        return res.json({
-          data: {
-            idWallet: 40,
-            type: 'CREDIT_CARD',
-            favourite: false,
-            creditCard: {
-              id: 48,
-              holder: decodedReq.data?.creditCard?.holder,
-              pan: obscuredPan,
-              expireMonth: decodedReq.data?.creditCard?.expireMonth,
-              expireYear: decodedReq.data?.creditCard?.expireYear,
-              brandLogo: 'http://localhost:8080/wallet/assets/img/creditcard/generic.png',
-              flag3dsVerified: false,
-              brand: 'OTHER',
-              hpan: myFake.random.alphaNumeric(64),
-              onUs: false,
-            },
-            psp: {
-              id: 8,
-              idPsp: 'POSTE1',
-              businessName: 'Poste Italiane',
-              paymentType: 'CP',
-              idIntermediary: 'BANCOPOSTA',
-              idChannel: 'POSTE1',
-              logoPSP: 'http://pagopa-dev:8080/pp-restapi/v3/resources/psp/8',
-              serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v3/resources/service/8',
-              serviceName: 'nomeServizio 02 poste (MOD0)',
-              fixedCost: [Object],
-              appChannel: false,
-              serviceAvailability: 'disponibilitaServizio FRANCESE',
-              urlInfoChannel: 'http://www.test.sia.eu',
-              paymentModel: 0,
-              idCard: 11008,
-              lingua: 'IT',
-              codiceAbi: '06220',
-              isPspOnus: false,
-              solvedByPan: false,
-            },
-            idPsp: 8,
-            pspEditable: false,
-            onboardingChannel: 'WISP',
-            services: ['FA', 'pagoPA', 'BPD'],
-            isPspToIgnore: false,
-            saved: false,
-            registeredNexi: false,
-          },
-        });
-      }
-    },
+  fromPredicate(
+    (myReq: typeof req) => /Bearer [\d\w]{128}/.test(fromNullable(myReq.headers.authorization).getOrElse('')),
+    identity,
+  )(req).fold(
+    () => res.sendStatus(401),
+    myReq =>
+      WalletRequest.decode(myReq.body).fold(
+        () => res.sendStatus(500),
+
+        decodedReq => {
+          if (
+            // request id {}
+            Object.keys(decodedReq).length === 0
+          ) {
+            return res.sendStatus(500);
+          } else if (decodedReq.data && Object.keys(decodedReq.data).length === 0) {
+            return res.sendStatus(422);
+          } else if (decodedReq.data?.creditCard?.expireYear?.match(/(\d\d.+)|[^\d]+/)) {
+            return res.sendStatus(422);
+          } else if (!Object.prototype.hasOwnProperty.call(decodedReq.data, 'idPagamentoFromEC')) {
+            return res.sendStatus(500);
+          } else {
+            const obscuredPan = fromNullable(decodedReq.data?.creditCard?.pan as string)
+              .map(myPan => '*'.repeat(myPan?.length - 4) + myPan?.substr(myPan.length - 4))
+              .getOrElse('************4444');
+            return res.json({
+              data: {
+                idWallet: 40,
+                type: 'CREDIT_CARD',
+                favourite: false,
+                creditCard: {
+                  id: 48,
+                  holder: decodedReq.data?.creditCard?.holder,
+                  pan: obscuredPan,
+                  expireMonth: decodedReq.data?.creditCard?.expireMonth,
+                  expireYear: decodedReq.data?.creditCard?.expireYear,
+                  brandLogo: 'http://localhost:8080/wallet/assets/img/creditcard/generic.png',
+                  flag3dsVerified: false,
+                  brand: 'OTHER',
+                  hpan: myFake.random.alphaNumeric(64),
+                  onUs: false,
+                },
+                psp: {
+                  id: 8,
+                  idPsp: 'POSTE1',
+                  businessName: 'Poste Italiane',
+                  paymentType: 'CP',
+                  idIntermediary: 'BANCOPOSTA',
+                  idChannel: 'POSTE1',
+                  logoPSP: 'http://pagopa-dev:8080/pp-restapi/v3/resources/psp/8',
+                  serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v3/resources/service/8',
+                  serviceName: 'nomeServizio 02 poste (MOD0)',
+                  fixedCost: [Object],
+                  appChannel: false,
+                  serviceAvailability: 'disponibilitaServizio FRANCESE',
+                  urlInfoChannel: 'http://www.test.sia.eu',
+                  paymentModel: 0,
+                  idCard: 11008,
+                  lingua: 'IT',
+                  codiceAbi: '06220',
+                  isPspOnus: false,
+                  solvedByPan: false,
+                },
+                idPsp: 8,
+                pspEditable: false,
+                onboardingChannel: 'WISP',
+                services: ['FA', 'pagoPA', 'BPD'],
+                isPspToIgnore: false,
+                saved: false,
+                registeredNexi: false,
+              },
+            });
+          }
+        },
+      ),
   );
 });
 

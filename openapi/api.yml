@@ -2339,7 +2339,7 @@ definitions:
   StartSessionRequest:
     type: object
     required:
-      - email
+      - data
     properties:
       data:
         $ref: '#/definitions/StartSession'
@@ -2741,6 +2741,8 @@ definitions:
     title: WalletListResponse
   WalletRequest:
     type: object
+    required:
+      - data
     properties:
       data:
         $ref: '#/definitions/Wallet'
