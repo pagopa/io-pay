@@ -7,6 +7,7 @@ export default function idpayguard(): void {
   const paymentID: string | null = paymentIDStored != null ? paymentIDStored : paymentByQS;
   if (!paymentID) {
     // TO-DO
-    alert('TO-DO prevedere exit in caso non ci sia paymentid');
+    // eslint-disable-next-line no-console
+    console.log('TO-DO prevedere exit in caso non ci sia paymentid');
   }
 }

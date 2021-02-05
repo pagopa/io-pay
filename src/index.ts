@@ -1,5 +1,7 @@
 import { createClient } from '../generated/definitions/pagopa/client';
 import { actionsCheck } from './js/sessiondata';
+import { initHeader } from './js/header';
+import idpayguard from './js/idpayguard';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,6 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // actions/check FAKE IMPLEMENTATION
   actionsCheck();
+
+  initHeader();
+
+  idpayguard();
 
   // email validation
   function emailValidation(email: string): boolean {
