@@ -2318,6 +2318,8 @@ definitions:
     title: SpidSessionResponse
   StartSession:
     type: object
+    required:
+      - email
     properties:
       device:
         $ref: '#/definitions/Device'
@@ -2338,8 +2340,6 @@ definitions:
     title: StartSessionDto
   StartSessionRequest:
     type: object
-    required:
-      - email
     properties:
       data:
         $ref: '#/definitions/StartSession'
