@@ -1,6 +1,6 @@
 import { Server } from 'http';
 
-import { Browser, launch } from 'puppeteer';
+import { Browser, launch, Page } from 'puppeteer';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import express from 'express';
 
@@ -14,6 +14,10 @@ describe('Credit Card Field', () => {
   let devServerTerminator: HttpTerminator;
   // eslint-disable-next-line functional/no-let
   let myBrowser: Browser;
+  // eslint-disable-next-line functional/no-let
+  let page: Page;
+
+  const creditCardFieldS = '#creditcardnumber';
 
   beforeAll(() => {
     // Start server
@@ -28,20 +32,29 @@ describe('Credit Card Field', () => {
 
   beforeEach(async () => {
     myBrowser = await launch({ headless: true });
+    page = await myBrowser.newPage();
+
+    await page.goto(`http://${HOST}:${PORT}/index.html?p=9999`);
+    await page.setViewport({ width: 1200, height: 907 });
+
+    const emailS = '.emailform > #emailform #useremail';
+    const buttonS = '#emailform > .windowcont__bottom > .container > .windowcont__bottom__wrap > .btn-primary';
+
+    await page.waitForSelector(emailS);
+    await page.focus(emailS);
+    await page.keyboard.type('xxx@yyy.io');
+
+    await page.click(buttonS);
   });
 
   afterEach(async () => {
+    await page.close();
     await myBrowser.close();
   });
 
   it('should show a warning text when the credit card number is wrong', async () => {
     // Start the browser environment
-    const page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
-    await page.setViewport({ width: 1200, height: 907 });
-
-    const creditCardFieldS = '#creditcardnumber';
     await page.waitForSelector(creditCardFieldS);
     await page.focus(creditCardFieldS);
     await page.keyboard.type('2324234342423');
@@ -50,16 +63,10 @@ describe('Credit Card Field', () => {
     const errorMsgV = await page.$eval(errorMsgS, element => element.textContent);
 
     expect(errorMsgV).toMatch(/Inserisci un numero valido/);
-    await page.close();
   });
 
   it('should handle Mastercard cards, when the PAN is valid', async () => {
-    const page = await myBrowser.newPage();
-
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
-    await page.setViewport({ width: 1200, height: 907 });
-
-    const creditCardFieldS = '#creditcardnumber';
+    await page.waitForSelector(creditCardFieldS);
 
     await page.focus(creditCardFieldS);
     await page.keyboard.type('5555555555554444');
@@ -68,30 +75,18 @@ describe('Credit Card Field', () => {
   });
 
   it('should handle Visa cards, when the PAN is valid', async () => {
-    const page = await myBrowser.newPage();
-
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
-    await page.setViewport({ width: 1200, height: 907 });
-
-    const creditCardFieldS = '#creditcardnumber';
+    await page.waitForSelector(creditCardFieldS);
 
     await page.focus(creditCardFieldS);
     await page.keyboard.type('4111111111111111');
     const checked = await page.$eval(creditCardFieldS, element => element.getAttribute('data-checked'));
     expect(checked).toMatch(/1/);
-    await page.close();
   });
 
   it('should handle Maestro cards, when the PAN is valid', async () => {
-    // Start the browser environment
-    const page = await myBrowser.newPage();
+    await page.waitForSelector(creditCardFieldS);
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
-    await page.setViewport({ width: 1200, height: 907 });
-
-    const creditCardFieldS = '#creditcardnumber';
     const creditCardInput = await page.$(creditCardFieldS);
-
     await page.focus(creditCardFieldS);
     await page.keyboard.type('6759649826438453');
     await expect(page.$eval(creditCardFieldS, element => element.getAttribute('data-checked'))).resolves.toMatch(/1/);
@@ -103,30 +98,19 @@ describe('Credit Card Field', () => {
     // Different length
     await page.keyboard.type('6799990100000000019');
     await expect(page.$eval(creditCardFieldS, element => element.getAttribute('data-checked'))).resolves.toMatch(/1/);
-    await page.close();
   });
 
   it('should handle American Express cards, when the PAN is valid', async () => {
-    const page = await myBrowser.newPage();
-
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
-    await page.setViewport({ width: 1200, height: 907 });
-
-    const creditCardFieldS = '#creditcardnumber';
+    await page.waitForSelector(creditCardFieldS);
 
     await page.focus(creditCardFieldS);
     await page.keyboard.type('340024388482878');
     await expect(page.$eval(creditCardFieldS, element => element.getAttribute('data-checked'))).resolves.toMatch(/1/);
-    await page.close();
   });
 
   it('should remove data-checked attribute, when the card number is removed', async () => {
-    const page = await myBrowser.newPage();
+    await page.waitForSelector(creditCardFieldS);
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=1234`);
-    await page.setViewport({ width: 1200, height: 907 });
-
-    const creditCardFieldS = '#creditcardnumber';
     const creditCardInput = await page.$(creditCardFieldS);
 
     await page.focus(creditCardFieldS);
@@ -140,6 +124,5 @@ describe('Credit Card Field', () => {
 
     const myAttr = await page.$eval(creditCardFieldS, element => element.getAttribute('data-checked'));
     expect(myAttr).toBeNull();
-    await page.close();
   });
 });

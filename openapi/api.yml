@@ -45,12 +45,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/PaymentResponse'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
         '404':
           description: Not Found
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Generic Error  
   '/v3/payments/{id}/actions/check-internal':
     get:
       tags:
@@ -1962,6 +1962,10 @@ definitions:
     title: PayRequest
   Payment:
     type: object
+    required:
+        - amount
+        - id
+        - idPayment
     properties:
       amount:
         $ref: '#/definitions/Amount'
@@ -1997,6 +2001,8 @@ definitions:
     title: Payment
   PaymentResponse:
     type: object
+    required:
+        - data
     properties:
       data:
         $ref: '#/definitions/Payment'
