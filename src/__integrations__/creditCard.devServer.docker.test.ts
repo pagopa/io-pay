@@ -34,7 +34,7 @@ describe('Credit Card Field', () => {
     myBrowser = await launch({ headless: true });
     page = await myBrowser.newPage();
 
-    await page.goto(`http://${HOST}:${PORT}/index.html?p=9999`);
+    await page.goto(`http://${HOST}:${PORT}/index.html?p=8fa64d75-acb4-4a74-a87c-32f348a6a95f`);
     await page.setViewport({ width: 1200, height: 907 });
 
     const emailS = '.emailform > #emailform #useremail';
@@ -46,12 +46,12 @@ describe('Credit Card Field', () => {
 
     await page.click(buttonS);
   });
-
+  /*
   afterEach(async () => {
     await page.close();
     await myBrowser.close();
   });
-
+*/
   it('should show a warning text when the credit card number is wrong', async () => {
     // Start the browser environment
 
