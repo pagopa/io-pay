@@ -3,6 +3,7 @@ import { Server } from 'http';
 import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import express from 'express';
+import { getIdPayment } from '../utils/testUtils';
 
 describe('Data Submission Form', () => {
   const SRV_PORT = process.env.IOPAY_DEV_SERVER_PORT ? parseInt(process.env.IOPAY_DEV_SERVER_PORT, 10) : 1234;
@@ -11,6 +12,9 @@ describe('Data Submission Form', () => {
     ? parseInt(process.env.PAYMENT_MANAGER_DOCKER_PORT, 10)
     : 1234;
   const PM_DOCK_HOST = process.env.PAYMENT_MANAGER_DOCKER_HOST as string;
+  const PM_DOCK_CTRL_PORT = process.env.PAYMENT_MANAGER_DOCKER_CONTROL_PORT
+    ? parseInt(process.env.PAYMENT_MANAGER_DOCKER_CONTROL_PORT, 10)
+    : 8081;
 
   // eslint-disable-next-line functional/no-let
   let myDevServer: Server;
@@ -46,8 +50,10 @@ describe('Data Submission Form', () => {
     await myBrowser.close();
   });
 
-  it('should call start session, when Continua is pressed', async () => {
+  it.only('should call start session, approve terms and add wallet when Continua is pressed', async () => {
     // PRECONDITIONS
+
+    // check if PM is started
     const pmTab = await myBrowser.newPage();
     const [pmResponseApiDocs] = await Promise.all([
       pmTab.waitForResponse(response => response.request().method() === 'GET'),
@@ -57,10 +63,24 @@ describe('Data Submission Form', () => {
     expect(pmResponseApiDocs?.status()).toEqual(200);
     await pmTab.close();
 
-    const page = await myBrowser.newPage();
+    // get a good idPayment, using PM control interface
+    const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
 
-    await page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=6666`);
+    // start the test
+    const page = await myBrowser.newPage();
+    await page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=${myIdPayment}`);
     await page.setViewport({ width: 1200, height: 907 });
+
+    // insert the email
+    const emailFielS = '.emailform > #emailform #useremail';
+    await page.waitForSelector(emailFielS);
+    await page.click(emailFielS);
+    await page.keyboard.type('username@domain.com');
+
+    const emailButtonS = '#emailform > .windowcont__bottom > .container > .windowcont__bottom__wrap > .btn-primary';
+
+    await page.waitForSelector(emailButtonS);
+    await page.click(emailButtonS); // navigate to credit card form
 
     // Fill the form
     const creditCardHolderFieldS = '#creditcardname';
@@ -91,13 +111,29 @@ describe('Data Submission Form', () => {
     await page.waitForSelector(buttonS);
 
     const serverResponse = await Promise.all([
-      page.waitForResponse(response => response.request().method() === 'OPTIONS'),
-      page.waitForResponse(response => response.request().method() === 'POST'),
+      page.waitForResponse(
+        response => response.request().method() === 'OPTIONS' && /start-session/.test(response.request().url()),
+      ),
+      page.waitForResponse(
+        response => response.request().method() === 'OPTIONS' && /approve-terms/.test(response.request().url()),
+      ),
+      page.waitForResponse(
+        response => response.request().method() === 'OPTIONS' && /wallet/.test(response.request().url()),
+      ),
+      page.waitForResponse(
+        response => response.request().method() === 'POST' && /start-session/.test(response.request().url()),
+      ),
       page.click(buttonS),
     ]);
 
     expect(serverResponse[0]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
-    await expect(serverResponse[1]?.json()).resolves.toMatchObject({ data: { user: { email: 'pippo@pluto.com' } } });
+    expect(serverResponse[1]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
+    expect(serverResponse[2]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
+    expect(serverResponse[3]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
+
+    await expect(serverResponse[3]?.json()).resolves.toMatchObject({
+      data: { user: { email: 'username@domain.com' } },
+    });
 
     await page.close();
   });

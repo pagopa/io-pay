@@ -1,51 +1,16 @@
-import { debug } from 'console';
-import { Millisecond } from 'italia-ts-commons/lib/units';
-import { fromNullable } from 'fp-ts/lib/Option';
-import { toError } from 'fp-ts/lib/Either';
-import { tryCatch } from 'fp-ts/lib/TaskEither';
-import { createClient } from '../generated/definitions/pagopa/client';
 import { actionsCheck } from './js/sessiondata';
 import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
-import { retryingFetch } from './utils/fetch';
-import { getUrlParameter } from './js/urlUtilities';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
-  const pmClient = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
-  });
-
-  const idPayment = fromNullable(getUrlParameter('p')).getOrElse('');
-
-  await tryCatch(
-    () =>
-      pmClient.checkPaymentUsingGET({
-        id: idPayment,
-      }),
-    toError,
-  )
-    .fold(
-      () => undefined, // MANAGE ERRORS
-      myResExt =>
-        sessionStorage.setItem(
-          'paymentID',
-          myResExt.fold(
-            () => 'fakePaymentId',
-            myRes => (myRes.status === 200 ? myRes.value.data.idPayment : 'fakePaymentId'),
-          ),
-        ),
-    )
-    .run();
-
   const useremail: HTMLInputElement | null = (document.getElementById('useremail') as HTMLInputElement) || null;
   const emailform: HTMLElement | null = document.getElementById('emailform') || null;
   const emailformInputs: NodeListOf<HTMLInputElement> | undefined = emailform?.querySelectorAll('input');
   const emailformSubmit: HTMLElement | null = emailform?.querySelector("button[type='submit']") || null;
 
   // actions/check FAKE IMPLEMENTATION
-  actionsCheck();
+  await actionsCheck();
 
   initHeader();
 

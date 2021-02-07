@@ -1,15 +1,22 @@
 import CreditCard from 'card-validator';
+import { Millisecond } from 'italia-ts-commons/lib/units';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { toError } from 'fp-ts/lib/Either';
+import { fromNullable } from 'fp-ts/lib/Option';
+import { identity, pipe } from 'fp-ts/lib/function';
 import { createClient } from '../generated/definitions/pagopa/client';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
 import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
-
+import { retryingFetch } from './utils/fetch';
+import { debug } from 'console';
+import { TypeEnum } from '../generated/definitions/pagopa/Wallet';
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
   const pmClient = createClient({
     baseUrl: 'http://localhost:8080',
-    fetchApi: fetch,
+    fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
 
   const dropdownElements = document.querySelectorAll('.btn-dropdown');
@@ -62,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const el = document.querySelector(`[name="${k}"]`) || null;
       if (el !== null && fillValue) {
         el.setAttribute('value', fillValue);
-        el.setAttribute('data-checked', '1'); // TODO: should be bool not string
+        el.setAttribute('data-checked', '1');
         if (el.getAttribute('type') === 'checkbox') {
           el.setAttribute('checked', '1');
         }
@@ -158,43 +165,104 @@ document.addEventListener('DOMContentLoaded', () => {
     'submit',
     async function (e) {
       e.preventDefault();
-      (
-        await pmClient.startSessionUsingPOST({
-          startSessionRequest: {
-            data: {
-              email: 'pippo@pluto.com',
-              fiscalCode: 'HBBJUU78U89R556T',
-              idPayment: '12345',
-            },
-          },
-        })
-      ).fold(
-        () => undefined, // to be replaced with logic to handle failures
-        () => {
-          creditcardformInputs?.forEach(el => {
-            sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
-          });
-          window.location.replace('check.html');
-        },
-      );
-      /*
-      e.preventDefault();
-      const result = await pmClient.startSessionUsingPOST({
-        startSessionRequest: {
-          data: {
-            email: 'pippo@pluto.com',
-            fiscalCode: 'HBBJUU78U89R556T',
-            idPayment: '12345',
-          },
-        },
-      });
 
-      if (result.isRight()) {
-        creditcardformInputs?.forEach(el => {
-          sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
-        });
-        window.location.replace('check.html');
-      } */
+      // Start Session to Fetch session token
+
+      const mySessionToken = await TE.tryCatch(
+        () =>
+          pmClient.startSessionUsingPOST({
+            startSessionRequest: {
+              data: {
+                email: fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
+                idPayment: fromNullable(sessionStorage.getItem('paymentID')).getOrElse(''),
+                fiscalCode: JSON.parse(fromNullable(sessionStorage.getItem('checkData')).getOrElse('{}')).fiscalCode,
+              },
+            },
+          }),
+        toError,
+      )
+        .fold(
+          () => 'fakeSessionToken', // to be replaced with logic to handle failures
+          myResExt => {
+            const sessionToken = myResExt.fold(
+              () => 'fakeSessionToken',
+              myRes =>
+                myRes.status === 200
+                  ? fromNullable(myRes.value.data?.sessionToken).getOrElse('fakeSessionToken')
+                  : 'fakeSessionToken',
+            );
+            sessionStorage.setItem('sessionToken', sessionToken);
+            return sessionToken;
+          },
+        )
+        .run();
+
+      debug(`Bearer ${mySessionToken}`);
+      await TE.tryCatch(
+        () =>
+          pmClient.approveTermsUsingPOST({
+            Bearer: `Bearer ${mySessionToken}`,
+            approveTermsRequest: {
+              data: {
+                terms: true,
+                privacy: true,
+              },
+            },
+          }),
+        toError,
+      )
+        .fold(
+          () => undefined, // to be replaced with logic to handle failures
+          myResExt => {
+            const approvalState = myResExt.fold(
+              () => 'noApproval',
+              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'noApproval'),
+            );
+            sessionStorage.setItem('approvalState', approvalState);
+          },
+        )
+        .run();
+
+      await TE.tryCatch(
+        () =>
+          pmClient.addWalletUsingPOST({
+            Bearer: `Bearer ${mySessionToken}`,
+            walletRequest: {
+              data: {
+                type: TypeEnum.CREDIT_CARD,
+                creditCard: {
+                  expireMonth: '03',
+                  expireYear: '25', // year must be encoded with two digits
+                  holder: 'Ciccio Mio',
+                  pan: creditcardformNumber?.innerText,
+                },
+                idPagamentoFromEC: '', // needs to exist
+              },
+            },
+            language: 'it',
+          }),
+        toError,
+      )
+        .fold(
+          () => void 0, // to be replaced with logic to handle failures
+          myResExt => {
+            const approvalState = myResExt.fold(
+              () => 'fakeCC',
+              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet'),
+            );
+            sessionStorage.setItem('wallet', approvalState);
+            window.location.replace('check.html');
+          },
+        )
+        .run();
+
+      /*
+      
+      creditcardformInputs?.forEach(el => {
+              sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
+            });
+            window.location.replace('check.html');
+      */
     },
     false,
   );

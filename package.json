@@ -21,6 +21,7 @@
     "build:test-cases": "parcel build src/__integrations__/testCases/* --out-dir distTest",
     "build:index": "parcel build src/index.ts ",
     "build:template": "parcel build src/*.pug",
+    "prestart": "ts-node script/generateTestingUrl.ts",
     "start": "parcel src/*.pug",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md"
@@ -76,6 +77,7 @@
     "sass": "^1.27.0",
     "tingle.js": "^0.15.3",
     "ts-jest": "^26.4.4",
+    "ts-node": "^9.1.1",
     "typescript": "^4.1.3",
     "whatwg-fetch": "^3.5.0"
   },
