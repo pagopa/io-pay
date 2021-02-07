@@ -1,17 +1,16 @@
+import { debug } from 'console';
 import CreditCard from 'card-validator';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { toError } from 'fp-ts/lib/Either';
 import { fromNullable } from 'fp-ts/lib/Option';
-import { identity, pipe } from 'fp-ts/lib/function';
 import { createClient } from '../generated/definitions/pagopa/client';
+import { TypeEnum } from '../generated/definitions/pagopa/Wallet';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
 import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
 import { retryingFetch } from './utils/fetch';
-import { debug } from 'console';
-import { TypeEnum } from '../generated/definitions/pagopa/Wallet';
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
   const pmClient = createClient({
