@@ -62,20 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function fillFieldsBySessionStorage() {
-    Object.keys(window.sessionStorage).map(function (k) {
-      const fillValue = window.sessionStorage.getItem(k);
-      const el = document.querySelector(`[name="${k}"]`) || null;
-      if (el !== null && fillValue) {
-        el.setAttribute('value', fillValue);
-        el.setAttribute('data-checked', '1');
-        if (el.getAttribute('type') === 'checkbox') {
-          el.setAttribute('checked', '1');
-        }
-      }
-    });
-    fieldsCheck();
-  }
   // idpayguard
   idpayguard();
 
@@ -87,8 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // init modals
   modalWindows();
-
-  fillFieldsBySessionStorage();
 
   // dropdown
   dropdownElements.forEach(el => {
