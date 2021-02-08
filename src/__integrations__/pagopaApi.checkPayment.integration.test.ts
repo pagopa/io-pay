@@ -62,7 +62,7 @@ describe('Payment Manager Client', () => {
       ),
     ).toEqual(idPayment);
   });
-  /*
+
   it('should return UnprocessableEntity error (422) when checkPayment endpoint is invoked with idPayment already retrived', async () => {
     const idPayment = 'ca41570b-8c03-496b-9192-9284dec646d2';
 
@@ -77,7 +77,7 @@ describe('Payment Manager Client', () => {
       ),
     ).toEqual(422);
   });
-*/
+
   it('should return not found error (404) when checkPayment endpoint is invoked with idPayment not found', async () => {
     const idPayment = 'bn41570b-8c03-5432-9192-4444dec646d2';
 
@@ -92,7 +92,7 @@ describe('Payment Manager Client', () => {
       ),
     ).toEqual(404);
   });
-  /*
+
   it('should return generic error (500) when checkPayment endpoint fails with generic error', async () => {
     const idPayment = 'ba41570b-77c03-496b-9192-9284dec646d2';
 
@@ -106,5 +106,5 @@ describe('Payment Manager Client', () => {
         response => response.status,
       ),
     ).toEqual(500);
-  }); */
+  });
 });
