@@ -6,7 +6,7 @@ import { createClient } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
 import { getUrlParameter } from './urlUtilities';
 
-export async function actionsCheck(): void {
+export async function actionsCheck() {
   document.body.classList.add('loading');
 
   // This instance on PM Client calls the  of PM
