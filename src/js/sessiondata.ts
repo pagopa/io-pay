@@ -6,7 +6,7 @@ import { createClient } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
 import { getUrlParameter } from './urlUtilities';
 
-export async function actionsCheck() {
+export async function actionsCheck(): void {
   document.body.classList.add('loading');
 
   // This instance on PM Client calls the  of PM
@@ -16,41 +16,37 @@ export async function actionsCheck() {
   });
   // const checkData = checkdata;
 
-  const paymentIDStored: string | null = sessionStorage.getItem('paymentID');
-  const paymentByQS: string | null = getUrlParameter('p') !== '' ? getUrlParameter('p') : null;
-  const paymentID: string | null = paymentIDStored != null ? paymentIDStored : paymentByQS;
-
-  fromNullable(paymentID).fold(
-    // If undefined
-    await tryCatch(
-      () =>
-        pmClient.checkPaymentUsingGET({
-          id: fromNullable(paymentByQS).getOrElse(''),
-        }),
-      toError,
-    )
-      .fold(
-        () => undefined, // MANAGE ERRORS
-        myResExt => {
-          sessionStorage.setItem(
-            'checkData',
-            myResExt.fold(
-              () => 'fakeChekData',
-              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeCheckData'),
-            ),
-          );
-          sessionStorage.setItem(
-            'paymentID',
-            myResExt.fold(
-              () => 'fakePaymentID',
-              myRes => (myRes.status === 200 ? myRes.value.data.idPayment : 'fakePaymentID'),
-            ),
-          );
-        },
+  const checkDataStored: string | null = sessionStorage.getItem('checkData') || null;
+  const idPaymentStored: string | null = checkDataStored ? JSON.parse(checkDataStored).idPayment : null;
+  const idPaymentByQS: string | null = getUrlParameter('p') !== '' ? getUrlParameter('p') : null;
+  const idPayment: string | null = checkDataStored != null ? JSON.parse(checkDataStored).idPayment : idPaymentByQS;
+  // Trying to avoid a new call to endpoint if we've data stored
+  if (idPaymentStored === null) {
+    fromNullable(idPayment).fold(
+      // If undefined
+      await tryCatch(
+        () =>
+          pmClient.checkPaymentUsingGET({
+            id: fromNullable(idPayment).getOrElse(''),
+          }),
+        toError,
       )
-      .run(),
-    () => undefined,
-  );
-
+        .fold(
+          () => undefined, // MANAGE ERRORS
+          myResExt => {
+            myResExt.fold(
+              () => undefined,
+              response => {
+                if (response.status === 200) {
+                  sessionStorage.setItem('checkData', JSON.stringify(response.value.data));
+                }
+              },
+            );
+          },
+        )
+        .run(),
+      () => undefined,
+    );
+  }
   document.body.classList.remove('loading');
 }
