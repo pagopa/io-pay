@@ -149,6 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function (e) {
       e.preventDefault();
 
+      const useremail: string = sessionStorage.getItem('useremail') || '';
+      const checkDataStored: string = sessionStorage.getItem('checkData') || '';
+      const checkData = JSON.parse(checkDataStored);
+
       // Start Session to Fetch session token
 
       const mySessionToken = await TE.tryCatch(
@@ -156,16 +160,16 @@ document.addEventListener('DOMContentLoaded', () => {
           pmClient.startSessionUsingPOST({
             startSessionRequest: {
               data: {
-                email: fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
-                idPayment: fromNullable(sessionStorage.getItem('paymentID')).getOrElse(''),
-                fiscalCode: JSON.parse(fromNullable(sessionStorage.getItem('checkData')).getOrElse('{}')).fiscalCode,
+                email: fromNullable(useremail).getOrElse(''),
+                idPayment: fromNullable(checkData.idPayment).getOrElse(''),
+                fiscalCode: fromNullable(checkData.fiscalCode).getOrElse(''),
               },
             },
           }),
         toError,
       )
         .fold(
-          () => 'fakeSessionToken', // to be replaced with logic to handle failures
+          () => undefined, // to be replaced with logic to handle failures
           myResExt => {
             const sessionToken = myResExt.fold(
               () => 'fakeSessionToken',
@@ -180,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
         )
         .run();
 
-      debug(`Bearer ${mySessionToken}`);
+      // debug(`Bearer ${mySessionToken}`);
       await TE.tryCatch(
         () =>
           pmClient.approveTermsUsingPOST({
@@ -214,12 +218,13 @@ document.addEventListener('DOMContentLoaded', () => {
               data: {
                 type: TypeEnum.CREDIT_CARD,
                 creditCard: {
-                  expireMonth: '03',
-                  expireYear: '25', // year must be encoded with two digits
-                  holder: 'Ciccio Mio',
-                  pan: creditcardformNumber?.innerText,
+                  expireMonth: (creditcardformExpiration as HTMLInputElement).value.split('/')[0],
+                  expireYear: (creditcardformExpiration as HTMLInputElement).value.split('/')[1],
+                  holder: (creditcardformName as HTMLInputElement).value.trim(),
+                  pan: (creditcardformNumber as HTMLInputElement).value.trim(),
+                  securityCode: (creditcardformSecurecode as HTMLInputElement).value,
                 },
-                idPagamentoFromEC: '', // needs to exist
+                idPagamentoFromEC: checkData.idPayment, // needs to exist
               },
             },
             language: 'it',
