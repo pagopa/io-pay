@@ -7,7 +7,6 @@ import { fromNullable } from 'fp-ts/lib/Option';
 import { fromPredicate } from 'fp-ts/lib/Either';
 import { identity } from 'fp-ts/lib/function';
 import { WalletRequest } from '../../generated/definitions/pagopa/WalletRequest';
-import { StartSessionRequest } from '../../generated/definitions/pagopa/StartSessionRequest';
 import {
   approveTermsResponseAccepted,
   httpResponseStatus,
@@ -23,28 +22,24 @@ pm.use(bodyParser.json());
 // Use router to keep the express app extensible
 const walletRouter = Router();
 walletRouter.post('/pp-restapi/v3/users/actions/start-session', function (req, res) {
-  StartSessionRequest.decode(req.body).fold(
-    () => res.sendStatus(500),
-    decodedReq => {
-      if (decodedReq.data?.email === 'tooManyRequests@pm.com') {
-        return res.sendStatus(429);
-      } else if (decodedReq.data && Object.keys(decodedReq.data).length === 0) {
-        return res.sendStatus(422);
-      } else if (!Object.prototype.hasOwnProperty.call(decodedReq.data, 'email')) {
-        return res.sendStatus(500);
-      } else {
-        return res.json({
-          data: {
-            sessionToken: myFake.random.alphaNumeric(128),
-            user: {
-              email: decodedReq.data?.email,
-              status: 'ANONYMOUS',
-            },
-          },
-        });
-      }
-    },
-  );
+  const decodedReq = req.body;
+  if (decodedReq.data?.email === 'tooManyRequests@pm.com') {
+    return res.sendStatus(429);
+  } else if (decodedReq.data && Object.keys(decodedReq.data).length === 0) {
+    return res.sendStatus(422);
+  } else if (!Object.prototype.hasOwnProperty.call(decodedReq.data, 'email')) {
+    return res.sendStatus(500);
+  } else {
+    return res.json({
+      data: {
+        sessionToken: myFake.random.alphaNumeric(128),
+        user: {
+          email: decodedReq.data?.email,
+          status: 'ANONYMOUS',
+        },
+      },
+    });
+  }
 });
 
 // approve-terms
