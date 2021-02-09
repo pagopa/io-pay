@@ -2743,6 +2743,8 @@ definitions:
     title: WalletListResponse
   WalletRequest:
     type: object
+    required:
+      - data
     properties:
       data:
         $ref: '#/definitions/Wallet'
