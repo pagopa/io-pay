@@ -1,4 +1,3 @@
-import { debug } from 'console';
 import CreditCard from 'card-validator';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import * as TE from 'fp-ts/lib/TaskEither';
@@ -243,14 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
           },
         )
         .run();
-
-      /*
-      
-      creditcardformInputs?.forEach(el => {
-              sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
-            });
-            window.location.replace('check.html');
-      */
     },
     false,
   );

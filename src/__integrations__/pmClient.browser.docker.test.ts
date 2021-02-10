@@ -3,6 +3,7 @@ import { Server } from 'http';
 import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import express from 'express';
+import { fromNullable } from 'fp-ts/lib/Option';
 import { getIdPayment } from '../utils/testUtils';
 
 describe('Data Submission Form', () => {
@@ -50,7 +51,7 @@ describe('Data Submission Form', () => {
     await myBrowser.close();
   });
 
-  it.only('should call start session, approve terms and add wallet when Continua is pressed', async () => {
+  it('should call start session, approve terms and add wallet when Continua is pressed', async () => {
     // PRECONDITIONS
 
     // check if PM is started
@@ -120,20 +121,40 @@ describe('Data Submission Form', () => {
       page.waitForResponse(
         response => response.request().method() === 'OPTIONS' && /wallet/.test(response.request().url()),
       ),
-      page.waitForResponse(
-        response => response.request().method() === 'POST' && /start-session/.test(response.request().url()),
-      ),
       page.click(buttonS),
+      page.waitForNavigation(),
     ]);
+
+    // Assert CORS is working
 
     expect(serverResponse[0]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
     expect(serverResponse[1]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
     expect(serverResponse[2]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
-    expect(serverResponse[3]?.headers()['access-control-allow-origin']).toEqual(`http://${SRV_HOST}:${SRV_PORT}`);
 
-    await expect(serverResponse[3]?.json()).resolves.toMatchObject({
-      data: { user: { email: 'username@domain.com' } },
-    });
+    const sessionStorageState = await Promise.all([
+      page.evaluate(() => sessionStorage.getItem('wallet')),
+      page.evaluate(() => sessionStorage.getItem('sessionToken')),
+      page.evaluate(() => sessionStorage.getItem('approvalState')),
+    ]);
+
+    // Assert response payload, stored in Session Storage, is correct
+    expect(
+      fromNullable(sessionStorageState[0])
+        .map(myString => JSON.parse(myString))
+        .getOrElse({}),
+    ).toMatchObject({ creditCard: { holder: 'Luigi XIV' } });
+
+    expect(
+      fromNullable(sessionStorageState[1])
+        .map(myString => /[\d\w]{128}/.test(myString))
+        .getOrElse(false),
+    ).toBeTruthy();
+
+    expect(
+      fromNullable(sessionStorageState[2])
+        .map(myString => JSON.parse(myString))
+        .getOrElse({}),
+    ).toMatchObject({ acceptTerms: true });
 
     await page.close();
   });
@@ -150,52 +171,19 @@ describe('Data Submission Form', () => {
     await pmTab.close();
 
     const page = await myBrowser.newPage();
+    const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
 
-    const body = {
-      importoTotale: '95354.24',
-      email: 'test.test@example.com',
-      ragioneSociale: 'PagoPa',
-      oggettoPagamento: 'Pagamento',
-      bolloDigitale: 'false',
-      codiceFiscale: 'OVYUIW25N63T952W',
-      idCarrello: 'hx0gPsvSiIZy15L',
-      iban: 'IT80W0990817267H5TMU57XNTJ3',
-      language: '',
-      idLogo: '',
-      dettagli: [
-        {
-          iuv: 'iuv_qDkbzGEQjbFScXl',
-          ccp: 'ccp_erCpMFWQYzpgXGV',
-          idDominio: 'idD_obEpmnWaxGHrFSh',
-          enteBeneficiario: 'Ironston TAFE',
-          importo: '95354.24',
-          tipoPagatore: 'F',
-          codicePagatore: 'LHOXYX10Y50H466C',
-          nomePagatore: 'Sabino Fior',
-        },
-      ],
-    };
+    await Promise.all([
+      page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=${myIdPayment}`),
+      page.waitForResponse(response => response.request().method() === 'GET' && /check/.test(response.request().url())),
+    ]);
 
-    const form_data = new FormData();
-
-    // eslint-disable-next-line guard-for-in, no-var
-    for (var key in body) {
-      form_data.append(key, body[key]);
-    }
-
-    const response = await fetch(`http://${PM_DOCK_HOST}:8081/pa/send/rpt`, {
-      method: 'PUT',
-      body: form_data,
-    });
-
-    const idPayment = (await response.json()).idPayment;
-
-    await page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=${idPayment}`);
-    await page.setViewport({ width: 1200, height: 907 });
-
-    await Promise.all([page.waitForResponse(response => response.request().method() === 'GET')]);
-
-    expect(sessionStorage.getItem('idPayment')).toEqual(idPayment);
+    const checkRes = await page.evaluate(() => sessionStorage.getItem('checkData'));
+    expect(
+      fromNullable(checkRes)
+        .map(myString => JSON.parse(myString))
+        .getOrElse({}),
+    ).toMatchObject({ idPayment: myIdPayment });
 
     await page.close();
   });
