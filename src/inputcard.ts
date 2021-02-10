@@ -234,11 +234,11 @@ document.addEventListener('DOMContentLoaded', () => {
         .fold(
           () => void 0, // to be replaced with logic to handle failures
           myResExt => {
-            const approvalState = myResExt.fold(
+            const walletResp = myResExt.fold(
               () => 'fakeCC',
               myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet'),
             );
-            sessionStorage.setItem('wallet', approvalState);
+            sessionStorage.setItem('wallet', walletResp);
             window.location.replace('check.html');
           },
         )
