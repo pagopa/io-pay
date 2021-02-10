@@ -21,7 +21,7 @@ pm.use(cors());
 pm.use(bodyParser.json());
 // Use router to keep the express app extensible
 const walletRouter = Router();
-walletRouter.post('/pp-restapi/v3/users/actions/start-session', function (req, res) {
+walletRouter.post('/pp-restapi/v4/users/actions/start-session', function (req, res) {
   const decodedReq = req.body;
   if (decodedReq.data?.email === 'tooManyRequests@pm.com') {
     return res.sendStatus(429);
@@ -43,7 +43,7 @@ walletRouter.post('/pp-restapi/v3/users/actions/start-session', function (req, r
 });
 
 // approve-terms
-walletRouter.post('/pp-restapi/v3/users/actions/approve-terms', function (req, res) {
+walletRouter.post('/pp-restapi/v4/users/actions/approve-terms', function (req, res) {
   fromNullable(req.header('Authorization')) // iif not null Authorization header
     .map(authHd => {
       if (req.headers.authorization?.match(/Bearer [\d\w]{128}/)) {
@@ -79,7 +79,7 @@ walletRouter.post('/pp-restapi/v3/users/actions/approve-terms', function (req, r
       res.sendStatus(httpResponseStatus.HTTP_401);
     });
 });
-walletRouter.get('/pp-restapi/v3/payments/:id/actions/check', function (req, res) {
+walletRouter.get('/pp-restapi/v4/payments/:id/actions/check', function (req, res) {
   if (req.params.id === '8fa64d75-acb4-4a74-a87c-32f348a6a95f') {
     res.json({
       data: {
@@ -122,7 +122,7 @@ walletRouter.get('/pp-restapi/v3/payments/:id/actions/check', function (req, res
   }
 });
 
-walletRouter.post('/pp-restapi/v3/wallet', function (req, res) {
+walletRouter.post('/pp-restapi/v4/wallet', function (req, res) {
   fromPredicate(
     (myReq: typeof req) => /Bearer [\d\w]{128}/.test(fromNullable(myReq.headers.authorization).getOrElse('')),
     identity,
@@ -172,8 +172,8 @@ walletRouter.post('/pp-restapi/v3/wallet', function (req, res) {
                   paymentType: 'CP',
                   idIntermediary: 'BANCOPOSTA',
                   idChannel: 'POSTE1',
-                  logoPSP: 'http://pagopa-dev:8080/pp-restapi/v3/resources/psp/8',
-                  serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v3/resources/service/8',
+                  logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
+                  serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
                   serviceName: 'nomeServizio 02 poste (MOD0)',
                   fixedCost: [Object],
                   appChannel: false,
