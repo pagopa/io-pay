@@ -40,6 +40,10 @@ stages:
         - script: |
             yarn lint
           displayName: 'Lint'
+      
+        - script: |
+            yarn lint-api
+          displayName: 'Validate API specification'
 
       - job: danger
         condition: 
