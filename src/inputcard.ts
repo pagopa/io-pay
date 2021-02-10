@@ -1,15 +1,20 @@
 import CreditCard from 'card-validator';
+import { Millisecond } from 'italia-ts-commons/lib/units';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { toError } from 'fp-ts/lib/Either';
+import { fromNullable } from 'fp-ts/lib/Option';
 import { createClient } from '../generated/definitions/pagopa/client';
+import { TypeEnum } from '../generated/definitions/pagopa/Wallet';
 import { setTranslateBtns } from './js/translateui';
 import { modalWindows } from './js/modals';
 import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
-
+import { retryingFetch } from './utils/fetch';
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
   const pmClient = createClient({
     baseUrl: 'http://localhost:8080',
-    fetchApi: fetch,
+    fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
 
   const dropdownElements = document.querySelectorAll('.btn-dropdown');
@@ -142,40 +147,101 @@ document.addEventListener('DOMContentLoaded', () => {
     'submit',
     async function (e) {
       e.preventDefault();
-      (
-        await pmClient.startSessionUsingPOST({
-          startSessionRequest: {
-            data: {
-              email: 'pippo@pluto.com',
-              fiscalCode: 'HBBJUU78U89R556T',
-              idPayment: '12345',
-            },
-          },
-        })
-      ).fold(
-        () => undefined, // to be replaced with logic to handle failures
-        () => {
-          window.location.replace('check.html');
-        },
-      );
-      /*
-      e.preventDefault();
-      const result = await pmClient.startSessionUsingPOST({
-        startSessionRequest: {
-          data: {
-            email: 'pippo@pluto.com',
-            fiscalCode: 'HBBJUU78U89R556T',
-            idPayment: '12345',
-          },
-        },
-      });
 
-      if (result.isRight()) {
-        creditcardformInputs?.forEach(el => {
-          sessionStorage.setItem(el.getAttribute('name')?.trim() || '', el.value);
-        });
-        window.location.replace('check.html');
-      } */
+      const useremail: string = sessionStorage.getItem('useremail') || '';
+      const checkDataStored: string = sessionStorage.getItem('checkData') || '';
+      const checkData = JSON.parse(checkDataStored);
+
+      // Start Session to Fetch session token
+
+      const mySessionToken = await TE.tryCatch(
+        () =>
+          pmClient.startSessionUsingPOST({
+            startSessionRequest: {
+              data: {
+                email: fromNullable(useremail).getOrElse(''),
+                idPayment: fromNullable(checkData.idPayment).getOrElse(''),
+                fiscalCode: fromNullable(checkData.fiscalCode).getOrElse(''),
+              },
+            },
+          }),
+        toError,
+      )
+        .fold(
+          () => undefined, // to be replaced with logic to handle failures
+          myResExt => {
+            const sessionToken = myResExt.fold(
+              () => 'fakeSessionToken',
+              myRes =>
+                myRes.status === 200
+                  ? fromNullable(myRes.value.data?.sessionToken).getOrElse('fakeSessionToken')
+                  : 'fakeSessionToken',
+            );
+            sessionStorage.setItem('sessionToken', sessionToken);
+            return sessionToken;
+          },
+        )
+        .run();
+
+      // debug(`Bearer ${mySessionToken}`);
+      await TE.tryCatch(
+        () =>
+          pmClient.approveTermsUsingPOST({
+            Bearer: `Bearer ${mySessionToken}`,
+            approveTermsRequest: {
+              data: {
+                terms: true,
+                privacy: true,
+              },
+            },
+          }),
+        toError,
+      )
+        .fold(
+          () => undefined, // to be replaced with logic to handle failures
+          myResExt => {
+            const approvalState = myResExt.fold(
+              () => 'noApproval',
+              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'noApproval'),
+            );
+            sessionStorage.setItem('approvalState', approvalState);
+          },
+        )
+        .run();
+
+      await TE.tryCatch(
+        () =>
+          pmClient.addWalletUsingPOST({
+            Bearer: `Bearer ${mySessionToken}`,
+            walletRequest: {
+              data: {
+                type: TypeEnum.CREDIT_CARD,
+                creditCard: {
+                  expireMonth: (creditcardformExpiration as HTMLInputElement).value.split('/')[0],
+                  expireYear: (creditcardformExpiration as HTMLInputElement).value.split('/')[1],
+                  holder: (creditcardformName as HTMLInputElement).value.trim(),
+                  pan: (creditcardformNumber as HTMLInputElement).value.trim(),
+                  securityCode: (creditcardformSecurecode as HTMLInputElement).value,
+                },
+                idPagamentoFromEC: checkData.idPayment, // needs to exist
+              },
+            },
+            language: 'it',
+          }),
+        toError,
+      )
+        .fold(
+          () => void 0, // to be replaced with logic to handle failures
+          myResExt => {
+            const walletResp = myResExt.fold(
+              () => 'fakeCC',
+              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet'),
+            );
+            sessionStorage.setItem('wallet', walletResp);
+            window.location.replace('check.html');
+          },
+        )
+        .run();
     },
     false,
   );

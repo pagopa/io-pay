@@ -1,22 +1,16 @@
-import { createClient } from '../generated/definitions/pagopa/client';
 import { actionsCheck } from './js/sessiondata';
 import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-document.addEventListener('DOMContentLoaded', () => {
-  const pmClient = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: fetch,
-  });
-
+document.addEventListener('DOMContentLoaded', async () => {
   const useremail: HTMLInputElement | null = (document.getElementById('useremail') as HTMLInputElement) || null;
   const emailform: HTMLElement | null = document.getElementById('emailform') || null;
   const emailformInputs: NodeListOf<HTMLInputElement> | undefined = emailform?.querySelectorAll('input');
   const emailformSubmit: HTMLElement | null = emailform?.querySelector("button[type='submit']") || null;
 
   // actions/check FAKE IMPLEMENTATION
-  actionsCheck();
+  await actionsCheck();
 
   initHeader();
 
@@ -25,7 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // email validation
   function emailValidation(email: string): boolean {
     // eslint-disable-next-line
-    const regpattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+    const regpattern = new RegExp(
+      /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i,
+    );
     return regpattern.test(email);
   }
 
