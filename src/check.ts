@@ -2,13 +2,13 @@
 import { toError } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
+import { fromNullable } from 'fp-ts/lib/Option';
 import { createClient } from '../generated/definitions/pagopa/client';
 import { modalWindows } from './js/modals';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
 import { retryingFetch } from './utils/fetch';
-import { fromNullable } from 'fp-ts/lib/Option';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {

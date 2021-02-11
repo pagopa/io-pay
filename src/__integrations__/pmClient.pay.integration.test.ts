@@ -68,7 +68,8 @@ describe('Endpoint pay of PM', () => {
     expect(payResponse?.idWallet).toEqual(goodIdWallet);
     expect(payResponse?.nodoIdPayment).toEqual(goodIdPayment);
     expect(
-      fromNullable(payResponse?.amount?.amount).getOrElse(0) + fromNullable(payResponse?.fee?.amount).getOrElse(0),
+      (fromNullable(payResponse?.amount?.amount).getOrElse(0) as number) +
+        (fromNullable(payResponse?.fee?.amount).getOrElse(0) as number),
     ).toEqual(fromNullable(payResponse?.grandTotal?.amount).getOrElse(0));
   });
 
