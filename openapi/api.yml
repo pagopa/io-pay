@@ -472,14 +472,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/TransactionStatusResponse'
-        '401':
-          description: Unauthorized
-        '403':
-          description: Forbidden
+        '422':
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/ErrorResponse'        
         '404':
           description: Not Found
-      security:
-        - Bearer: []
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: Generic Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'    
   '/transactions/{id}/actions/resume':
     post:
       tags:
@@ -2778,3 +2782,10 @@ definitions:
       xpayNonce:
         type: string
     title: Xpay3DSResponse
+  ErrorResponse:
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string  

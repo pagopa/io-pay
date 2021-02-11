@@ -201,6 +201,31 @@ walletRouter.post('/pp-restapi/v4/wallet', function (req, res) {
   );
 });
 
+walletRouter.get('/pp-restapi/v4/transactions/:id/actions/check', function (req, res) {
+  const idTransaction = req.params.id;
+  if (idTransaction === 'Ng==') {
+    res.json({
+      data: {
+        idTransaction: 6,
+        idStatus: 3,
+        statusMessage: 'Confermato',
+        finalStatus: true,
+        expired: false,
+        authorizationCode: '00',
+        paymentOrigin: 'WALLET_APP',
+        idPayment: '7652e590-324d-421a-8fa6-e0d8d0633906',
+        result: 'OK',
+      },
+    });
+  } else if (idTransaction === 'MTAw==') {
+    res.status(422).json({ code: '9005', message: 'Status code null' });
+  } else if (idTransaction === 'MTAw') {
+    res.status(404).json({ code: '8', message: 'Transazione non trovata' });
+  } else {
+    res.status(500).json({ code: '500', message: 'For input string: ' + idTransaction });
+  }
+});
+
 const routers: ReadonlyArray<Router> = [walletRouter];
 routers.forEach(r => pm.use(r));
 
