@@ -48,7 +48,8 @@ html(lang='it')
                                 a.font-weight-bold.text-decoration-none.ml-auto(href="choosepsp.pug",id="check__pspchoose") Modifica
                             .windowcont__comm.d-flex.py-2.mt-2.border-bottom.border-bottom-gray
                                 div.text-muted Costo transazione
-                                div.ml-auto.d-flex.font-weight-bold(id="check__pspcost") 
+                                div.ml-auto.d-flex.font-weight-bold
+                                    span(id="check__pspcost")
                                     svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-checkpaypsp", data-modal-buttons="close")
                                         title= "Info PSP"
                                         use(href="/assets/icons/sprite.svg#it-info-circle")
@@ -71,7 +72,7 @@ html(lang='it')
                                             span.amount(id="check__totamount__button") &nbsp;
                                     .text-center
                                         a.d-block.font-weight-bold.text-decoration-none.py-2(href="#",data-modal="#modal-checkwhypsp", data-modal-buttons="close") Perchè vedo&nbsp;
-                                            span(id="check__pspbankname") 
+                                            span(class="check__pspbankname") 
                                             span ?
                                         
 
