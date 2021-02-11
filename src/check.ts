@@ -1,12 +1,25 @@
-import CreditCard from 'card-validator';
-import { userSession } from './js/sessiondata';
+/* eslint-disable complexity */
 import { modalWindows } from './js/modals';
+import idpayguard from './js/idpayguard';
+import { initHeader } from './js/header';
+import { setTranslateBtns } from './js/translateui';
 
-document.addEventListener('DOMContentLoaded', function () {
-  userSession();
-
+// eslint-disable-next-line sonarjs/cognitive-complexity
+document.addEventListener('DOMContentLoaded', () => {
+  // idpayguard
+  idpayguard();
+  // initHeader
+  initHeader();
+  // init translations
+  setTranslateBtns();
   // init modals
   modalWindows();
+
+  const walletStored = sessionStorage.getItem('wallet') || '';
+  const checkDataStored = sessionStorage.getItem('checkData') || '';
+  const wallet = JSON.parse(walletStored);
+  const checkData = JSON.parse(checkDataStored);
+  const userEmail = sessionStorage.getItem('useremail') || '';
 
   const circuitCustomType = document.querySelector('.windowcont__recapcc__circuit--custom use');
   const circuitCustomEl = document.querySelector('.windowcont__recapcc__circuit--custom');
@@ -18,34 +31,55 @@ document.addEventListener('DOMContentLoaded', function () {
   const checkCreditcardname = document.getElementById('check__creditcardname');
   const checkCreditcardexpirationdate = document.getElementById('check__creditcardexpirationdate');
   const checkCreditcardnumber = document.getElementById('check__creditcardnumber');
+  const pspbank = document.getElementById('check__pspbank');
+  const pspbankname = document.getElementById('check__pspbankname');
+  const pspcost = document.getElementById('check__pspcost');
+  const pspchoose = document.getElementById('check__pspchoose');
+  const checkUserEmail = document.getElementById('check__useremail');
 
-  const amount = sessionStorage.getItem('amount');
-  const creditcardname = sessionStorage.getItem('creditcardname');
-  const creditcardexpirationdate = sessionStorage.getItem('creditcardexpirationdate');
-  const creditcardnumber = sessionStorage.getItem('creditcardnumber');
+  const fixedCost: number = wallet?.psp.fixedCost.amount || 0;
+  const amount: number | null = checkData?.amount.amount;
+  const totAmount: number = fixedCost && amount ? fixedCost + amount : 0;
+  const prettyAmount: number = totAmount / 100;
+  const prettyfixedCost: number = fixedCost / 100;
 
-  const creditcardcircuitValidator = CreditCard.number(creditcardnumber);
-  const creditcardcircuit =
-    creditcardcircuitValidator.card !== null ? creditcardcircuitValidator.card.type.toLowerCase() : null;
-  if (creditcardcircuit !== null) {
-    circuitCustomEl?.classList.remove('d-none');
-    circuitDefaultEl?.classList.add('d-none');
-    const circuitCustomUrl = circuitCustomTypeHref?.replace('#icons-visa', `#icons-${creditcardcircuit}`);
-
-    circuitCustomType?.setAttribute('href', circuitCustomUrl || '');
+  if (checkTotamount) {
+    // eslint-disable-next-line functional/immutable-data
+    checkTotamount.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(prettyAmount || '0'))}`;
   }
-
-  const creditcardnumberMasked = creditcardnumber?.slice(creditcardnumber.length - 3, creditcardnumber.length);
-
-  checkTotamount?.setAttribute('innerText', `€ ${Intl.NumberFormat('it-IT').format(+(amount || '0'))}`);
-  checkTotamountButton?.setAttribute('innerText', `€ ${Intl.NumberFormat('it-IT').format(+(amount || '0'))}`);
-  checkCreditcardname?.setAttribute('innerText', creditcardname || '');
-  checkCreditcardexpirationdate?.setAttribute('innerText', creditcardexpirationdate || '');
-  checkCreditcardnumber?.setAttribute('innerText', '****' + (creditcardnumberMasked || ''));
-
-  // checkTotamount.innerText = `€ ${Intl.NumberFormat('it-IT').format(amount)}`;
-  // checkTotamountButton.innerText = `€ ${Intl.NumberFormat('it-IT').format(amount)}`;
-  // checkCreditcardname.innerText = creditcardname;
-  // checkCreditcardexpirationdate.innerText = creditcardexpirationdate;
-  // checkCreditcardnumber.innerText = '****' + creditcardnumberMasked;
+  if (checkTotamountButton) {
+    // eslint-disable-next-line functional/immutable-data
+    checkTotamountButton.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(prettyAmount || '0'))}`;
+  }
+  if (checkCreditcardname && wallet) {
+    // eslint-disable-next-line functional/immutable-data
+    checkCreditcardname.innerText = wallet.creditCard.holder;
+  }
+  if (checkCreditcardexpirationdate && wallet) {
+    // eslint-disable-next-line functional/immutable-data
+    checkCreditcardexpirationdate.innerText = `${wallet.creditCard.expireMonth}/${wallet?.creditCard.expireYear}`;
+  }
+  if (checkCreditcardnumber && wallet) {
+    // eslint-disable-next-line functional/immutable-data
+    checkCreditcardnumber.innerText = wallet.creditCard.pan;
+  }
+  if (pspbank && wallet) {
+    // eslint-disable-next-line functional/immutable-data
+    pspbank.setAttribute('src', wallet.psp.logoPSP);
+  }
+  if (pspcost && wallet) {
+    // eslint-disable-next-line functional/immutable-data
+    pspcost.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(prettyfixedCost || '0'))}`;
+  }
+  if (pspbankname && wallet) {
+    // eslint-disable-next-line functional/immutable-data
+    pspbankname.innerText = wallet.psp.businessName;
+  }
+  if (checkUserEmail && userEmail) {
+    // eslint-disable-next-line functional/immutable-data
+    checkUserEmail.innerText = userEmail;
+  }
+  if (pspchoose && wallet && wallet.pspEditable === false) {
+    pspchoose.classList.add('d-none');
+  }
 });
