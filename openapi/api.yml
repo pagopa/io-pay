@@ -9,7 +9,7 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0'
 host: 'localhost:8080'
-basePath: /pp-restapi
+basePath: /pp-restapi/v4
 tags:
   - name: otp-controller
     description: OTP Controller
@@ -28,7 +28,7 @@ tags:
 produces:
   - application/json
 paths:
-  '/v4/payments/{id}/actions/check':
+  '/payments/{id}/actions/check':
     get:
       tags:
         - payments-controller
@@ -51,7 +51,7 @@ paths:
           description: Unprocessable Entity
         '500':
           description: Generic Error  
-  '/v4/payments/{id}/actions/check-internal':
+  '/payments/{id}/actions/check-internal':
     get:
       tags:
         - payments-controller
@@ -74,7 +74,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-  '/v4/payments/{id}/actions/delete':
+  '/payments/{id}/actions/delete':
     delete:
       tags:
         - payments-controller
@@ -107,7 +107,7 @@ paths:
           description: Forbidden
       security:
         - Bearer: []
-  '/v4/payments/{id}/actions/pay':
+  '/payments/{id}/actions/pay':
     post:
       tags:
         - payments-controller
@@ -148,7 +148,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/psps:
+  /psps:
     get:
       tags:
         - psp-controller
@@ -184,7 +184,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/psps/actions/get-buyer-bank/{idBuyer}':
+  '/psps/actions/get-buyer-bank/{idBuyer}':
     get:
       tags:
         - psp-controller
@@ -210,7 +210,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/psps/actions/get-seller-bank/{idBuyer}':
+  '/psps/actions/get-seller-bank/{idBuyer}':
     post:
       tags:
         - psp-controller
@@ -246,7 +246,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/psps/buyer-banks:
+  /psps/buyer-banks:
     get:
       tags:
         - psp-controller
@@ -273,7 +273,7 @@ paths:
       security:
         - Bearer: []
 
-  '/v4/psps/{id}':
+  '/psps/{id}':
     get:
       tags:
         - psp-controller
@@ -299,7 +299,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/resources:
+  /resources:
     get:
       tags:
         - resource-controller
@@ -323,7 +323,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-  '/v4/resources/psp/{id}':
+  '/resources/psp/{id}':
     get:
       tags:
         - resource-controller
@@ -345,7 +345,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-  '/v4/resources/service/img/pa-logo/{idLogo}':
+  '/resources/service/img/pa-logo/{idLogo}':
     get:
       tags:
         - resource-controller
@@ -366,7 +366,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-  '/v4/resources/service/img/{imgName}':
+  '/resources/service/img/{imgName}':
     get:
       tags:
         - resource-controller
@@ -387,7 +387,7 @@ paths:
           description: Forbidden
         '404':
           description: Not Found
-  '/v4/resources/service/{id}':
+  '/resources/service/{id}':
     get:
       tags:
         - resource-controller
@@ -410,7 +410,7 @@ paths:
         '404':
           description: Not Found
 
-  /v4/transactions:
+  /transactions:
     get:
       tags:
         - transaction-controller
@@ -429,7 +429,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/transactions/{id}':
+  '/transactions/{id}':
     get:
       tags:
         - transaction-controller
@@ -455,7 +455,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/transactions/{id}/actions/check':
+  '/transactions/{id}/actions/check':
     get:
       tags:
         - transaction-controller
@@ -480,7 +480,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/transactions/{id}/actions/resume':
+  '/transactions/{id}/actions/resume':
     post:
       tags:
         - transaction-controller
@@ -519,7 +519,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users:
+  /users:
     get:
       tags:
         - users-controller
@@ -567,7 +567,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/approve-terms:
+  /users/actions/approve-terms:
     post:
       tags:
         - users-controller
@@ -595,7 +595,7 @@ paths:
           description: Generic Error  
       security:
         - Bearer: []
-  /v4/users/actions/change-email:
+  /users/actions/change-email:
     post:
       tags:
         - users-controller
@@ -625,7 +625,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/change-phone:
+  /users/actions/change-phone:
     post:
       tags:
         - users-controller
@@ -655,7 +655,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/check-session:
+  /users/actions/check-session:
     get:
       tags:
         - users-controller
@@ -680,7 +680,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/check-username-availability:
+  /users/actions/check-username-availability:
     get:
       tags:
         - users-controller
@@ -705,7 +705,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/generate-reset-password:
+  /users/actions/generate-reset-password:
     get:
       tags:
         - users-controller
@@ -741,7 +741,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/logic-delete-user:
+  /users/actions/logic-delete-user:
     post:
       tags:
         - users-controller
@@ -771,7 +771,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/login:
+  /users/actions/login:
     post:
       tags:
         - users-controller
@@ -801,7 +801,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/logout:
+  /users/actions/logout:
     post:
       tags:
         - users-controller
@@ -822,7 +822,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/recovery:
+  /users/actions/recovery:
     post:
       tags:
         - users-controller
@@ -852,7 +852,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/send-email-verification-token:
+  /users/actions/send-email-verification-token:
     get:
       tags:
         - users-controller
@@ -948,7 +948,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/send-otp:
+  /users/actions/send-otp:
     post:
       tags:
         - otp-controller
@@ -983,7 +983,7 @@ paths:
       security:
         - Bearer: []
 
-  /v4/users/actions/start-session:
+  /users/actions/start-session:
     post:
       tags:
         - users-controller
@@ -1015,7 +1015,7 @@ paths:
           description: Unprocessable Entity
         '500':
           description: Generic Error
-  '/v4/users/actions/validate-bo-reset-password/{id}':
+  '/users/actions/validate-bo-reset-password/{id}':
     get:
       tags:
         - users-controller
@@ -1040,7 +1040,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/users/actions/validate-bo-reset-puk/{id}':
+  '/users/actions/validate-bo-reset-puk/{id}':
     get:
       tags:
         - users-controller
@@ -1065,7 +1065,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/users/actions/validate-email/{id}':
+  '/users/actions/validate-email/{id}':
     get:
       tags:
         - users-controller
@@ -1095,7 +1095,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/users/actions/validate-reset-password/{id}':
+  '/users/actions/validate-reset-password/{id}':
     get:
       tags:
         - users-controller
@@ -1120,7 +1120,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/verify-otp:
+  /users/actions/verify-otp:
     post:
       tags:
         - otp-controller
@@ -1150,7 +1150,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/verify-password:
+  /users/actions/verify-password:
     post:
       tags:
         - users-controller
@@ -1180,7 +1180,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/users/actions/verify-puk:
+  /users/actions/verify-puk:
     post:
       tags:
         - users-controller
@@ -1210,7 +1210,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/users/byTransactionId/{transactionId}':
+  '/users/byTransactionId/{transactionId}':
     get:
       tags:
         - users-controller
@@ -1235,7 +1235,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/wallet:
+  /wallet:
     get:
       tags:
         - wallet-controller
@@ -1288,7 +1288,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/wallet/actions/check-card-bin:
+  /wallet/actions/check-card-bin:
     post:
       tags:
         - wallet-controller
@@ -1318,7 +1318,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/wallet/byTransactionId/{transactionId}':
+  '/wallet/byTransactionId/{transactionId}':
     get:
       tags:
         - wallet-controller
@@ -1343,7 +1343,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/wallet/delete-contract:
+  /wallet/delete-contract:
     delete:
       tags:
         - wallet-controller
@@ -1368,7 +1368,7 @@ paths:
           description: Forbidden
       security:
         - Bearer: []
-  /v4/wallet/set-favorite:
+  /wallet/set-favorite:
     post:
       tags:
         - wallet-controller
@@ -1399,7 +1399,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  /v4/wallet/set-visible:
+  /wallet/set-visible:
     post:
       tags:
         - wallet-controller
@@ -1430,7 +1430,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/wallet/{id}':
+  '/wallet/{id}':
     get:
       tags:
         - wallet-controller
@@ -1519,7 +1519,7 @@ paths:
           description: Forbidden
       security:
         - Bearer: []
-  '/v4/wallet/{id}/actions/confirm':
+  '/wallet/{id}/actions/confirm':
     post:
       tags:
         - wallet-controller
@@ -1549,7 +1549,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/wallet/{id}/actions/favourite':
+  '/wallet/{id}/actions/favourite':
     post:
       tags:
         - wallet-controller
