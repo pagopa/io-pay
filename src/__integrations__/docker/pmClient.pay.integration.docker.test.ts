@@ -1,4 +1,3 @@
-import { debug } from 'console';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
@@ -51,8 +50,6 @@ describe('Endpoint pay of PM', () => {
   beforeEach(async () => {
     // Execute the Happy Path before testing payment
     myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
-
-    debug(myIdPayment);
 
     // check
     checkResponse = (
