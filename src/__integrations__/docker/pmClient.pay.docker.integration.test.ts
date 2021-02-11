@@ -1,7 +1,7 @@
 import { fromNullable } from 'fp-ts/lib/Option';
 import { Millisecond } from 'italia-ts-commons/lib/units';
-import { createClient, Client } from '../../generated/definitions/pagopa/client';
-import { retryingFetch } from '../utils/fetch';
+import { createClient, Client } from '../../../generated/definitions/pagopa/client';
+import { retryingFetch } from '../../utils/fetch';
 
 describe('Endpoint xxxx of PM Client', () => {
   // eslint-disable-next-line functional/no-let

@@ -16,6 +16,7 @@
     "test:integration": "jest -c jest.config.integration.js --detectOpenHandles",
     "test:coverage-unit": "jest -c jest.config.unit.js --detectOpenHandles --coverage",
     "test:coverage-int": "jest -c jest.config.integration.js --detectOpenHandles --coverage",
+    "test:docker-int" : "jest -c jest.config.integration.docker.js --detectOpenHandles",
     "test": "yarn test:unit && yarn test:integration",
     "test:coverage": "yarn test:coverage-unit && yarn test:coverage-int",
     "build": "parcel build src/index.ts src/*.pug",
