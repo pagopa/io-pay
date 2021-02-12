@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkCreditcardexpirationdate = document.getElementById('check__creditcardexpirationdate');
   const checkCreditcardnumber = document.getElementById('check__creditcardnumber');
   const pspbank = document.getElementById('check__pspbank');
-  const pspbankname = document.getElementById('check__pspbankname');
+  const pspbankname = document.getElementsByClassName('check__pspbankname');
   const pspcost = document.getElementById('check__pspcost');
   const pspchoose = document.getElementById('check__pspchoose');
   const checkUserEmail = document.getElementById('check__useremail');
@@ -85,8 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
     pspcost.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(prettyfixedCost || '0'))}`;
   }
   if (pspbankname && wallet) {
-    // eslint-disable-next-line functional/immutable-data
-    pspbankname.innerText = wallet.psp.businessName;
+    const bankArray = Array.from(pspbankname);
+    for (const el of bankArray) {
+      // eslint-disable-next-line functional/immutable-data
+      (el as HTMLElement).innerText = wallet.psp.businessName;
+    }
   }
   if (checkUserEmail && userEmail) {
     // eslint-disable-next-line functional/immutable-data

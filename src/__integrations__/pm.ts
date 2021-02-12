@@ -11,7 +11,9 @@ import { WalletRequest } from '../../generated/definitions/pagopa/WalletRequest'
 
 import {
   approveTermsResponseAccepted,
+  getTermAndServices,
   httpResponseStatus,
+  qrParams,
   sessionTokenInternalException,
   sessionTokenUnprocessableEntity,
 } from '../__mocks__/mocks';
@@ -206,6 +208,19 @@ walletRouter.post('/pp-restapi/v4/wallet', function (req, res) {
         },
       ),
   );
+});
+// resources
+walletRouter.get('/pp-restapi/v4/resources', function (req, res) {
+  const termsAndConditionsR: string = getTermAndServices(req.query[qrParams.language] as string);
+  res.json({
+    data: {
+      is3ds2: 'false',
+      SPID_CALLBACK_URL: 'https://auth.pagopa.agid.gov.it/vaservices/internal',
+      urlImg: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/img/',
+      creditCardPlaceholder: 'http://localhost:8080/cc/mastercard.png',
+      termsAndConditions: termsAndConditionsR,
+    },
+  });
 });
 
 walletRouter.post('/pp-restapi/v4/payments/:id/actions/pay', function (req, res) {
