@@ -6,7 +6,9 @@ import * as myFake from 'faker/locale/it';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { fromPredicate } from 'fp-ts/lib/Either';
 import { identity } from 'fp-ts/lib/function';
+import { PayRequest } from '../../generated/definitions/pagopa/PayRequest';
 import { WalletRequest } from '../../generated/definitions/pagopa/WalletRequest';
+
 import {
   approveTermsResponseAccepted,
   getTermAndServices,
@@ -21,8 +23,13 @@ import {
 const pm: Application = express();
 pm.use(cors());
 pm.use(bodyParser.json());
+
 // Use router to keep the express app extensible
 const walletRouter = Router();
+
+const goodIdPayment = '8fa64d75-acb4-4a74-a87c-32f348a6a95f';
+const goodIdWallet = 100;
+
 walletRouter.post('/pp-restapi/v4/users/actions/start-session', function (req, res) {
   const decodedReq = req.body;
   if (decodedReq.data?.email === 'tooManyRequests@pm.com') {
@@ -82,11 +89,11 @@ walletRouter.post('/pp-restapi/v4/users/actions/approve-terms', function (req, r
     });
 });
 walletRouter.get('/pp-restapi/v4/payments/:id/actions/check', function (req, res) {
-  if (req.params.id === '8fa64d75-acb4-4a74-a87c-32f348a6a95f') {
+  if (req.params.id === goodIdPayment) {
     res.json({
       data: {
         id: 2,
-        idPayment: '8fa64d75-acb4-4a74-a87c-32f348a6a95f',
+        idPayment: goodIdPayment,
         amount: {
           currency: 'EUR',
           amount: 6248175,
@@ -152,7 +159,7 @@ walletRouter.post('/pp-restapi/v4/wallet', function (req, res) {
               .getOrElse('************4444');
             return res.json({
               data: {
-                idWallet: 40,
+                idWallet: goodIdWallet,
                 type: 'CREDIT_CARD',
                 favourite: false,
                 creditCard: {
@@ -214,6 +221,76 @@ walletRouter.get('/pp-restapi/v4/resources', function (req, res) {
       termsAndConditions: termsAndConditionsR,
     },
   });
+});
+
+walletRouter.post('/pp-restapi/v4/payments/:id/actions/pay', function (req, res) {
+  fromPredicate(
+    (myReq: typeof req) => /Bearer [\d\w]{128}/.test(fromNullable(myReq.headers.authorization).getOrElse('')),
+    identity,
+  )(req).fold(
+    () => res.sendStatus(401),
+    myReq =>
+      PayRequest.decode(myReq.body).fold(
+        () => res.sendStatus(500),
+
+        decodedReq => {
+          if (
+            // request id {}
+            Object.keys(decodedReq).length === 0
+          ) {
+            return res.sendStatus(500);
+          } else if (
+            decodedReq.data &&
+            (Object.keys(decodedReq.data).length === 0 ||
+              fromNullable(decodedReq.data.idWallet).getOrElse(-1) <= 0 ||
+              req.params.id !== goodIdPayment)
+          ) {
+            return res.sendStatus(422);
+          } else if (Object.keys(fromNullable(decodedReq).getOrElse({})).length === 0) {
+            return res.sendStatus(500);
+          } else {
+            return res.json({
+              data: {
+                id: 43,
+                created: '2021-02-11T13:36:53.000Z',
+                updated: '2021-02-11T13:36:53.000Z',
+                amount: { currency: 'EUR', amount: 2981249, decimalDigits: 2 },
+                grandTotal: { currency: 'EUR', amount: 2981250, decimalDigits: 2 },
+                description: 'Pagamento',
+                merchant: 'PagoPa',
+                idStatus: 0,
+                statusMessage: 'Da autorizzare',
+                error: false,
+                success: false,
+                fee: { currency: 'EUR', amount: 1, decimalDigits: 2 },
+                urlCheckout3ds: 'http://pagopa-dev:8080/wallet/checkout?id=NDM=',
+                paymentModel: 0,
+                token: 'NDM=',
+                idWallet: goodIdWallet,
+                idPsp: 8,
+                idPayment: 115,
+                nodoIdPayment: goodIdPayment,
+                orderNumber: 43,
+                paymentCancelled: false,
+                detailsList: [
+                  {
+                    IUV: 'iuv_fiQILNxqvjcnupl',
+                    CCP: 'ccp_mQrRJWmRkltrgaD',
+                    idDominio: 'idD_UQoAUiWcOEyyclr',
+                    enteBeneficiario: 'Clearcourt Technical College',
+                    importo: 29812.49,
+                    tipoPagatore: 'F',
+                    codicePagatore: 'OPSHHY00H69M949Q',
+                    nomePagatore: 'Mietta Pellegrini',
+                  },
+                ],
+                directAcquirer: false,
+              },
+            });
+          }
+        },
+      ),
+  );
 });
 
 const routers: ReadonlyArray<Router> = [walletRouter];
