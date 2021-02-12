@@ -2134,6 +2134,17 @@ definitions:
   ResourcesResponse:
     type: object
     title: ResourcesResponse
+    properties: 
+        is3ds2: 
+          type: string
+        SPID_CALLBACK_URL:
+          type: string 
+        urlImg:
+          type: string
+        creditCardPlaceholder:
+          type: string
+        termsAndConditions:
+          type: string
   Resume:
     type: object
     properties:

@@ -1,11 +1,22 @@
 /* eslint-disable complexity */
+import { toError } from 'fp-ts/lib/Either';
+import * as TE from 'fp-ts/lib/TaskEither';
+import { Millisecond } from 'italia-ts-commons/lib/units';
+import { fromNullable } from 'fp-ts/lib/Option';
+import { createClient } from '../generated/definitions/pagopa/client';
 import { modalWindows } from './js/modals';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
+import { retryingFetch } from './utils/fetch';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
+  const pmClient = createClient({
+    baseUrl: 'http://localhost:8080',
+    fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+  });
+
   // idpayguard
   idpayguard();
   // initHeader
@@ -32,10 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkCreditcardexpirationdate = document.getElementById('check__creditcardexpirationdate');
   const checkCreditcardnumber = document.getElementById('check__creditcardnumber');
   const pspbank = document.getElementById('check__pspbank');
-  const pspbankname = document.getElementById('check__pspbankname');
+  const pspbankname = document.getElementsByClassName('check__pspbankname');
   const pspcost = document.getElementById('check__pspcost');
   const pspchoose = document.getElementById('check__pspchoose');
   const checkUserEmail = document.getElementById('check__useremail');
+
+  const checkoutForm = document.getElementById('checkout');
 
   const fixedCost: number = wallet?.psp.fixedCost.amount || 0;
   const amount: number | null = checkData?.amount.amount;
@@ -72,8 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
     pspcost.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(prettyfixedCost || '0'))}`;
   }
   if (pspbankname && wallet) {
-    // eslint-disable-next-line functional/immutable-data
-    pspbankname.innerText = wallet.psp.businessName;
+    const bankArray = Array.from(pspbankname);
+    for (const el of bankArray) {
+      // eslint-disable-next-line functional/immutable-data
+      (el as HTMLElement).innerText = wallet.psp.businessName;
+    }
   }
   if (checkUserEmail && userEmail) {
     // eslint-disable-next-line functional/immutable-data
@@ -82,4 +98,41 @@ document.addEventListener('DOMContentLoaded', () => {
   if (pspchoose && wallet && wallet.pspEditable === false) {
     pspchoose.classList.add('d-none');
   }
+
+  checkoutForm?.addEventListener(
+    'submit',
+    async function (e) {
+      e.preventDefault();
+
+      // Pay
+      await TE.tryCatch(
+        () =>
+          pmClient.payUsingPOST({
+            Bearer: `Bearer ${sessionStorage.getItem('sessionToken')}`,
+            id: checkData.idPayment,
+            payRequest: {
+              data: {
+                idWallet: wallet.idWallet,
+                cvv: fromNullable(sessionStorage.getItem('securityCode')).getOrElse(''),
+              },
+            },
+            language: 'it',
+          }),
+        toError,
+      )
+        .fold(
+          () => void 0, // to be replaced with logic to handle failures
+          myResExt => {
+            const paymentResp = myResExt.fold(
+              () => 'fakePayment',
+              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakePayment'),
+            );
+            sessionStorage.setItem('payment', paymentResp);
+            window.location.replace('response-ok.html');
+          },
+        )
+        .run();
+    },
+    false,
+  );
 });

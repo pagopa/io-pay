@@ -183,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
         )
         .run();
 
-      // debug(`Bearer ${mySessionToken}`);
       await TE.tryCatch(
         () =>
           pmClient.approveTermsUsingPOST({
@@ -238,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
               myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet'),
             );
             sessionStorage.setItem('wallet', walletResp);
+            sessionStorage.setItem('securityCode', (creditcardformSecurecode as HTMLInputElement).value);
             window.location.replace('check.html');
           },
         )

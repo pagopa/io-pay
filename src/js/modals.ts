@@ -1,7 +1,7 @@
 import Tingle from 'tingle.js';
 
 const modalWindows = () => {
-  // eslint-disable-next-line functional/no-let
+  const modalCallers = document.querySelectorAll('[data-modal]');
   const modals: Record<string, any> = {};
 
   const createModal = (elfrom: any) => {
@@ -15,15 +15,14 @@ const modalWindows = () => {
     // eslint-disable-next-line functional/immutable-data
     modals[modalName] = new Tingle.modal({
       footer: true,
-      // TODO: this reference is used in a tricky way. refactor?
-      /* onOpen: () => {
-                const customClose = this.modalBox.querySelector('.modalwindow__close');
-                if (customClose !== null) {
-                    customClose.addEventListener('click', function () {
-                        modals[modalName].close();
-                    });
-                }
-            }, */
+      onOpen: () => {
+        const customClose = modals[modalName].modalBox.querySelector('.modalwindow__close');
+        if (customClose !== null) {
+          customClose.addEventListener('click', () => {
+            modals[modalName].close();
+          });
+        }
+      },
     });
 
     const modalContent = modalTarget || null;
@@ -48,17 +47,13 @@ const modalWindows = () => {
     return modalName;
   };
 
-  /* 
-    let callers = modalCallers.forEach( el => {
-
-        el.addEventListener("click", function(e) {
-            e.preventDefault();
-            let modalWindow = createModal(el);
-            modals[modalWindow].open();
-        )};
-
-
-    }); */
+  modalCallers.forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      const modalWindow = createModal(el);
+      modals[modalWindow].open();
+    });
+  });
 };
 
 export { modalWindows };

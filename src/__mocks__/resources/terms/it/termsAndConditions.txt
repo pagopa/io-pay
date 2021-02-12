@@ -1,0 +1,63 @@
+<p align="center"><h3 align="center"><b>INFORMATIVA SUL TRATTAMENTO DEI DATI PERSONALI</b></h3></p>
+<p align="center">ai sensi degli artt. 13-14 del Regolamento (UE) 2016/679</p>
+<!--- Contitolari del trattamento dei dati -->
+<p>&nbsp;</p>
+<p><h4><b>Contitolari del trattamento dei dati</b></h4></p>
+<p><h5><b>AgID &#8211; Agenzia per l'Italia Digitale</b></h5></p>
+<p>Indirizzo: <a href="https://goo.gl/maps/eNBN2YL6B1q">Via Liszt 21 - 00144 Roma</a></p>
+<p>Indirizzo PEC: <a href="mailto:protocollo@pec.agid.gov.it">protocollo@pec.agid.gov.it</a></p>
+<p><h5><b>Presidenza del Consiglio dei Ministri per il tramite del Commissario Straordinario per l'attuazione dell'Agenda Digitale</b></h5></p>
+<p>Indirizzo: <a href="https://goo.gl/maps/PPyZMSPqiR42">Piazza Colonna 370 - 00187 Roma</a></p>
+<p>Indirizzo PEC: <a href="mailto:teamdigitale@governo.it">teamdigitale@governo.it</a></p>
+<!--- Contatti dei responsabili della protezione dei dati -->
+<p>&nbsp;</p>
+<p><h4><b>Contatti dei responsabili della protezione dei dati</b></h4></p>
+<p>Per AgID, <a href="https://goo.gl/maps/NhugWfPNRE62">Via Liszt 21 - 00144 Roma</a>, e-mail: <a href="mailto:responsabileprotezionedati@agid.gov.it">responsabileprotezionedati@agid.gov.it</a></p>
+<p>Per Commissario Straordinario per l'attuazione dell'Agenda Digitale, <a href="https://goo.gl/maps/PPyZMSPqiR42">Piazza Colonna 370 - 00187 Roma</a>, e-mail: <a href="mailto:dpo@teamdigitale.governo.it">dpo@teamdigitale.governo.it</a></p>
+<!--- Responsabile del trattamento dei dati -->
+<p>&nbsp;</p>
+<h4><b>Responsabile del trattamento dei dati</b></h4></p>
+<p><h5><b>SIA S.P.A.</b></h5></p>
+<p>Indirizzo: <a href="https://goo.gl/maps/EPn7brGxSiC2">Via F. Gonin 36 - 20147 Milano</a></p>
+<p>Indirizzo PEC: <a href="mailto:direzione_net@pec.sia.eu">direzione_net@pec.sia.eu</a></p>
+<!--- Autorit&agrave; di controllo -->
+<p>&nbsp;</p>
+<p><h4><b>Autorit&#224; di controllo</b></h4></p>
+<p><h5><b>Garante per la protezione dei dati personali </b></h5></p>
+<p>Indirizzo e-mail: <a href="mailto:garante@gpdp.it">garante@gpdp.it</a></p>
+<p>Indirizzo PEC: <a href="mailto:protocollo@pec.gpdp.it">protocollo@pec.gpdp.it</a></p>
+<p>Sito web: <a href="https://www.garanteprivacy.it">https://www.garanteprivacy.it</a></p>
+<!--- Finalit&agrave; e base giuridica del trattamento -->
+<p>&nbsp;</p>
+<p><h4><b>Finalit&#224; e base giuridica del trattamento</b></h4></p>
+<p>I dati personali sono trattati al fine di consentire la registrazione alla piattaforma e l'autenticazione dei soggetti che effettuano un pagamento elettronico.<br/>I log di accesso al sito wisp2.pagopa.gov.it/wallet/ sono trattati al fine di garantire la sicurezza del sistema e delle relative transazioni, nonche' per l'esecuzione di un compito di interesse pubblico e connesso all'esercizio di pubblici poteri<br/>Il titolare garantisce che non &egrave; prevista alcuna forma di processo decisionale automatizzato che comporti effetti giuridici sull'interessato</p>
+<!--- Categorie di dati personali non ottenuti presso l'interessato -->
+<p>&nbsp;</p>
+<p><h4><b>Categorie di dati personali non ottenuti presso l'interessato</b></h4></p>
+<p>I dati personali non ottenuti mediante inserimento da parte dell'interessato sono esclusivamente gli indirizzi IP contenuti nei log di accesso al sito wisp2.pagopa.gov.it/wallet/.</p>
+<!---Categorie di destinatari dei dati -->
+<p>&nbsp;</p>
+<p><h4><b>Categorie di destinatari dei dati</b></h4></p>
+<p>Il titolare tratta i dati personali unitamente alle seguenti categorie di destinatari:</p>
+<p>
+	<ul>
+	<li>SIA S.p.A., in qualit&agrave; fornitore di servizi tecnici, responsabile del trattamento;</li>
+	<li>altri soggetti pubblici e autorit&agrave; giudiziarie ai sensi e nei limiti della normativa vigente.</li>
+	</ul>
+</p>
+<p>Il Titolare non intende trasferire i dati personali a Paesi terzi o a organizzazioni internazionali.</p>
+<!--- Tempi di conservazione dei dati -->
+<p>&nbsp;</p>
+<p><h4><b>Tempi di conservazione dei dati</b></h4></p>
+<p>I dati personali sono trattati per il tempo necessario allo svolgimento del servizio richiesto e in ogni caso fino a che l'acconto dell'utente pagatore risulti attivo sul sistema pagoPA.<br/>I log di accesso al sito wisp2.pagopa.gov.it/wallet/ vengono conservati per il tempo necessario allo svolgimento del servizio e comunque non oltre 90 giorni.
+</p>
+<!--- Diritti degli interessati -->
+<p>&nbsp;</p>
+<p><h4><b>Diritti degli interessati</b></h4></p>
+<p>Gli interessati hanno il diritto di ottenere dal titolare l'accesso ai propri dati personali, la rettifica o la cancellazione degli stessi, la limitazione del trattamento e il diritto di opporsi allo stesso nonch&eacute; il diritto alla portabilit&agrave; dei dati personali. Gli interessati hanno, inoltre, diritto di revocare il proprio consenso in qualsiasi momento, senza pregiudicare la liceit&agrave; del trattamento basata sul consenso prestato prima della revoca. In mancanza del consenso o del conferimento dei dati personali richiesti per l'autenticazione, tuttavia, non sar&agrave; possibile registrarsi alla piattaforma ed effettuare pagamenti elettronici.<br/>Le richieste sono presentate all'Agenzia contattando il responsabile della protezione dei dati agli indirizzi sopra indicati.<br/>Gli interessati, che ritengano che il trattamento dei propri dati personali avvenga in violazione di quanto previsto nel Regolamento, hanno il diritto di proporre reclamo al Garante per la protezione dei dati personali o di adire le opportune sedi giudiziarie.</p>
+<!--- Cookie policy -->
+<p>&nbsp;</p>
+<p><h4><b>Cookie policy</b></h4></p>
+<p>Il sito del Portale delle Adesioni pagoPA potrebbe utilizzare cookie tecnici/funzionali, cookie di statistica di prima parte e/o cookie di statistica di terza parte che comunque non richiedono un cookie banner, il blocco preventivo dei cookie prima del consenso e il salvataggio dei consensi.<br/>Lo stesso sito non presenta altri tipi di cookie, esclusi anche quelli pubblicitari e tutti gli altri tipi di terze parti.</p>
+<p>&nbsp;</p>
+<p>[31.01.2019]</p>
