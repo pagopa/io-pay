@@ -50,6 +50,25 @@ describe('IOPAY App', () => {
     await myBrowser.close();
   });
 
+  it('should call start check payment, when app is loaded', async () => {
+    const page = await myBrowser.newPage();
+    const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
+
+    await Promise.all([
+      page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=${myIdPayment}`),
+      page.waitForResponse(response => response.request().method() === 'GET' && /check/.test(response.request().url())),
+    ]);
+
+    const checkRes = await page.evaluate(() => sessionStorage.getItem('checkData'));
+    expect(
+      fromNullable(checkRes)
+        .map(myString => JSON.parse(myString))
+        .getOrElse({}),
+    ).toMatchObject({ idPayment: myIdPayment });
+
+    await page.close();
+  });
+
   it('should call start session, approve terms and add wallet when Continua is pressed on Credit Card input form', async () => {
     // get a good idPayment, using PM control interface
     const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
@@ -146,26 +165,7 @@ describe('IOPAY App', () => {
     await page.close();
   });
 
-  it('should call start check payment, when app is loaded', async () => {
-    const page = await myBrowser.newPage();
-    const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
-
-    await Promise.all([
-      page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=${myIdPayment}`),
-      page.waitForResponse(response => response.request().method() === 'GET' && /check/.test(response.request().url())),
-    ]);
-
-    const checkRes = await page.evaluate(() => sessionStorage.getItem('checkData'));
-    expect(
-      fromNullable(checkRes)
-        .map(myString => JSON.parse(myString))
-        .getOrElse({}),
-    ).toMatchObject({ idPayment: myIdPayment });
-
-    await page.close();
-  });
-
-  it('should call pay when PAY is pressed on checkout Page', async () => {
+  it('should call pay when Paga is pressed on checkout Page', async () => {
     // get a good idPayment, using PM control interface
     const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
 
