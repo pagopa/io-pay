@@ -222,7 +222,7 @@ body {
   &.dropdown-opened,
   &.loading,
   &.tingle-enabled {
-    overflow-y: hidden;
+    // overflow-y: hidden;
   }
 }
 .loader {
@@ -600,53 +600,149 @@ body {
   }
 }
 // MODAL
+
 .modalwindow {
   display: none;
+
+  &__title {
+    color: #17324d;
+  }
+  &__desc {
+    color: #5c6f82;
+    font-weight: 400;
+  }
+  &__content {
+    margin-top: 1rem;
+  }
 }
+
+.tingle-modal * {
+  box-sizing: border-box;
+}
+
 .tingle-modal {
-  display: none;
   position: fixed;
-  background: rgba(0, 0, 0, 0.7);
   top: 0;
-  left: 0;
-  bottom: 0;
   right: 0;
-  z-index: 9999;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  visibility: hidden;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  user-select: none;
+  cursor: pointer;
+}
 
-  &.tingle-modal--visible {
-    display: block;
-  }
+.tingle-modal--confirm .tingle-modal-box {
+  text-align: center;
+}
 
-  &__close {
-    display: none;
-  }
+.tingle-modal--noOverlayClose {
+  cursor: default;
+}
 
-  &-box {
-    width: 90vw;
-    background-color: #fff;
-    border-radius: $border-radius;
-    padding: 1.7rem 1.2rem;
-    top: 50%;
-    left: 50%;
-    position: absolute;
-    transform: translate(-50%, -50%);
+.tingle-modal__close {
+  display: none;
+}
 
-    @include media-breakpoint-up(md) {
-      @include make-col(6);
-    }
-
-    @include media-breakpoint-up(xl) {
-      @include make-col(4);
-    }
-  }
-
-  .modalwindow__title {
-    margin-bottom: 1rem;
+.tingle-modal-box {
+  position: relative;
+  flex-shrink: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  border-radius: 0;
+  background: #fff;
+  opacity: 1;
+  cursor: auto;
+  will-change: transform, opacity;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  @include media-breakpoint-up(md) {
+    border-radius: 4px;
+    width: 50vh;
   }
 }
 
-/* animations
-  -------------------------------------------------------------- */
+.tingle-modal-box__content {
+  padding: 1rem 1.5rem;
+  overflow-y: scroll;
+  @include media-breakpoint-up(md) {
+    overflow-y: visible;
+    padding: 1rem 2.5rem;
+  }
+}
+
+.tingle-modal-box__footer {
+  padding: 0.5rem 2.5rem;
+  width: auto;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  cursor: auto;
+}
+
+.tingle-modal-box__footer::after {
+  display: table;
+  clear: both;
+  content: '';
+}
+
+.tingle-modal-box__footer--sticky {
+  position: fixed;
+  bottom: -200px; /* TODO : find a better way */
+  z-index: 10001;
+  opacity: 1;
+  transition: bottom 0.3s ease-in-out 0.3s;
+}
+.tingle-enabled {
+  position: fixed;
+  right: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.tingle-modal--visible .tingle-modal-box__footer {
+  bottom: 0;
+}
+
+.tingle-enabled .tingle-content-wrapper {
+  filter: blur(8px);
+}
+
+.tingle-modal--visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tingle-modal--visible .tingle-modal-box {
+  animation: scale 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.tingle-modal--overflow {
+  overflow-y: scroll;
+  padding-top: 8vh;
+}
+
+.tingle-modal:before {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.tingle-enabled .tingle-content-wrapper {
+  filter: none;
+}
+
+// MODAL animations
 
 @keyframes scale {
   0% {
