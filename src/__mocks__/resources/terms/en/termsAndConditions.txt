@@ -1,0 +1,72 @@
+<p align="center"><h3 align="center"><b>PRIVACY NOTICE</b></h3></p>
+<p align="center">in compliance with articles 13-14 of the Regulation (UE) 2016/679</p>
+
+<!--- Contitolari del trattamento dei dati -->
+<p>&nbsp;</p>
+<p><h4><b>Data controllers</b></h4></p>
+<p><h5><b>AgID &#8211; Agenzia per l'Italia Digitale</b></h5></p>
+<p>Address:&#160;<a href="https://goo.gl/maps/eNBN2YL6B1q">Via Liszt 21 - 00144 Roma</a></p>
+<p>Certified e-mail:&#160;<a href="mailto:protocollo@pec.agid.gov.it">protocollo@pec.agid.gov.it</a></p>
+<p><h5><b>Presidenza del Consiglio dei Ministri per il tramite del Commissario Straordinario per l'attuazione dell'Agenda Digitale</b></h5></p>
+<p>Address:&#160;<a href="https://goo.gl/maps/PPyZMSPqiR42">Piazza Colonna 370 - 00187 Roma</a></p>
+<p>Certified e-mail:&#160;<a href="mailto:teamdigitale@governo.it">teamdigitale@governo.it</a></p>
+
+<!--- Contatti dei responsabili della protezione dei dati -->
+<p>&nbsp;</p>
+<p><h4><b>Contacts of data protection officers</b></h4></p>
+<p>For AgID, <a href="https://goo.gl/maps/NhugWfPNRE62">Via Liszt 21 - 00144 Roma</a>, e-mail:&#160;<a href="mailto:responsabileprotezionedati@agid.gov.it">responsabileprotezionedati@agid.gov.it</a></p>
+<p>For the <i>Commissario Straordinario per l'attuazione dell'Agenda Digitale</i>, <a href="https://goo.gl/maps/PPyZMSPqiR42">Piazza Colonna 370 - 00187 Roma</a>, e-mail:&#160;<a href="mailto:dpo@teamdigitale.governo.it">dpo@teamdigitale.governo.it</a></p>
+
+<!--- Responsabile del trattamento dei dati -->
+<h4><b>Responsible for data processing</b></h4></p>
+<p><h5><b>SIA S.P.A.</b></h5></p>
+<p>Address:&#160;<a href="https://goo.gl/maps/EPn7brGxSiC2">Via F. Gonin 36 - 20147 Milano</a></p>
+<p>Certified e-mail:&#160;<a href="mailto:direzione_net@pec.sia.eu">direzione_net@pec.sia.eu</a></p>
+
+<!--- Autoritŕ di controllo -->
+<p>&nbsp;</p>
+<p><h4><b>Data Protection Authority</b></h4></p>
+<p><h5><b>Guarantor for the protection of personal data</b></h5></p>
+<p>e-mail:&#160;<a href="mailto:garante@gpdp.it">garante@gpdp.it</a></p>
+<p>certified e-mail: <a href="mailto:protocollo@pec.gpdp.it">protocollo@pec.gpdp.it</a></p>
+<p>Web site: <a href="https://www.garanteprivacy.it">https://www.garanteprivacy.it</a></p>
+
+<!--- Finalitŕ e base giuridica del trattamento -->
+<p>&nbsp;</p>
+<p><h4><b>Purpose and legal basis of the processing</b></h4></p>
+<p>Personal data are processed in order to allow registration to the platform and authentication of subjects making an electronic payment.<br/>The access logs to the site wisp2.pagopa.gov.it/wallet/ are treated in order to guarantee the security of the system and of the relative transactions, as well as for the execution of a task of public interest and connected to the exercise of public powers.<br/>The holder guarantees that no form of automated decision-making process is foreseen which involves legal effects on the interested party.</p>
+
+<!--- Categorie di dati personali non ottenuti presso l'interessato -->
+<p>&nbsp;</p>
+<p><h4><b>Categories of personal data not obtained from the data subject</b></h4></p>
+<p>Personal data not obtained by entering the data subject are exclusively the IP addresses contained in the access logs to the site wisp2.pagopa.gov.it/wallet/.</p>
+
+<!---Categorie di destinatari dei dati -->
+<p>&nbsp;</p>
+<p><h4><b>Data recipient categories</b></h4></p>
+<p>The owner processes personal data together with the following categories of recipients:</p>
+<p>
+	<ul>
+	<li>SIA S.p.A., as a supplier of technical services, responsible for processing;</li>
+	<li>other public entities and judicial authorities pursuant to and within the limits of current legislation.</li>
+	</ul>
+</p>
+<p>The Data Controller does not intend to transfer personal data to third countries or international organizations.</p>
+
+<!--- Tempi di conservazione dei dati -->
+<p>&nbsp;</p>
+<p><h4><b>Data retention time</b></h4></p>
+<p>Personal data are processed for the time necessary to perform the service requested and in any case until the payer's account is active on the pagoPA system.<br/>The access logs to the website wisp2.pagopa.gov.it/wallet/ are kept for the time necessary to perform the service and in any case no later than 90 days.
+</p>
+<!--- Diritti degli interessati -->
+<p>&nbsp;</p>
+<p><h4><b>Rights of the interested parties</b></h4></p>
+<p>The interested parties have the right to obtain access to their personal data from the holder, correction or cancellation of the same, the limitation of treatment and the right to oppose the same as well as the right to the portability of personal data. Furthermore, the interested parties have the right to withdraw their consent at any time, without prejudice to the lawfulness of the treatment based on the consent given prior to the revocation. In the absence of consent or the provision of personal data required for authentication, however, it will not be possible to register with the platform and make electronic payments. <br/>Requests are submitted to the Agency by contacting the Data Protection Officer at the addresses indicated above.<br/>The interested parties, who consider that the processing of their personal data takes place in violation of the provisions of the Rules, have the right to propose a complaint to the Guarantor for the protection of personal data or to take appropriate judicial offices.</p>
+
+<!--- Cookie policy -->
+<p>&nbsp;</p>
+<p><h4><b>Cookie policy</b></h4></p>
+<p>The website wisp2.pagopa.gov.it/wallet/ uses technical/functional cookies, first-party statistics cookies and / or third-party statistical cookies that do not require a cookie banner, prevent cookies block before consent and save consents.<br/>The same website does not have other types of cookies, excluding those advertising and all other types of third parties.</p>
+
+<p>&nbsp;</p>
+<p>[31.01.2019]</p>
