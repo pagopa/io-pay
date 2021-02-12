@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 export const sessionTokenUnprocessableEntity = 'UnprocessableEntity';
 export const sessionTokenInternalException = 'InternalException';
 
@@ -29,3 +31,19 @@ export const httpResponseStatus = {
   HTTP_422: 422, // Unprocessable Entity
   HTTP_500: 500, // Internal Server Error
 };
+
+export const qrParams = {
+  language: 'language',
+};
+
+// Add / remove validity to input elements
+export function getTermAndServices(lang: string): string {
+  try {
+    return fs.readFileSync(`src/__mocks__/resources/terms/${lang}/termsAndConditions.txt`, {
+      encoding: 'utf8',
+      flag: 'r',
+    });
+  } catch (err) {
+    return getTermAndServices('it');
+  }
+}
