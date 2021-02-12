@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const creditcardformHolderIcon = document.getElementById('creditcardholdericon') || null;
   const creditcardformExpiration = document.getElementById('creditcardexpirationdate') || null;
   const creditcardformSecurecode = document.getElementById('creditcardsecurcode') || null;
+  const modalAndTerm = document.getElementById('modal-inputcardterms') || null;
 
   // check if all fields are OK
   function fieldsCheck() {
@@ -72,6 +73,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // init modals
   modalWindows();
+
+  // get and set terms of services
+  async function setTermOfService() {
+    await TE.tryCatch(() => pmClient.getResourcesUsingGET({ language: 'it' }), toError)
+      .fold(
+        () => undefined, // to be replaced with logic to handle failures
+        myResExt => {
+          const termini = myResExt.fold(
+            () => 'notFound :(',
+            myRes => (myRes.status === 200 ? myRes.value?.data?.termsAndConditions : 'notFound :('),
+          );
+          const tersmAndService = modalAndTerm?.getElementsByClassName('modalwindow__content')[0];
+          if (tersmAndService) {
+            // eslint-disable-next-line functional/immutable-data
+            tersmAndService.innerHTML = termini;
+          }
+        },
+      )
+      .run();
+  }
+
+  void setTermOfService();
 
   // dropdown
   dropdownElements.forEach(el => {
