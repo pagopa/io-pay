@@ -3,7 +3,7 @@
  * timeout and retries with exponential backoff.
  */
 import { left, right } from 'fp-ts/lib/Either';
-import { fromEither, TaskEither } from 'fp-ts/lib/TaskEither';
+import { fromEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { calculateExponentialBackoffInterval } from 'italia-ts-commons/lib/backoff';
 import { AbortableFetch, retriableFetch, setFetchTimeout, toFetch } from 'italia-ts-commons/lib/fetch';
 import { RetriableTask, TransientError, withRetries } from 'italia-ts-commons/lib/tasks';
@@ -43,7 +43,32 @@ export function retryLogicForTransientResponseError(
     retryLogic(
       // when the result of the task is a Response that satisfies
       // the predicate p, map it to a transient error
-      t.chain((r: any) => fromEither(p(r) ? left<TransientError, never>(TransientError) : right<never, Response>(r))),
+      t.chain((r: Response) =>
+        fromEither(p(r) ? left<TransientError, never>(TransientError) : right<never, Response>(r)),
+      ),
+      shouldAbort,
+    );
+}
+
+//
+// Given predicate that return a boolean promise, fetch with transient error handling.
+// Handle error that occurs once or at unpredictable intervals.
+//
+export function retryLogicOnPromisePredicate(
+  p: (r: Response) => Promise<boolean>,
+  retryLogic: (
+    t: RetriableTask<Error, Response>,
+    shouldAbort?: Promise<boolean>,
+  ) => TaskEither<Error | 'max-retries' | 'retry-aborted', Response>,
+): typeof retryLogic {
+  return (t: RetriableTask<Error, Response>, shouldAbort?: Promise<boolean>) =>
+    retryLogic(
+      t.chain((r: Response) =>
+        tryCatch(
+          () => p(r),
+          () => TransientError,
+        ).chain(d => fromEither(d ? left<TransientError, never>(TransientError) : right<never, Response>(r))),
+      ),
       shouldAbort,
     );
 }
@@ -76,6 +101,27 @@ export const constantPollingFetch = (
 
   // TODO: remove the cast once we upgrade to tsc >= 3.1 (https://www.pivotaltracker.com/story/show/170819445)
   return retriableFetch(retryWithTransient404s, shouldAbort)(timeoutFetch as typeof fetch);
+};
+
+export const constantPollingWithPromisePredicateFetch = (
+  shouldAbort: Promise<boolean>,
+  retries: number,
+  delay: number,
+  timeout: Millisecond = 1000 as Millisecond,
+  condition: (r: Response) => Promise<boolean>,
+) => {
+  // fetch client that can be aborted for timeout
+  const abortableFetch = AbortableFetch((global as any).fetch);
+  const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
+
+  // use a constant backoff
+  const constantBackoff = () => delay as Millisecond;
+  const retryLogic = withRetries<Error, Response>(retries, constantBackoff);
+
+  // use to define transient errors
+  const retryWithPromisePredicate = retryLogicOnPromisePredicate(condition, retryLogic);
+
+  return retriableFetch(retryWithPromisePredicate, shouldAbort)(timeoutFetch);
 };
 
 export interface ITransientFetchOpts {
