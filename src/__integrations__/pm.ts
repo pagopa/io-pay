@@ -17,7 +17,6 @@ import {
   sessionTokenInternalException,
   sessionTokenUnprocessableEntity,
 } from '../__mocks__/mocks';
-// import { identity } from 'fp-ts/lib/function';
 
 // create express server
 const pm: Application = express();
@@ -29,6 +28,9 @@ const walletRouter = Router();
 
 const goodIdPayment = '8fa64d75-acb4-4a74-a87c-32f348a6a95f';
 const goodIdWallet = 100;
+
+// eslint-disable-next-line functional/no-let
+let countRetry = 0;
 
 walletRouter.post('/pp-restapi/v4/users/actions/start-session', function (req, res) {
   const decodedReq = req.body;
@@ -309,6 +311,47 @@ walletRouter.get('/pp-restapi/v4/transactions/:id/actions/check', function (req,
         result: 'OK',
       },
     });
+  } else if (idTransaction === 'MjA=') {
+    res.json({
+      data: {
+        idTransaction: 20,
+        idStatus: 0,
+        finalStatus: false,
+        expired: false,
+        authorizationCode: '00',
+        paymentOrigin: 'WALLET_APP',
+        idPayment: '7652e590-324d-421a-8fa6-e0d8d0633906',
+      },
+    });
+  } else if (idTransaction === 'MzA=') {
+    countRetry++;
+    if (countRetry < 3) {
+      res.json({
+        data: {
+          idTransaction: 30,
+          idStatus: 0,
+          finalStatus: false,
+          expired: false,
+          authorizationCode: '00',
+          paymentOrigin: 'WALLET_APP',
+          idPayment: '7652e590-324d-421a-8fa6-e0d8d0633906',
+        },
+      });
+    } else {
+      res.json({
+        data: {
+          idTransaction: 30,
+          idStatus: 3,
+          statusMessage: 'Confermato',
+          finalStatus: true,
+          expired: false,
+          authorizationCode: '00',
+          paymentOrigin: 'WALLET_APP',
+          idPayment: '7652e590-324d-421a-8fa6-e0d8d0633906',
+          result: 'OK',
+        },
+      });
+    }
   } else if (idTransaction === 'MTAw==') {
     res.status(422).json({ code: '9005', message: 'Status code null' });
   } else if (idTransaction === 'MTAw') {
