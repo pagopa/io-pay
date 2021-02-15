@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             () => 'notFound :(',
             myRes => (myRes.status === 200 ? myRes.value?.data?.termsAndConditions : 'notFound :('),
           );
-          const termsAndService = modalAndTerm?.getElementsByClassName('modalwindow__content')[0];
+          const termsAndService = modalAndTerm?.querySelector('.modalwindow__content');
           if (termsAndService) {
             // eslint-disable-next-line functional/immutable-data
             termsAndService.innerHTML = termini;
