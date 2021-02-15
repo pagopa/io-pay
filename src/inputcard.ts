@@ -84,10 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
             () => 'notFound :(',
             myRes => (myRes.status === 200 ? myRes.value?.data?.termsAndConditions : 'notFound :('),
           );
-          const tersmAndService = modalAndTerm?.getElementsByClassName('modalwindow__content')[0];
-          if (tersmAndService) {
+          const termsAndService = modalAndTerm?.getElementsByClassName('modalwindow__content')[0];
+          if (termsAndService) {
             // eslint-disable-next-line functional/immutable-data
-            tersmAndService.innerHTML = termini;
+            termsAndService.innerHTML = termini;
           }
         },
       )
