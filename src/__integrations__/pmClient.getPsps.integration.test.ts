@@ -2,6 +2,10 @@ import { Server } from 'http';
 
 import { Millisecond } from 'italia-ts-commons/lib/units';
 
+import * as myFake from 'faker/locale/it';
+
+import { fromNullable } from 'fp-ts/lib/Option';
+
 import nodeFetch from 'node-fetch';
 
 import { createHttpTerminator } from 'http-terminator';
@@ -9,12 +13,10 @@ import { retryingFetch } from '../utils/fetch';
 
 import { Client, createClient } from '../../generated/definitions/pagopa/client';
 
-import * as myFake from 'faker/locale/it';
-
-import pm from './pm';
 import { PspListResponse } from '../../generated/definitions/pagopa/PspListResponse';
 import { Psp } from '../../generated/definitions/pagopa/Psp';
-import { fromNullable } from 'fp-ts/lib/Option';
+
+import pm from './pm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
@@ -76,6 +78,7 @@ describe('Payment Manager Client to retrive psps', () => {
       _ => fail(),
       res => {
         const pspListResponse: PspListResponse = res.value;
+        // eslint-disable-next-line @typescript-eslint/array-type
         const itPspsList: readonly Psp[] = fromNullable(pspListResponse.data?.pspList).getOrElse([]);
         expect(itPspsList.length).toEqual(3);
         itPspsList.forEach(psp => {
@@ -116,6 +119,7 @@ describe('Payment Manager Client to retrive psps', () => {
       _ => fail(),
       res => {
         const pspListResponse: PspListResponse = res.value;
+        // eslint-disable-next-line @typescript-eslint/array-type
         const itPspsList: readonly Psp[] = fromNullable(pspListResponse.data?.pspList).getOrElse([]);
         expect(itPspsList.length).toEqual(1);
         itPspsList.forEach(psp => {
@@ -156,6 +160,7 @@ describe('Payment Manager Client to retrive psps', () => {
       _ => fail(),
       res => {
         const pspListResponse: PspListResponse = res.value;
+        // eslint-disable-next-line @typescript-eslint/array-type
         const itPspsList: readonly Psp[] = fromNullable(pspListResponse.data?.pspList).getOrElse([]);
         expect(itPspsList.length).toEqual(1);
         itPspsList.forEach(psp => {
