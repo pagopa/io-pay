@@ -1,4 +1,3 @@
-import { debug } from 'console';
 import { Server } from 'http';
 
 import { fromNullable } from 'fp-ts/lib/Option';
@@ -11,24 +10,18 @@ import * as myFake from 'faker/locale/it';
 import { identity } from 'fp-ts/lib/function';
 import { createClient, Client } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
-
-// import { getIdPayment } from '../utils/testUtils';
-// import { TypeEnum } from '../../generated/definitions/pagopa/Wallet';
-// import { WalletResponse } from '../../generated/definitions/pagopa/WalletResponse';
 import { PspListResponse } from '../../generated/definitions/pagopa/PspListResponse';
-// import { PspListResponse } from '../../../generated/definitions/pagopa/PspListResponse';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
-import pm from './pm';
 import { WalletResponse } from '../../generated/definitions/pagopa/WalletResponse';
+import pm from './pm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
 
 describe('Endpoint PUT wallet of PM', () => {
   // Set the testing environment
-
   const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 8080;
   const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+  
   // eslint-disable-next-line functional/no-let
   let pmClient: Client;
 
@@ -55,7 +48,7 @@ describe('Endpoint PUT wallet of PM', () => {
 
   afterAll(async () => await pmServerTerminator.terminate());
 
-  it.only('should return modified wallet when the default psp is updated', async () => {
+  it('should return modified wallet when the default psp is updated', async () => {
     // GET Psps list
     const psps = (
       await pmClient.getPspListUsingGET({
@@ -73,8 +66,6 @@ describe('Endpoint PUT wallet of PM', () => {
 
     const pspsList = fromNullable(psps.data?.pspList).getOrElse([]);
 
-    debug(pspsList);
-
     const updateWalletResponse =
       pspsList.length > 1 // PSP can be changed
         ? (
@@ -88,24 +79,23 @@ describe('Endpoint PUT wallet of PM', () => {
               },
             })
           ).fold(
-            () => fail(),
-            res => WalletResponse.decode(res.value).fold(() => fail(), identity),
+            () => undefined,
+            res => WalletResponse.decode(res.value).getOrElse({ data: {} }),
           )
         : { data: {} };
 
-    debug(updateWalletResponse);
-
-    expect(updateWalletResponse.data.idPsp).toEqual(22);
+    expect(updateWalletResponse?.data.idPsp).toEqual(22);
+    expect(updateWalletResponse?.data.psp?.serviceAvailability).toEqual('NEXI');
   });
-  /*
+
   it('should return 401 when the Bearer Token is wrong', async () => {
     const updateWalletResponse = (
       await pmClient.updateWalletUsingPUT({
         Bearer: 'Bearer wrong_token',
-        id: fromNullable(walletResponse.data.idWallet).getOrElse(-1),
+        id: goodIdWallet,
         walletRequest: {
           data: {
-            idPsp: walletResponse.data.idPsp,
+            idPsp: 22,
           },
         },
       })
@@ -114,19 +104,17 @@ describe('Endpoint PUT wallet of PM', () => {
       res => res.status,
     );
 
-    debug('update');
-
     expect(updateWalletResponse).toEqual(401);
   });
 
   it('should return 422 when the idWallet is wrong', async () => {
     const updateWalletResponse = (
       await pmClient.updateWalletUsingPUT({
-        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
+        Bearer: `Bearer ${mySessionToken}`,
         id: -1,
         walletRequest: {
           data: {
-            idPsp: walletResponse.data.idPsp,
+            idPsp: 22,
           },
         },
       })
@@ -141,8 +129,8 @@ describe('Endpoint PUT wallet of PM', () => {
   it('should return 422 when the idPsp is wrong', async () => {
     const updateWalletResponse = (
       await pmClient.updateWalletUsingPUT({
-        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
-        id: fromNullable(walletResponse.data.idWallet).getOrElse(-1),
+        Bearer: `Bearer ${mySessionToken}`,
+        id: goodIdWallet,
         walletRequest: {
           data: {
             idPsp: -1,
@@ -160,8 +148,8 @@ describe('Endpoint PUT wallet of PM', () => {
   it('should return current wallet when data is empty', async () => {
     const updateWalletResponse = (
       await pmClient.updateWalletUsingPUT({
-        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
-        id: fromNullable(walletResponse.data.idWallet).getOrElse(-1),
+        Bearer: `Bearer ${mySessionToken}`,
+        id: goodIdWallet,
         walletRequest: {
           data: {},
         },
@@ -171,6 +159,7 @@ describe('Endpoint PUT wallet of PM', () => {
       res => WalletResponse.decode(res.value).fold(() => fail(), identity),
     );
 
-    expect(updateWalletResponse).toEqual(walletResponse);
-  }); */
+    expect(updateWalletResponse?.data.idPsp).toEqual(8);
+    expect(updateWalletResponse?.data.psp?.businessName).toEqual('Poste Italiane');
+  });
 });

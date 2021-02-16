@@ -17,6 +17,9 @@ import {
   sessionTokenInternalException,
   sessionTokenUnprocessableEntity,
 } from '../__mocks__/mocks';
+import { TypeEnum } from '../../generated/definitions/pagopa/Wallet';
+import { WalletResponse } from '../../generated/definitions/pagopa/WalletResponse';
+import { LinguaEnum } from '../../generated/definitions/pagopa/Psp';
 
 // create express server
 const pm: Application = express();
@@ -30,10 +33,10 @@ const pspsRouter = Router();
 // FAKER UTILS
 const goodIdPayment = '8fa64d75-acb4-4a74-a87c-32f348a6a95f';
 const goodIdWallet = 100;
-const fakeGoodWallet = decodedReq => ({
+const fakeGoodWallet = (decodedReq: WalletRequest): WalletResponse => ({
   data: {
     idWallet: goodIdWallet,
-    type: 'CREDIT_CARD',
+    type: TypeEnum.CREDIT_CARD,
     favourite: false,
     creditCard: {
       id: 48,
@@ -65,7 +68,7 @@ const fakeGoodWallet = decodedReq => ({
       urlInfoChannel: 'http://www.test.sia.eu',
       paymentModel: 0,
       idCard: 11008,
-      lingua: 'IT',
+      lingua: LinguaEnum.IT,
       codiceAbi: '06220',
       isPspOnus: false,
       solvedByPan: false,
@@ -129,7 +132,7 @@ const firstItPspsList = {
         urlInfoChannel: 'http://www.test.sia.eu',
         paymentModel: 0,
         idCard: 11008,
-        lingua: 'IT',
+        lingua: LinguaEnum.IT,
         codiceAbi: '06220',
         isPspOnus: false,
         directAcquirer: false,
@@ -159,7 +162,7 @@ const itPspsList = {
         urlInfoChannel: 'http://www.test.sia.eu',
         paymentModel: 0,
         idCard: 11008,
-        lingua: 'IT',
+        lingua: LinguaEnum.IT,
         codiceAbi: '06220',
         isPspOnus: false,
         directAcquirer: false,
@@ -182,7 +185,7 @@ const itPspsList = {
         paymentModel: 1,
         flagStamp: true,
         idCard: 11008,
-        lingua: 'IT',
+        lingua: LinguaEnum.IT,
         codiceAbi: '06220',
         isPspOnus: false,
         directAcquirer: false,
@@ -204,7 +207,7 @@ const itPspsList = {
         paymentModel: 1,
         flagStamp: true,
         idCard: 99997,
-        lingua: 'IT',
+        lingua: LinguaEnum.IT,
         codiceAbi: '99997',
         isPspOnus: false,
         directAcquirer: true,
@@ -214,6 +217,10 @@ const itPspsList = {
     myBankSellerBankList: [],
   },
 };
+
+const modifyPsp = (res: WalletResponse, myIdPsp: number): WalletResponse => ({
+  data: { ...res.data, idPsp: myIdPsp, psp: itPspsList.data.pspList.find(psp => psp.id === myIdPsp) },
+});
 
 // eslint-disable-next-line functional/no-let
 let countRetry = 0;
@@ -349,7 +356,7 @@ walletRouter.post('/pp-restapi/v4/wallet', function (req, res) {
   );
 });
 
-walletRouter.put('/pp-restapi/v4/wallet', function (req, res) {
+walletRouter.put('/pp-restapi/v4/wallet/:id', function (req, res) {
   fromPredicate(
     (myReq: typeof req) => /Bearer [\d\w]{128}/.test(fromNullable(myReq.headers.authorization).getOrElse('')),
     identity,
@@ -365,14 +372,17 @@ walletRouter.put('/pp-restapi/v4/wallet', function (req, res) {
             Object.keys(decodedReq).length === 0
           ) {
             return res.sendStatus(500);
-          } else if (decodedReq.data && Object.keys(decodedReq.data).length === 0) {
+          } else if (
+            (decodedReq.data.idPsp && fromNullable(decodedReq.data.idPsp).getOrElse(-1) <= 0) ||
+            parseInt(req.params.id, 10) < 0
+          ) {
             return res.sendStatus(422);
-          } else if (decodedReq.data?.creditCard?.expireYear?.match(/(\d\d.+)|[^\d]+/)) {
-            return res.sendStatus(422);
-          } else if (!Object.prototype.hasOwnProperty.call(decodedReq.data, 'idPagamentoFromEC')) {
-            return res.sendStatus(500);
           } else {
-            return res.json(fakeGoodWallet(decodedReq));
+            if (decodedReq.data && Object.keys(decodedReq.data).length === 0) {
+              return res.json(fakeGoodWallet(decodedReq)); // Return the same wallet a POST
+            } else {
+              return res.json(modifyPsp(fakeGoodWallet(decodedReq), fromNullable(decodedReq.data.idPsp).getOrElse(0)));
+            }
           }
         },
       ),

@@ -1,5 +1,3 @@
-import { debug } from 'console';
-
 // import { fromNullable } from 'fp-ts/lib/Option';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
@@ -105,11 +103,11 @@ describe('Endpoint PUT wallet of PM', () => {
           data: {
             type: TypeEnum.CREDIT_CARD,
             creditCard: {
-              brand: 'VISA',
+              brand: 'AMEX',
               expireMonth: '03',
               expireYear: '25',
               holder: 'UserName UserSurname',
-              pan: '4024007182788397',
+              pan: '374379020906869',
               securityCode: '666',
             },
             favourite: true,
@@ -181,8 +179,6 @@ describe('Endpoint PUT wallet of PM', () => {
       () => undefined,
       res => res.status,
     );
-
-    debug('update');
 
     expect(updateWalletResponse).toEqual(401);
   });
