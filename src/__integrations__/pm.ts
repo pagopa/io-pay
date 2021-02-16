@@ -27,8 +27,193 @@ pm.use(bodyParser.json());
 const walletRouter = Router();
 const pspsRouter = Router();
 
+// FAKER UTILS
 const goodIdPayment = '8fa64d75-acb4-4a74-a87c-32f348a6a95f';
 const goodIdWallet = 100;
+const fakeGoodWallet = decodedReq => ({
+  data: {
+    idWallet: goodIdWallet,
+    type: 'CREDIT_CARD',
+    favourite: false,
+    creditCard: {
+      id: 48,
+      holder: decodedReq.data?.creditCard?.holder,
+      pan: fromNullable(decodedReq.data?.creditCard?.pan as string)
+        .map(myPan => '*'.repeat(myPan?.length - 4) + myPan?.substr(myPan.length - 4))
+        .getOrElse('************4444'), // obscured pan
+      expireMonth: decodedReq.data?.creditCard?.expireMonth,
+      expireYear: decodedReq.data?.creditCard?.expireYear,
+      brandLogo: 'http://localhost:8080/wallet/assets/img/creditcard/generic.png',
+      flag3dsVerified: false,
+      brand: 'OTHER',
+      hpan: myFake.random.alphaNumeric(64),
+      onUs: false,
+    },
+    psp: {
+      id: 8,
+      idPsp: 'POSTE1',
+      businessName: 'Poste Italiane',
+      paymentType: 'CP',
+      idIntermediary: 'BANCOPOSTA',
+      idChannel: 'POSTE1',
+      logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
+      serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
+      serviceName: 'nomeServizio 02 poste (MOD0)',
+      fixedCost: [Object],
+      appChannel: false,
+      serviceAvailability: 'disponibilitaServizio FRANCESE',
+      urlInfoChannel: 'http://www.test.sia.eu',
+      paymentModel: 0,
+      idCard: 11008,
+      lingua: 'IT',
+      codiceAbi: '06220',
+      isPspOnus: false,
+      solvedByPan: false,
+    },
+    idPsp: 8,
+    pspEditable: false,
+    onboardingChannel: 'WISP',
+    services: ['FA', 'pagoPA', 'BPD'],
+    isPspToIgnore: false,
+    saved: false,
+    registeredNexi: false,
+  },
+});
+
+const enPspsList = {
+  data: {
+    pspList: [
+      {
+        id: 30,
+        idPsp: 'Digital stamp enabled PSP',
+        businessName: 'Poste Inglesi',
+        paymentType: 'CP',
+        idIntermediary: 'BANCOPOSTA',
+        idChannel: 'POSTE1',
+        logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/30',
+        serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/30',
+        serviceName: 'poste EN - DS Enabled',
+        fixedCost: { currency: 'EUR', amount: 625, decimalDigits: 2 },
+        appChannel: false,
+        serviceAvailability: 'Pagamento Bollo Digitale tramite Poste',
+        urlInfoChannel: 'http://www.test.sia.eu',
+        paymentModel: 1,
+        flagStamp: true,
+        idCard: 11008,
+        lingua: 'EN',
+        codiceAbi: '06220',
+        isPspOnus: false,
+        directAcquirer: false,
+        solvedByPan: false,
+      },
+    ],
+    myBankSellerBankList: [],
+  },
+};
+const firstItPspsList = {
+  data: {
+    pspList: [
+      {
+        id: 8,
+        idPsp: 'POSTE1',
+        businessName: 'Poste Italiane',
+        paymentType: 'CP',
+        idIntermediary: 'BANCOPOSTA',
+        idChannel: 'POSTE1',
+        logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
+        serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
+        serviceName: 'nomeServizio 02 poste (MOD0)',
+        fixedCost: { currency: 'EUR', amount: 1, decimalDigits: 2 },
+        appChannel: false,
+        serviceAvailability: 'disponibilitaServizio FRANCESE',
+        urlInfoChannel: 'http://www.test.sia.eu',
+        paymentModel: 0,
+        idCard: 11008,
+        lingua: 'IT',
+        codiceAbi: '06220',
+        isPspOnus: false,
+        directAcquirer: false,
+        solvedByPan: false,
+      },
+    ],
+    myBankSellerBankList: [],
+  },
+};
+
+const itPspsList = {
+  data: {
+    pspList: [
+      {
+        id: 8,
+        idPsp: 'POSTE1',
+        businessName: 'Poste Italiane',
+        paymentType: 'CP',
+        idIntermediary: 'BANCOPOSTA',
+        idChannel: 'POSTE1',
+        logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
+        serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
+        serviceName: 'nomeServizio 02 poste (MOD0)',
+        fixedCost: { currency: 'EUR', amount: 1, decimalDigits: 2 },
+        appChannel: false,
+        serviceAvailability: 'disponibilitaServizio FRANCESE',
+        urlInfoChannel: 'http://www.test.sia.eu',
+        paymentModel: 0,
+        idCard: 11008,
+        lingua: 'IT',
+        codiceAbi: '06220',
+        isPspOnus: false,
+        directAcquirer: false,
+        solvedByPan: false,
+      },
+      {
+        id: 11,
+        idPsp: 'Digital stamp enabled PSP',
+        businessName: 'Poste Italiane',
+        paymentType: 'CP',
+        idIntermediary: 'BANCOPOSTA',
+        idChannel: 'POSTE1',
+        logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/11',
+        serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/11',
+        serviceName: 'poste - DS Enabled',
+        fixedCost: { currency: 'EUR', amount: 625, decimalDigits: 2 },
+        appChannel: false,
+        serviceAvailability: 'Pagamento Bollo Digitale tramite Poste',
+        urlInfoChannel: 'http://www.test.sia.eu',
+        paymentModel: 1,
+        flagStamp: true,
+        idCard: 11008,
+        lingua: 'IT',
+        codiceAbi: '06220',
+        isPspOnus: false,
+        directAcquirer: false,
+        solvedByPan: false,
+      },
+      {
+        id: 22,
+        idPsp: 'NEXI_Visa',
+        businessName: 'Psp NEXI 2',
+        paymentType: 'CP',
+        idIntermediary: 'Psp Nexi',
+        idChannel: 'NEXI (Visa)',
+        logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/22',
+        serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/22',
+        serviceName: 'NEXI (Visa)',
+        fixedCost: { currency: 'EUR', amount: 111, decimalDigits: 2 },
+        appChannel: false,
+        serviceAvailability: 'NEXI',
+        paymentModel: 1,
+        flagStamp: true,
+        idCard: 99997,
+        lingua: 'IT',
+        codiceAbi: '99997',
+        isPspOnus: false,
+        directAcquirer: true,
+        solvedByPan: false,
+      },
+    ],
+    myBankSellerBankList: [],
+  },
+};
 
 // eslint-disable-next-line functional/no-let
 let countRetry = 0;
@@ -157,61 +342,43 @@ walletRouter.post('/pp-restapi/v4/wallet', function (req, res) {
           } else if (!Object.prototype.hasOwnProperty.call(decodedReq.data, 'idPagamentoFromEC')) {
             return res.sendStatus(500);
           } else {
-            const obscuredPan = fromNullable(decodedReq.data?.creditCard?.pan as string)
-              .map(myPan => '*'.repeat(myPan?.length - 4) + myPan?.substr(myPan.length - 4))
-              .getOrElse('************4444');
-            return res.json({
-              data: {
-                idWallet: goodIdWallet,
-                type: 'CREDIT_CARD',
-                favourite: false,
-                creditCard: {
-                  id: 48,
-                  holder: decodedReq.data?.creditCard?.holder,
-                  pan: obscuredPan,
-                  expireMonth: decodedReq.data?.creditCard?.expireMonth,
-                  expireYear: decodedReq.data?.creditCard?.expireYear,
-                  brandLogo: 'http://localhost:8080/wallet/assets/img/creditcard/generic.png',
-                  flag3dsVerified: false,
-                  brand: 'OTHER',
-                  hpan: myFake.random.alphaNumeric(64),
-                  onUs: false,
-                },
-                psp: {
-                  id: 8,
-                  idPsp: 'POSTE1',
-                  businessName: 'Poste Italiane',
-                  paymentType: 'CP',
-                  idIntermediary: 'BANCOPOSTA',
-                  idChannel: 'POSTE1',
-                  logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
-                  serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
-                  serviceName: 'nomeServizio 02 poste (MOD0)',
-                  fixedCost: [Object],
-                  appChannel: false,
-                  serviceAvailability: 'disponibilitaServizio FRANCESE',
-                  urlInfoChannel: 'http://www.test.sia.eu',
-                  paymentModel: 0,
-                  idCard: 11008,
-                  lingua: 'IT',
-                  codiceAbi: '06220',
-                  isPspOnus: false,
-                  solvedByPan: false,
-                },
-                idPsp: 8,
-                pspEditable: false,
-                onboardingChannel: 'WISP',
-                services: ['FA', 'pagoPA', 'BPD'],
-                isPspToIgnore: false,
-                saved: false,
-                registeredNexi: false,
-              },
-            });
+            return res.json(fakeGoodWallet(decodedReq));
           }
         },
       ),
   );
 });
+
+walletRouter.put('/pp-restapi/v4/wallet', function (req, res) {
+  fromPredicate(
+    (myReq: typeof req) => /Bearer [\d\w]{128}/.test(fromNullable(myReq.headers.authorization).getOrElse('')),
+    identity,
+  )(req).fold(
+    () => res.sendStatus(401),
+    myReq =>
+      WalletRequest.decode(myReq.body).fold(
+        () => res.sendStatus(500),
+
+        decodedReq => {
+          if (
+            // request id {}
+            Object.keys(decodedReq).length === 0
+          ) {
+            return res.sendStatus(500);
+          } else if (decodedReq.data && Object.keys(decodedReq.data).length === 0) {
+            return res.sendStatus(422);
+          } else if (decodedReq.data?.creditCard?.expireYear?.match(/(\d\d.+)|[^\d]+/)) {
+            return res.sendStatus(422);
+          } else if (!Object.prototype.hasOwnProperty.call(decodedReq.data, 'idPagamentoFromEC')) {
+            return res.sendStatus(500);
+          } else {
+            return res.json(fakeGoodWallet(decodedReq));
+          }
+        },
+      ),
+  );
+});
+
 // resources
 walletRouter.get('/pp-restapi/v4/resources', function (req, res) {
   const termsAndConditionsR: string = getTermAndServices(req.query[qrParams.language] as string);
@@ -363,141 +530,6 @@ walletRouter.get('/pp-restapi/v4/transactions/:id/actions/check', function (req,
 });
 
 pspsRouter.get('/pp-restapi/v4/psps', function (req, res) {
-  const enPspsList = {
-    data: {
-      pspList: [
-        {
-          id: 30,
-          idPsp: 'Digital stamp enabled PSP',
-          businessName: 'Poste Inglesi',
-          paymentType: 'CP',
-          idIntermediary: 'BANCOPOSTA',
-          idChannel: 'POSTE1',
-          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/30',
-          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/30',
-          serviceName: 'poste EN - DS Enabled',
-          fixedCost: { currency: 'EUR', amount: 625, decimalDigits: 2 },
-          appChannel: false,
-          serviceAvailability: 'Pagamento Bollo Digitale tramite Poste',
-          urlInfoChannel: 'http://www.test.sia.eu',
-          paymentModel: 1,
-          flagStamp: true,
-          idCard: 11008,
-          lingua: 'EN',
-          codiceAbi: '06220',
-          isPspOnus: false,
-          directAcquirer: false,
-          solvedByPan: false,
-        },
-      ],
-      myBankSellerBankList: [],
-    },
-  };
-  const firstItPspsList = {
-    data: {
-      pspList: [
-        {
-          id: 8,
-          idPsp: 'POSTE1',
-          businessName: 'Poste Italiane',
-          paymentType: 'CP',
-          idIntermediary: 'BANCOPOSTA',
-          idChannel: 'POSTE1',
-          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
-          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
-          serviceName: 'nomeServizio 02 poste (MOD0)',
-          fixedCost: { currency: 'EUR', amount: 1, decimalDigits: 2 },
-          appChannel: false,
-          serviceAvailability: 'disponibilitaServizio FRANCESE',
-          urlInfoChannel: 'http://www.test.sia.eu',
-          paymentModel: 0,
-          idCard: 11008,
-          lingua: 'IT',
-          codiceAbi: '06220',
-          isPspOnus: false,
-          directAcquirer: false,
-          solvedByPan: false,
-        },
-      ],
-      myBankSellerBankList: [],
-    },
-  };
-
-  const itPspsList = {
-    data: {
-      pspList: [
-        {
-          id: 8,
-          idPsp: 'POSTE1',
-          businessName: 'Poste Italiane',
-          paymentType: 'CP',
-          idIntermediary: 'BANCOPOSTA',
-          idChannel: 'POSTE1',
-          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
-          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
-          serviceName: 'nomeServizio 02 poste (MOD0)',
-          fixedCost: { currency: 'EUR', amount: 1, decimalDigits: 2 },
-          appChannel: false,
-          serviceAvailability: 'disponibilitaServizio FRANCESE',
-          urlInfoChannel: 'http://www.test.sia.eu',
-          paymentModel: 0,
-          idCard: 11008,
-          lingua: 'IT',
-          codiceAbi: '06220',
-          isPspOnus: false,
-          directAcquirer: false,
-          solvedByPan: false,
-        },
-        {
-          id: 11,
-          idPsp: 'Digital stamp enabled PSP',
-          businessName: 'Poste Italiane',
-          paymentType: 'CP',
-          idIntermediary: 'BANCOPOSTA',
-          idChannel: 'POSTE1',
-          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/11',
-          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/11',
-          serviceName: 'poste - DS Enabled',
-          fixedCost: { currency: 'EUR', amount: 625, decimalDigits: 2 },
-          appChannel: false,
-          serviceAvailability: 'Pagamento Bollo Digitale tramite Poste',
-          urlInfoChannel: 'http://www.test.sia.eu',
-          paymentModel: 1,
-          flagStamp: true,
-          idCard: 11008,
-          lingua: 'IT',
-          codiceAbi: '06220',
-          isPspOnus: false,
-          directAcquirer: false,
-          solvedByPan: false,
-        },
-        {
-          id: 22,
-          idPsp: 'NEXI_Visa',
-          businessName: 'Psp NEXI 2',
-          paymentType: 'CP',
-          idIntermediary: 'Psp Nexi',
-          idChannel: 'NEXI (Visa)',
-          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/22',
-          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/22',
-          serviceName: 'NEXI (Visa)',
-          fixedCost: { currency: 'EUR', amount: 111, decimalDigits: 2 },
-          appChannel: false,
-          serviceAvailability: 'NEXI',
-          paymentModel: 1,
-          flagStamp: true,
-          idCard: 99997,
-          lingua: 'IT',
-          codiceAbi: '99997',
-          isPspOnus: false,
-          directAcquirer: true,
-          solvedByPan: false,
-        },
-      ],
-      myBankSellerBankList: [],
-    },
-  };
-
   fromPredicate(
     (myReq: typeof req) => /Bearer [\d\w]{128}/.test(fromNullable(myReq.headers.authorization).getOrElse('')),
     identity,

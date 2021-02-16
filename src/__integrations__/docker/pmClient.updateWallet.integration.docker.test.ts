@@ -4,10 +4,15 @@ import { debug } from 'console';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
 import nodeFetch from 'node-fetch';
+import { fromNullable } from 'fp-ts/lib/Option';
+import { identity } from 'fp-ts/lib/function';
 import { createClient, Client } from '../../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../../utils/fetch';
 import { getIdPayment } from '../../utils/testUtils';
 import { TypeEnum } from '../../../generated/definitions/pagopa/Wallet';
+import { WalletResponse } from '../../../generated/definitions/pagopa/WalletResponse';
+import { PspListResponse } from '../../../generated/definitions/pagopa/PspListResponse';
+// import { PspListResponse } from '../../../generated/definitions/pagopa/PspListResponse';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
 
@@ -32,13 +37,11 @@ describe('Endpoint PUT wallet of PM', () => {
   // 5. add wallet
 
   // eslint-disable-next-line functional/no-let
-  let myIdPayment;
-  // eslint-disable-next-line functional/no-let
-  let checkResponse;
+  let myIdPayment: string;
   // eslint-disable-next-line functional/no-let
   let startSessionResponse;
   // eslint-disable-next-line functional/no-let
-  let walletResponse;
+  let walletResponse: WalletResponse;
 
   beforeAll(async () => {
     // Start client
@@ -52,9 +55,8 @@ describe('Endpoint PUT wallet of PM', () => {
     // Execute the Happy Path before testing payment
     myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
 
-    debug('ID PAYMENT', myIdPayment);
     // check
-    checkResponse = (
+    (
       await pmClient.checkPaymentUsingGET({
         id: myIdPayment,
       })
@@ -62,8 +64,6 @@ describe('Endpoint PUT wallet of PM', () => {
       _ => fail(),
       res => res.value?.data,
     );
-
-    debug(checkResponse);
 
     // start session
     startSessionResponse = (
@@ -81,8 +81,6 @@ describe('Endpoint PUT wallet of PM', () => {
       res => res.value?.data,
     );
 
-    debug('START SESSION', startSessionResponse);
-    /*
     // approve terms
     (
       await pmClient.approveTermsUsingPOST({
@@ -98,7 +96,7 @@ describe('Endpoint PUT wallet of PM', () => {
       () => fail(),
       res => res.value?.data,
     );
-*/
+
     // POST Wallet
     walletResponse = (
       await pmClient.addWalletUsingPOST({
@@ -122,114 +120,125 @@ describe('Endpoint PUT wallet of PM', () => {
       })
     ).fold(
       () => fail(),
-      res => res.value?.data,
+      res => WalletResponse.decode(res.value).getOrElse({ data: {} }),
     );
-
-    debug('WALLET RESPONSE', walletResponse);
   });
 
-  it('should return modified wallet when the default psp gets updated', async () => {
-    // Psps list
+  it('should return modified wallet when the default psp is updated', async () => {
+    // GET Psps list
+
     const psps = (
       await pmClient.getPspListUsingGET({
         Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
-        paymentType: 'CREDIT_CARD',
+        paymentType: walletResponse.data.type as string,
+        isList: true,
+        idWallet: walletResponse.data.idWallet,
+        language: 'it',
         idPayment: myIdPayment,
       })
     ).fold(
       () => fail(),
-      res => res.value?.data,
+      res => PspListResponse.decode(res.value).fold(() => fail(), identity),
     );
 
-    debug(psps);
+    const pspsList = fromNullable(psps.data?.pspList).getOrElse([]);
 
+    const updateWalletResponse =
+      pspsList.length > 1 // PSP can be changed
+        ? (
+            await pmClient.updateWalletUsingPUT({
+              Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
+              id: fromNullable(walletResponse.data.idWallet).getOrElse(-1),
+              walletRequest: {
+                data: {
+                  // Select the new PSP as the first returned by GET psps with an ID different from the default one
+                  idPsp: pspsList[pspsList.findIndex(psp => psp.id !== walletResponse.data.idPsp)].id, // Just set the ID of the new PSP
+                },
+              },
+            })
+          ).fold(
+            () => fail(),
+            res => WalletResponse.decode(res.value).fold(() => fail(), identity),
+          )
+        : { data: {} };
+
+    expect(walletResponse.data.idPsp).not.toEqual(updateWalletResponse.data.idPsp);
+    expect(walletResponse.data.psp).not.toEqual(updateWalletResponse.data.psp);
+  });
+
+  it('should return 401 when the Bearer Token is wrong', async () => {
+    const updateWalletResponse = (
+      await pmClient.updateWalletUsingPUT({
+        Bearer: 'Bearer wrong_token',
+        id: fromNullable(walletResponse.data.idWallet).getOrElse(-1),
+        walletRequest: {
+          data: {
+            idPsp: walletResponse.data.idPsp,
+          },
+        },
+      })
+    ).fold(
+      () => undefined,
+      res => res.status,
+    );
+
+    debug('update');
+
+    expect(updateWalletResponse).toEqual(401);
+  });
+
+  it('should return 422 when the idWallet is wrong', async () => {
     const updateWalletResponse = (
       await pmClient.updateWalletUsingPUT({
         Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
-        id: walletResponse.idWallet,
+        id: -1,
+        walletRequest: {
+          data: {
+            idPsp: walletResponse.data.idPsp,
+          },
+        },
+      })
+    ).fold(
+      err => (err.pop()?.value as Response).status,
+      () => undefined,
+    );
+
+    expect(updateWalletResponse).toEqual(422);
+  });
+
+  it('should return 422 when the idPsp is wrong', async () => {
+    const updateWalletResponse = (
+      await pmClient.updateWalletUsingPUT({
+        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
+        id: fromNullable(walletResponse.data.idWallet).getOrElse(-1),
+        walletRequest: {
+          data: {
+            idPsp: -1,
+          },
+        },
+      })
+    ).fold(
+      err => (err.pop()?.value as Response).status,
+      () => undefined,
+    );
+
+    expect(updateWalletResponse).toEqual(422);
+  });
+
+  it('should return current wallet when data is empty', async () => {
+    const updateWalletResponse = (
+      await pmClient.updateWalletUsingPUT({
+        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
+        id: fromNullable(walletResponse.data.idWallet).getOrElse(-1),
         walletRequest: {
           data: {},
         },
       })
     ).fold(
       () => fail(),
-      res => res.value?.data,
+      res => WalletResponse.decode(res.value).fold(() => fail(), identity),
     );
 
-    debug('UPDATE WALLET', updateWalletResponse);
+    expect(updateWalletResponse).toEqual(walletResponse);
   });
-  /*
-  it('should return 404 when the idPayment is void', async () => {
-    // Pay
-    const payResponseStatus = (
-      await pmClient.payUsingPOST({
-        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
-        id: '',
-        payRequest: {
-          data: { idWallet: walletResponse?.idWallet, cvv: '666' },
-        },
-        language: 'it',
-      })
-    ).fold(
-      () => fail(),
-      res => res.status,
-    );
-
-    expect(payResponseStatus).toEqual(404);
-  });
-
-  it('should return 422 when the idWallet is wrong', async () => {
-    // Pay
-    const payResponseStatus = (
-      await pmClient.payUsingPOST({
-        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
-        id: myIdPayment,
-        payRequest: {
-          data: { idWallet: -1, cvv: '666' },
-        },
-        language: 'it',
-      })
-    ).fold(
-      err => (err.pop()?.value as Response).status,
-      () => undefined,
-    );
-
-    expect(payResponseStatus).toEqual(422);
-  });
-
-  it('should return 422 when the idPayment is wrong', async () => {
-    // Pay
-    const payResponseStatus = (
-      await pmClient.payUsingPOST({
-        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
-        id: 'wrong_idPayment',
-        payRequest: {
-          data: { idWallet: walletResponse?.idWallet, cvv: '666' },
-        },
-        language: 'it',
-      })
-    ).fold(
-      err => (err.pop()?.value as Response).status,
-      () => undefined,
-    );
-
-    expect(payResponseStatus).toEqual(422);
-  });
-
-  it('should return 500 when the payRequest is empty', async () => {
-    // Pay
-    const payResponseStatus = (
-      await pmClient.payUsingPOST({
-        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
-        id: myIdPayment,
-        payRequest: {},
-        language: 'it',
-      })
-    ).fold(
-      err => (err.pop()?.value as Response).status,
-      () => undefined,
-    );
-
-    expect(payResponseStatus).toEqual(500);
-  }); */
 });
