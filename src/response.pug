@@ -1,0 +1,52 @@
+doctype html
+html(lang='it')
+    - var languages = [{'label':'IT', 'full':'Italiano'},{'label':'EN', 'full':'English'}];
+    - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'amex'}];
+    head
+        title WISP Light
+        link(href="scss/style.scss",rel="stylesheet")
+        script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
+        script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
+        script(src="response.ts")
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    body.page--response
+        .main-wrapper.d-flex.flex-column
+            // HEADER
+            include includes/header.pug
+            .main.flex-fill.container
+                .row.justify-content-md-center
+                    .windowcont.px-4.px-md-0
+                        .windowcont__load
+                            .windowcont__load__inner
+                                h3.text-center Operazione in corso
+                                .text-muted.text-center.my-4 Ti preghiamo di attendere, senza chiudere la pagina.
+                        .windowcont__response
+                            .windowcont__response__detail(data-response="1")
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
+                                .h3.text-center Grazie, l'operazione è stata eseguita con successo!
+                                .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
+                                    span &nbsp;
+                                    span(class="windowcont__response__useremail")
+                            .windowcont__response__detail(data-response="2")
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
+                                .h3.text-center Grazie, l'operazione è stata presa in carico!
+                                .text-muted.text-center.my-4 Una volta completata, riceverai l'esito all'indirizzo
+                                    span &nbsp;
+                                    span(class="windowcont__response__useremail")
+                            .windowcont__response__detail(data-response="3")
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ko.svg")
+                                .h3.text-center Autorizzazione negata. Rivolgiti alla tua banca per avere informazioni
+                                .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
+                                    span &nbsp;
+                                    span(class="windowcont__response__useremail")
+                            .windowcont__response__detail(data-response="4")
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-timeout.svg")
+                                .h3.text-center Autorizzazione negata. Rivolgiti alla tua banca per avere informazioni
+                                .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
+                                    span &nbsp;
+                                    span(class="windowcont__response__useremail")
+                            a(href="#", id="response__continue").btn.btn-outline-primary.d-block Continua
+
+            // FOOTER
+            include includes/footer.pug                       
