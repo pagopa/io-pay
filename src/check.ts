@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
               myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakePayment'),
             );
             sessionStorage.setItem('payment', paymentResp);
-            window.location.replace('response-ok.html');
+            window.location.replace('response.html');
           },
         )
         .run();

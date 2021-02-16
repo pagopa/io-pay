@@ -374,6 +374,16 @@ body {
     font-weight: 600;
   }
 
+  &__load {
+    display: none;
+  }
+  body.loadingOperations &__load {
+    display: block;
+  }
+  body.page--response.loadingOperations &__response {
+    display: none;
+  }
+
   @include media-breakpoint-up(md) {
     margin-top: 5rem;
     margin-bottom: 5rem;
@@ -599,6 +609,7 @@ body {
     display: block;
   }
 }
+
 // MODAL
 
 .modalwindow {
