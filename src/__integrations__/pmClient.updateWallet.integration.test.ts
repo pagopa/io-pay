@@ -21,7 +21,6 @@ describe('Endpoint PUT wallet of PM', () => {
   // Set the testing environment
   const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 8080;
   const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
-  
   // eslint-disable-next-line functional/no-let
   let pmClient: Client;
 
