@@ -158,7 +158,7 @@ paths:
         - name: paymentType
           in: query
           description: paymentType
-          required: false
+          required: true
           type: string
         - name: paymentModel
           in: query
@@ -166,6 +166,23 @@ paths:
           required: false
           type: integer
           format: int64
+        - name: language
+          in: query
+          description: language
+          required: false
+          type: string  
+          default: it
+        - name: isList
+          in: query
+          description: to return only a result
+          required: false
+          type: boolean  
+          default: false
+        - name: idWallet
+          in: query
+          description: idWallet
+          required: false
+          type: integer
         - name: idPayment
           in: query
           description: idPayment
@@ -178,10 +195,20 @@ paths:
             $ref: '#/definitions/PspListResponse'
         '401':
           description: Unauthorized
-        '403':
-          description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '404':
           description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '422':
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/ErrorResponse'        
+        '500':
+          description: Generic Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'  
       security:
         - Bearer: []
   '/psps/actions/get-buyer-bank/{idBuyer}':

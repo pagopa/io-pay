@@ -25,6 +25,7 @@ pm.use(bodyParser.json());
 
 // Use router to keep the express app extensible
 const walletRouter = Router();
+const pspsRouter = Router();
 
 const goodIdPayment = '8fa64d75-acb4-4a74-a87c-32f348a6a95f';
 const goodIdWallet = 100;
@@ -361,7 +362,167 @@ walletRouter.get('/pp-restapi/v4/transactions/:id/actions/check', function (req,
   }
 });
 
-const routers: ReadonlyArray<Router> = [walletRouter];
+pspsRouter.get('/pp-restapi/v4/psps', function (req, res) {
+  const enPspsList = {
+    data: {
+      pspList: [
+        {
+          id: 30,
+          idPsp: 'Digital stamp enabled PSP',
+          businessName: 'Poste Inglesi',
+          paymentType: 'CP',
+          idIntermediary: 'BANCOPOSTA',
+          idChannel: 'POSTE1',
+          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/30',
+          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/30',
+          serviceName: 'poste EN - DS Enabled',
+          fixedCost: { currency: 'EUR', amount: 625, decimalDigits: 2 },
+          appChannel: false,
+          serviceAvailability: 'Pagamento Bollo Digitale tramite Poste',
+          urlInfoChannel: 'http://www.test.sia.eu',
+          paymentModel: 1,
+          flagStamp: true,
+          idCard: 11008,
+          lingua: 'EN',
+          codiceAbi: '06220',
+          isPspOnus: false,
+          directAcquirer: false,
+          solvedByPan: false,
+        },
+      ],
+      myBankSellerBankList: [],
+    },
+  };
+  const firstItPspsList = {
+    data: {
+      pspList: [
+        {
+          id: 8,
+          idPsp: 'POSTE1',
+          businessName: 'Poste Italiane',
+          paymentType: 'CP',
+          idIntermediary: 'BANCOPOSTA',
+          idChannel: 'POSTE1',
+          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
+          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
+          serviceName: 'nomeServizio 02 poste (MOD0)',
+          fixedCost: { currency: 'EUR', amount: 1, decimalDigits: 2 },
+          appChannel: false,
+          serviceAvailability: 'disponibilitaServizio FRANCESE',
+          urlInfoChannel: 'http://www.test.sia.eu',
+          paymentModel: 0,
+          idCard: 11008,
+          lingua: 'IT',
+          codiceAbi: '06220',
+          isPspOnus: false,
+          directAcquirer: false,
+          solvedByPan: false,
+        },
+      ],
+      myBankSellerBankList: [],
+    },
+  };
+
+  const itPspsList = {
+    data: {
+      pspList: [
+        {
+          id: 8,
+          idPsp: 'POSTE1',
+          businessName: 'Poste Italiane',
+          paymentType: 'CP',
+          idIntermediary: 'BANCOPOSTA',
+          idChannel: 'POSTE1',
+          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8',
+          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/8',
+          serviceName: 'nomeServizio 02 poste (MOD0)',
+          fixedCost: { currency: 'EUR', amount: 1, decimalDigits: 2 },
+          appChannel: false,
+          serviceAvailability: 'disponibilitaServizio FRANCESE',
+          urlInfoChannel: 'http://www.test.sia.eu',
+          paymentModel: 0,
+          idCard: 11008,
+          lingua: 'IT',
+          codiceAbi: '06220',
+          isPspOnus: false,
+          directAcquirer: false,
+          solvedByPan: false,
+        },
+        {
+          id: 11,
+          idPsp: 'Digital stamp enabled PSP',
+          businessName: 'Poste Italiane',
+          paymentType: 'CP',
+          idIntermediary: 'BANCOPOSTA',
+          idChannel: 'POSTE1',
+          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/11',
+          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/11',
+          serviceName: 'poste - DS Enabled',
+          fixedCost: { currency: 'EUR', amount: 625, decimalDigits: 2 },
+          appChannel: false,
+          serviceAvailability: 'Pagamento Bollo Digitale tramite Poste',
+          urlInfoChannel: 'http://www.test.sia.eu',
+          paymentModel: 1,
+          flagStamp: true,
+          idCard: 11008,
+          lingua: 'IT',
+          codiceAbi: '06220',
+          isPspOnus: false,
+          directAcquirer: false,
+          solvedByPan: false,
+        },
+        {
+          id: 22,
+          idPsp: 'NEXI_Visa',
+          businessName: 'Psp NEXI 2',
+          paymentType: 'CP',
+          idIntermediary: 'Psp Nexi',
+          idChannel: 'NEXI (Visa)',
+          logoPSP: 'http://pagopa-dev:8080/pp-restapi/v4/resources/psp/22',
+          serviceLogo: 'http://pagopa-dev:8080/pp-restapi/v4/resources/service/22',
+          serviceName: 'NEXI (Visa)',
+          fixedCost: { currency: 'EUR', amount: 111, decimalDigits: 2 },
+          appChannel: false,
+          serviceAvailability: 'NEXI',
+          paymentModel: 1,
+          flagStamp: true,
+          idCard: 99997,
+          lingua: 'IT',
+          codiceAbi: '99997',
+          isPspOnus: false,
+          directAcquirer: true,
+          solvedByPan: false,
+        },
+      ],
+      myBankSellerBankList: [],
+    },
+  };
+
+  fromPredicate(
+    (myReq: typeof req) => /Bearer [\d\w]{128}/.test(fromNullable(myReq.headers.authorization).getOrElse('')),
+    identity,
+  )(req).fold(
+    () => res.status(401).json({ code: '2000', message: 'Invalid Token' }),
+    () => {
+      const idPayemnt = req.query.idPayment;
+      const isList = req.query.isList;
+      const language = req.query.language;
+      if (idPayemnt === 'xxx') {
+        return res.status(422).json({ code: '0', message: 'Unexpected error' });
+      } else if (isList === 'true' && language === 'it') {
+        return res.json(itPspsList);
+      } else if (isList === 'true' && language === 'en') {
+        return res.json(enPspsList);
+      } else if (isList === 'false' && language === 'it') {
+        return res.json(firstItPspsList);
+      } else {
+        return res.status(500);
+      }
+    },
+  );
+});
+
+const routers: ReadonlyArray<Router> = [walletRouter, pspsRouter];
 routers.forEach(r => pm.use(r));
 
 export default pm;
