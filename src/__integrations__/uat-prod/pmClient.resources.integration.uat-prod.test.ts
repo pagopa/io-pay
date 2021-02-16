@@ -1,10 +1,8 @@
-// import { fromNullable } from 'fp-ts/lib/Option';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
 import nodeFetch from 'node-fetch';
 import { createClient } from '../../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../../utils/fetch';
-import * as myFetch from '../../utils/fetch';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
@@ -33,25 +31,9 @@ describe('Endpoint resources test suite for UAT/PROD PM', () => {
       baseUrl: `https://${PM_HOST_PROD}:${PM_PORT}`,
       fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
     });
-  });
 
-  beforeEach(async () => {
-    const mySpyCustomFetch = jest.spyOn(myFetch, 'retryingFetch');
-
-    const paymentManagerClientUAT = createClient({
-      baseUrl: `https://${PM_HOST_UAT}:${PM_PORT}/pp-restapi` as string,
-      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
-    });
-    const paymentManagerClientPROD = createClient({
-      baseUrl: `https://${PM_HOST_PROD}:${PM_PORT}/pp-restapi` as string,
-      fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
-    });
-    // Spy on th global fetch to check if it gets called
-    const mySpyGlobalFetch = jest.spyOn(global, 'fetch');
-    expect(paymentManagerClientUAT).toBeTruthy();
-    expect(paymentManagerClientPROD).toBeTruthy();
-    expect(mySpyGlobalFetch).not.toHaveBeenCalled();
-    expect(mySpyCustomFetch).toHaveBeenCalled();
+    expect(pmClientUAT).toBeTruthy();
+    expect(pmClientPROD).toBeTruthy();
   });
 
   it('should return 200 on getResourcesUsingGET response', async () => {
