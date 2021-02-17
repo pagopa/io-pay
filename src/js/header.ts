@@ -1,21 +1,30 @@
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export function initHeader() {
-  const enteBeneficiario: HTMLElement | null = document.querySelector("[data-sessiondata='enteBeneficiario']");
-  const subject: HTMLElement | null = document.querySelector("[data-sessiondata='subject']");
-  const importo: HTMLElement | null = document.querySelector("[data-sessiondata='importo']");
+  const enteBeneficiario = document.querySelectorAll("[data-sessiondata='enteBeneficiario']") || null;
+  const subject = document.querySelectorAll("[data-sessiondata='subject']") || null;
+  const importo = document.querySelectorAll("[data-sessiondata='importo']") || null;
   const dataStored: string | null = sessionStorage.getItem('checkData');
   const data = dataStored ? JSON.parse(dataStored) : null;
 
   if (enteBeneficiario) {
-    // eslint-disable-next-line functional/immutable-data
-    enteBeneficiario.innerText = data?.detailsList[0].enteBeneficiario;
+    for (const el of Array.from(enteBeneficiario)) {
+      // eslint-disable-next-line functional/immutable-data
+      (el as HTMLElement).innerText = data?.detailsList[0].enteBeneficiario;
+    }
   }
   if (subject) {
-    // eslint-disable-next-line functional/immutable-data
-    subject.innerText = data?.subject;
+    for (const el of Array.from(subject)) {
+      // eslint-disable-next-line functional/immutable-data
+      (el as HTMLElement).innerText = data?.subject;
+    }
   }
   if (importo) {
     const prettifiedAmount = parseInt(data?.amount.amount.toString(), 10) / 100;
-    // eslint-disable-next-line functional/immutable-data
-    importo.innerText = prettifiedAmount ? `€ ${Intl.NumberFormat('it-IT').format(prettifiedAmount)}` : '';
+    for (const el of Array.from(importo)) {
+      // eslint-disable-next-line functional/immutable-data
+      (el as HTMLElement).innerText = prettifiedAmount
+        ? `€ ${Intl.NumberFormat('it-IT').format(prettifiedAmount)}`
+        : '';
+    }
   }
 }

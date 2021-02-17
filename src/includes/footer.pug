@@ -7,15 +7,15 @@
                 use(href="/assets/icons/sprite.svg#it-close")
         .paymentdash__row
             .paymentdash__label Ente Creditore
-            .paymentdash__value Comune di Milano - Area Finanze
+            .paymentdash__value(data-sessiondata="enteBeneficiario") 
             .paymentdash__bottomborder 
         .paymentdash__row
             .paymentdash__label Causale
-            .paymentdash__value TARI 2020 Rata Unica
+            .paymentdash__value(data-sessiondata="subject") 
             .paymentdash__bottomborder 
         .paymentdash__row.d-flex
             .paymentdash__value Importo aggiornato
-            .paymentdash__sum.ml-auto € 50,00
+            .paymentdash__sum.ml-auto(data-sessiondata="importo") 
         .paymentdash__desc Il sistema pagoPA aggiorna automaticamente l’importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarti così more o altri interessi.
 .loader.flex-column.justify-content-center.align-items-center
     .spinner-grow.text-primary(role="status")
