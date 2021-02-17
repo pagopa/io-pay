@@ -160,12 +160,6 @@ paths:
           description: paymentType
           required: true
           type: string
-        - name: paymentModel
-          in: query
-          description: paymentModel
-          required: false
-          type: integer
-          format: int64
         - name: language
           in: query
           description: language
@@ -2793,6 +2787,8 @@ definitions:
     title: WalletRequest
   WalletResponse:
     type: object
+    required:
+      - data
     properties:
       data:
         $ref: '#/definitions/Wallet'
