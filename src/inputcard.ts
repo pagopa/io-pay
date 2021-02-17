@@ -10,14 +10,14 @@ import { modalWindows } from './js/modals';
 import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
 import { retryingFetch } from './utils/fetch';
+import { initDropdowns } from './js/dropdowns';
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
   const pmClient = createClient({
     baseUrl: 'http://localhost:8080',
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
-
-  const dropdownElements = document.querySelectorAll('.btn-dropdown');
 
   const privacyToggler = document.getElementById('privacyToggler') || null;
   const privacyTogglerInput = document.getElementById('privacyTogglerInput') || null;
@@ -68,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // initHeader
   initHeader();
 
+  initDropdowns();
+
   // init translations
   setTranslateBtns();
 
@@ -95,41 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   void setTermOfService();
-
-  // dropdown
-  dropdownElements.forEach(el => {
-    el.addEventListener('click', function () {
-      // const parentEl = el.parentNode;
-      const opened = el.getAttribute('aria-expanded') === 'true';
-      const target = el.getAttribute('data-target') || null;
-      if (target == null) {
-        return;
-      }
-      const targetEl = document.getElementById(target);
-      targetEl?.addEventListener('click', function () {
-        document.body.classList.remove('dropdown-opened');
-        document.body.removeAttribute('data-dropdownopened');
-        el.setAttribute('aria-expanded', 'false');
-        // parentEl.classList.remove('show');
-        el.parentElement?.classList.remove('show');
-        targetEl.classList.remove('show');
-      });
-
-      if (opened === true) {
-        document.body.classList.remove('dropdown-opened');
-        document.body.removeAttribute('data-dropdownopened');
-        el.setAttribute('aria-expanded', 'false');
-        el.parentElement?.classList.remove('show');
-        targetEl?.classList.remove('show');
-      } else {
-        document.body.classList.add('dropdown-opened');
-        document.body.setAttribute('data-dropdownopened', target);
-        el.setAttribute('aria-expanded', 'true');
-        el.parentElement?.classList.add('show');
-        targetEl?.classList.add('show');
-      }
-    });
-  });
 
   privacyToggler?.addEventListener('click', function () {
     if (privacyTogglerInput == null) {

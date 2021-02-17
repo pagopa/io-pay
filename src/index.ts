@@ -1,6 +1,7 @@
 import { actionsCheck } from './js/sessiondata';
 import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
+import { initDropdowns } from './js/dropdowns';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
@@ -13,6 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await actionsCheck();
 
   initHeader();
+
+  initDropdowns();
 
   idpayguard();
 

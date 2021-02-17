@@ -9,6 +9,7 @@ import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
 import { retryingFetch } from './utils/fetch';
+import { initDropdowns } from './js/dropdowns';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   idpayguard();
   // initHeader
   initHeader();
+  // initDropdowns
+  initDropdowns();
   // init translations
   setTranslateBtns();
   // init modals
