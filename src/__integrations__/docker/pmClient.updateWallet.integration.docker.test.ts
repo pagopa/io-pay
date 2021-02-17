@@ -10,7 +10,6 @@ import { getIdPayment } from '../../utils/testUtils';
 import { TypeEnum } from '../../../generated/definitions/pagopa/Wallet';
 import { WalletResponse } from '../../../generated/definitions/pagopa/WalletResponse';
 import { PspListResponse } from '../../../generated/definitions/pagopa/PspListResponse';
-// import { PspListResponse } from '../../../generated/definitions/pagopa/PspListResponse';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
 
