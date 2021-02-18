@@ -3,7 +3,7 @@ import { toError } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
-import { createClient } from '../generated/definitions/pagopa/client';
+import { createClient, Client } from '../generated/definitions/pagopa/client';
 import { modalWindows } from './js/modals';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
@@ -13,7 +13,7 @@ import { initDropdowns } from './js/dropdowns';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
-  const pmClient = createClient({
+  const pmClient: Client = createClient({
     baseUrl: 'http://localhost:8080',
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Pay
       await TE.tryCatch(
         () =>
-          pmClient.payUsingPOST({
+          pmClient.pay3ds2UsingPOST({
             Bearer: `Bearer ${sessionStorage.getItem('sessionToken')}`,
             id: checkData.idPayment,
             payRequest: {
@@ -131,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
               myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakePayment'),
             );
             sessionStorage.setItem('payment', paymentResp);
-            window.location.replace('response.html');
+            // window.location.replace('response.html');
+            window.location.replace(JSON.parse(paymentResp).urlCheckout3ds);
           },
         )
         .run();

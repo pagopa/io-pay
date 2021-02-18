@@ -4,9 +4,9 @@ import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import express from 'express';
 import { fromNullable } from 'fp-ts/lib/Option';
-import { getIdPayment } from '../utils/testUtils';
+import { getIdPayment } from '../../utils/testUtils';
 
-describe('Data Submission Form', () => {
+describe('Credit card submission form', () => {
   const SRV_PORT = process.env.IOPAY_DEV_SERVER_PORT ? parseInt(process.env.IOPAY_DEV_SERVER_PORT, 10) : 1234;
   const SRV_HOST = process.env.IOPAY_DEV_SERVER_HOST as string;
   const PM_DOCK_PORT = process.env.PAYMENT_MANAGER_DOCKER_PORT
@@ -155,35 +155,6 @@ describe('Data Submission Form', () => {
         .map(myString => JSON.parse(myString))
         .getOrElse({}),
     ).toMatchObject({ acceptTerms: true });
-
-    await page.close();
-  });
-
-  it('should call start check payment, when app is loaded', async () => {
-    // PRECONDITIONS
-    const pmTab = await myBrowser.newPage();
-    const [pmResponseApiDocs] = await Promise.all([
-      pmTab.waitForResponse(response => response.request().method() === 'GET'),
-      await pmTab.goto(`http://${PM_DOCK_HOST}:${PM_DOCK_PORT}/pp-restapi/v2/api-docs`),
-    ]);
-
-    expect(pmResponseApiDocs?.status()).toEqual(200);
-    await pmTab.close();
-
-    const page = await myBrowser.newPage();
-    const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
-
-    await Promise.all([
-      page.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html?p=${myIdPayment}`),
-      page.waitForResponse(response => response.request().method() === 'GET' && /check/.test(response.request().url())),
-    ]);
-
-    const checkRes = await page.evaluate(() => sessionStorage.getItem('checkData'));
-    expect(
-      fromNullable(checkRes)
-        .map(myString => JSON.parse(myString))
-        .getOrElse({}),
-    ).toMatchObject({ idPayment: myIdPayment });
 
     await page.close();
   });

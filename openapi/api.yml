@@ -148,6 +148,47 @@ paths:
           description: Not Found
       security:
         - Bearer: []
+  '/payments/{id}/actions/pay3ds2':
+    post:
+      tags:
+        - payments-controller
+      summary: 'valori authorizationCode: [ 00 - OK ] [ 02 - parametro duplicato ] [ 03 - formato messaggio errato, campo mancante o errato ][ 04 - MAC non corretto ] [ 06 - errore imprevisto durante l’elaborazione ][ 37 - codice di verifica mancante ] [ 40 - errore xml ] [ 41 - errore xml ] [ 98 - errore applicativo ] [ 99 - operazione fallita ]'
+      operationId: pay3ds2UsingPOST
+      consumes:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+        - in: body
+          name: payRequest
+          description: payRequest
+          required: true
+          schema:
+            $ref: '#/definitions/PayRequest'
+        - name: language
+          in: query
+          description: language
+          required: false
+          type: string
+          default: it
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TransactionResponse'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - Bearer: []
   /psps:
     get:
       tags:
