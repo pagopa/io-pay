@@ -53,7 +53,7 @@ describe('Endpoint addWalletUsingPOST', () => {
       })
     ).fold(
       () => 'wrong_token',
-      myRes => fromNullable(myRes.value.data.sessionToken).getOrElse('wrong_token'),
+      myRes => fromNullable(myRes.value.sessionToken).getOrElse('wrong_token'),
     );
   });
 
