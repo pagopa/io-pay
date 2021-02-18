@@ -42,17 +42,16 @@ export const showErrorStatus = () => {
   document.body.classList.remove('loadingOperations');
   document
     .querySelectorAll('[data-response]')
-    .forEach(i => (i.getAttribute('data-response') == '3' ? null : i.remove()));
-  //To improve
+    .forEach(i => (i.getAttribute('data-response') === '3' ? null : i.remove()));
+  // To improve
 };
 
 export const showSuccessStatus = (idStatus: GENERIC_STATUS) => {
   document.body.classList.remove('loadingOperations');
-  console.log(idStatus);
   TX_ACCEPTED.decode(idStatus).map(_ =>
     document
       .querySelectorAll('[data-response]')
-      .forEach(i => (i.getAttribute('data-response') == '1' ? null : i.remove())),
+      .forEach(i => (i.getAttribute('data-response') === '1' ? null : i.remove())),
   );
   // To improve
 };

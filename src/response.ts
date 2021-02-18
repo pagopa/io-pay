@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     (el as HTMLElement).innerText = useremail;
   }
 
-  getDataFromSessionStorageTask('payment')
+  await getDataFromSessionStorageTask('payment')
     .chain(transaction => checkStatusTask(transaction.token, paymentManagerClient))
     .chain(transactionStatusResponse => isNot3dsFlowTask(transactionStatusResponse))
     .fold(
