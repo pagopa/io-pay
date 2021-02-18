@@ -2797,7 +2797,7 @@ definitions:
   WalletResponse:
     type: object
     required:
-        - data
+      - data
     properties:
       data:
         $ref: '#/definitions/Wallet'

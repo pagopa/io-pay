@@ -27,7 +27,7 @@ export const checkStatusTask = (
 export const getDataFromSessionStorageTask = (key: string): TaskEither<UNKNOWN, Transaction> =>
   Transaction.decode(JSON.parse(fromNullable(sessionStorage.getItem(key)).getOrElse(''))).fold(
     _ => fromLeft(UNKNOWN.value),
-    transaction => taskEither.of(transaction),
+    data => taskEither.of(data),
   );
 
 export const isNot3dsFlowTask = (
