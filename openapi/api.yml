@@ -2462,6 +2462,9 @@ definitions:
     title: StartSpidSessionRequest
   Transaction:
     type: object
+    required:
+        - idPayment
+        - token
     properties:
       accountingStatus:
         type: integer
@@ -2551,6 +2554,10 @@ definitions:
     title: TransactionResponse
   TransactionStatus:
     type: object
+    required:
+        - idPayment
+        - idStatus
+        - idTransaction
     properties:
       acsUrl:
         type: string
@@ -2577,6 +2584,8 @@ definitions:
     title: TransactionStatus
   TransactionStatusResponse:
     type: object
+    required:
+      - data
     properties:
       data:
         $ref: '#/definitions/TransactionStatus'
