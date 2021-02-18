@@ -2796,6 +2796,8 @@ definitions:
     title: WalletRequest
   WalletResponse:
     type: object
+    required:
+        - data
     properties:
       data:
         $ref: '#/definitions/Wallet'
