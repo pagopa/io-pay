@@ -235,12 +235,10 @@ walletRouter.post('/pp-restapi/v4/users/actions/start-session', function (req, r
     return res.sendStatus(500);
   } else {
     return res.json({
-      data: {
-        sessionToken: myFake.random.alphaNumeric(128),
-        user: {
-          email: decodedReq.data?.email,
-          status: 'ANONYMOUS',
-        },
+      sessionToken: myFake.random.alphaNumeric(128),
+      user: {
+        email: decodedReq.data?.email,
+        status: 'ANONYMOUS',
       },
     });
   }

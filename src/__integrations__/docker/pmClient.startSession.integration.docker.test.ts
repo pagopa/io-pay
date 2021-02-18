@@ -1,44 +1,40 @@
-import { Server } from 'http';
-
-import nodeFetch from 'node-fetch';
-// Needed to patch the globals
-import 'abort-controller/polyfill';
-import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import { Millisecond } from 'italia-ts-commons/lib/units';
-import { createClient, Client } from '../../generated/definitions/pagopa/client';
-import { retryingFetch } from '../utils/fetch';
-import { OsEnum } from '../../generated/definitions/pagopa/Device';
-import pm from './pm';
-
+import 'abort-controller/polyfill';
+import nodeFetch from 'node-fetch';
+import { createClient, Client } from '../../../generated/definitions/pagopa/client';
+import { retryingFetch } from '../../utils/fetch';
+import { getIdPayment } from '../../utils/testUtils';
+import { OsEnum } from '../../../generated/definitions/pagopa/Device';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
 
-describe('Endpoint startSession', () => {
-  const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 8080;
-  const HOST = process.env.PAYMENT_MANAGER_STUB_HOST as string;
+describe('Endpoint start-session of PM', () => {
+  // Set the testing environment
 
-  // eslint-disable-next-line functional/no-let
-  let pmServer: Server;
-
-  // eslint-disable-next-line functional/no-let
-  let pmServerTerminator: HttpTerminator;
-
+  const PM_DOCK_PORT = process.env.PAYMENT_MANAGER_DOCKER_PORT
+    ? parseInt(process.env.PAYMENT_MANAGER_DOCKER_PORT, 10)
+    : 1234;
+  const PM_DOCK_HOST = process.env.PAYMENT_MANAGER_DOCKER_HOST as string;
+  const PM_DOCK_CTRL_PORT = process.env.PAYMENT_MANAGER_DOCKER_CONTROL_PORT
+    ? parseInt(process.env.PAYMENT_MANAGER_DOCKER_CONTROL_PORT, 10)
+    : 8081;
   // eslint-disable-next-line functional/no-let
   let pmClient: Client;
 
+  // eslint-disable-next-line functional/no-let
+  let myIdPayment: string;
+
   beforeAll(async () => {
-    // Start server
-    pmServer = pm.listen(PORT, HOST);
-    pmServerTerminator = createHttpTerminator({ server: pmServer });
     // Start client
     pmClient = createClient({
-      baseUrl: `http://${HOST}:${PORT}`,
+      baseUrl: `http://${PM_DOCK_HOST}:${PM_DOCK_PORT}`,
       fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
     });
   });
 
-  afterAll(async () => {
-    await pmServerTerminator.terminate();
+  beforeEach(async () => {
+    // Execute the Happy Path before testing payment
+    myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
   });
 
   it("should return the same notificationEmail when it's called with or without device", async () => {
@@ -47,7 +43,7 @@ describe('Endpoint startSession', () => {
         data: {
           email: 'nunzia.ross@example.com',
           fiscalCode: 'UQNSFM56P12T733D',
-          idPayment: '12345',
+          idPayment: myIdPayment,
         },
       },
     });
@@ -56,7 +52,7 @@ describe('Endpoint startSession', () => {
       startSessionRequest: {
         data: {
           email: 'nunzia.ross@example.com',
-          idPayment: '12345',
+          idPayment: myIdPayment,
           fiscalCode: 'UQNSFM56P12T733D',
           device: {
             os: 'ANDROID' as OsEnum,
@@ -86,7 +82,7 @@ describe('Endpoint startSession', () => {
             data: {
               email: 'nunzia.ross@example.com',
               fiscalCode: 'UQNSFM56P12T733D', // seems to be ignored by PM
-              idPayment: '12345', // seems to be ignored by PM
+              idPayment: myIdPayment, // seems to be ignored by PM
             },
           },
         })
@@ -103,7 +99,7 @@ describe('Endpoint startSession', () => {
         data: {
           email: 'nunzia.ross@example.com',
           fiscalCode: 'UQNSFM56P12T733D', // seems to be ignored by PM
-          idPayment: '12345', // seems to be ignored by PM
+          idPayment: myIdPayment, // seems to be ignored by PM
         },
       },
     });

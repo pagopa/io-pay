@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
               () => 'fakeSessionToken',
               myRes =>
                 myRes.status === 200
-                  ? fromNullable(myRes.value.data?.sessionToken).getOrElse('fakeSessionToken')
+                  ? fromNullable(myRes.value.sessionToken).getOrElse('fakeSessionToken')
                   : 'fakeSessionToken',
             );
             sessionStorage.setItem('sessionToken', sessionToken);
