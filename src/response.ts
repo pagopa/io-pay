@@ -1,16 +1,19 @@
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { DeferredPromise } from 'italia-ts-commons/lib/promises';
-import { fromNullable } from 'fp-ts/lib/Option';
-import { fromLeft, fromPredicate, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { Client, createClient } from '../generated/definitions/pagopa/client';
 import { TransactionStatusResponse } from '../generated/definitions/pagopa/TransactionStatusResponse';
-import { Transaction } from '../generated/definitions/pagopa/Transaction';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
 import { initDropdowns } from './js/dropdowns';
 import { constantPollingWithPromisePredicateFetch, retryingFetch } from './utils/fetch';
-import { GENERIC_STATUS, TX_ACCEPTED, UNKNOWN } from './utils/TransactionStatesTypes';
+import {
+  checkStatusTask,
+  getDataFromSessionStorageTask,
+  isNot3dsFlowTask,
+  showErrorStatus,
+  showSuccessStatus,
+} from './utils/transactionHelper';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
@@ -39,58 +42,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
 
-  const checkStatusTask = (
-    transactionId: string,
-    paymentManagerClient: Client,
-  ): TaskEither<UNKNOWN, TransactionStatusResponse> =>
-    tryCatch(
-      () =>
-        paymentManagerClient.checkStatusUsingGET({
-          id: transactionId,
-        }),
-      () => UNKNOWN.value,
-    ).foldTaskEither(
-      err => fromLeft(err),
-      errorOrResponse =>
-        errorOrResponse.fold(
-          () => fromLeft(UNKNOWN.value),
-          responseType => (responseType.status !== 200 ? fromLeft(UNKNOWN.value) : taskEither.of(responseType.value)),
-        ),
-    );
-
-  const getDataFromSessionStorageTask = (key: string): TaskEither<UNKNOWN, Transaction> =>
-    Transaction.decode(JSON.parse(fromNullable(sessionStorage.getItem(key)).getOrElse(''))).fold(
-      _ => fromLeft(UNKNOWN.value),
-      transaction => taskEither.of(transaction),
-    );
-
-  const isNot3dsFlowTask = (
-    transactionStatusResponse: TransactionStatusResponse,
-  ): TaskEither<UNKNOWN, TransactionStatusResponse> =>
-    fromPredicate(
-      (transaction: TransactionStatusResponse) => fromNullable(transaction.data?.acsUrl).isNone(),
-      _ => UNKNOWN.value,
-    )(transactionStatusResponse);
-
-  const showErrorStatus = () => {
-    document.body.classList.remove('loadingOperations');
-    document
-      .querySelectorAll('[data-response]')
-      .forEach(i => (i.getAttribute('data-response') == '3' ? null : i.remove()));
-    //To improve
-  };
-
-  const showSuccessStatus = (idStatus: GENERIC_STATUS) => {
-    document.body.classList.remove('loadingOperations');
-    console.log(idStatus);
-    TX_ACCEPTED.decode(idStatus).map(_ =>
-      document
-        .querySelectorAll('[data-response]')
-        .forEach(i => (i.getAttribute('data-response') == '1' ? null : i.remove())),
-    );
-    // To improve
-  };
-
   document.body.classList.add('loadingOperations');
 
   // idpayguard
@@ -116,15 +67,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   getDataFromSessionStorageTask('payment')
     .chain(transaction => checkStatusTask(transaction.token, paymentManagerClient))
     .chain(transactionStatusResponse => isNot3dsFlowTask(transactionStatusResponse))
-    .chain(transactionStatusResponse =>
-      checkStatusTask(
-        Buffer.from(transactionStatusResponse.data.idTransaction.toString()).toString('base64'),
-        paymentManagerClientWithPolling,
-      ),
-    )
     .fold(
-      _ => showErrorStatus(),
-      transactionStatusResponse => showSuccessStatus(transactionStatusResponse.data.idStatus),
+      _ => showErrorStatus(), // 3ds case
+      transactionStatusResponse =>
+        checkStatusTask(
+          Buffer.from(transactionStatusResponse.data.idTransaction.toString()).toString('base64'),
+          paymentManagerClientWithPolling,
+        )
+          .fold(
+            _ => showErrorStatus(),
+            transactionStatusResponse => showSuccessStatus(transactionStatusResponse.data.idStatus),
+          )
+          .run(),
     )
     .run();
 
