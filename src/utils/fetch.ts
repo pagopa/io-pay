@@ -77,32 +77,6 @@ export function retryLogicOnPromisePredicate(
 // that handles 404s as transient errors, this "fetch" must be passed to
 // createFetchRequestForApi when creating "getPaymentId"
 
-export const constantPollingFetch = (
-  shouldAbort: Promise<boolean>,
-  retries: number,
-  delay: number,
-  timeout: Millisecond = 1000 as Millisecond,
-) => {
-  // Override default react-native fetch with whatwg's that supports aborting
-  // eslint-disable-next-line
-  (global as any).AbortController = require('abort-controller');
-  require('./whatwg-fetch');
-
-  // fetch client that can be aborted for timeout
-  const abortableFetch = AbortableFetch((global as any).fetch);
-  const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
-  // use a constant backoff
-  const constantBackoff = () => delay as Millisecond;
-  const retryLogic = withRetries<Error, Response>(retries, constantBackoff);
-  // makes the retry logic map 404s to transient errors (by default only
-  // timeouts are transient)
-  // see also https://github.com/pagopa/io-ts-commons/blob/master/src/fetch.ts#L103
-  const retryWithTransient404s = retryLogicForTransientResponseError(_ => _.status === 404, retryLogic);
-
-  // TODO: remove the cast once we upgrade to tsc >= 3.1 (https://www.pivotaltracker.com/story/show/170819445)
-  return retriableFetch(retryWithTransient404s, shouldAbort)(timeoutFetch as typeof fetch);
-};
-
 export const constantPollingWithPromisePredicateFetch = (
   shouldAbort: Promise<boolean>,
   retries: number,

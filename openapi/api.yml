@@ -2015,6 +2015,8 @@ definitions:
         format: int64
       mobileToken:
         type: string
+      threeDSData:
+        type: string
       tipo:
         type: string
     title: Pay

@@ -121,14 +121,14 @@ describe('Endpoint pay3ds2 of PM', () => {
     );
   });
 
-  it('should return idWallet, idPayment and amount matching the ones in previous calls ', async () => {
+  it.only('should return idWallet, idPayment and amount matching the ones in previous calls ', async () => {
     // Pay
     const payResponse = (
       await pmClient.pay3ds2UsingPOST({
         Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
         id: myIdPayment,
         payRequest: {
-          data: { idWallet: walletResponse?.idWallet, cvv: '666' },
+          data: { idWallet: walletResponse?.idWallet, cvv: '666', threeDSData: '' },
         },
         language: 'it',
       })
@@ -148,6 +148,8 @@ describe('Endpoint pay3ds2 of PM', () => {
       (fromNullable(payResponse?.amount?.amount).getOrElse(0) as number) +
         (fromNullable(payResponse?.fee?.amount).getOrElse(0) as number),
     ).toEqual(fromNullable(payResponse?.grandTotal?.amount).getOrElse(0));
+
+    expect(fromNullable(payResponse?.statusMessage).getOrElse('')).not.toEqual('Da autorizzare');
   });
 
   it('should return 404 when the idPayment is void', async () => {
