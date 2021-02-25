@@ -164,7 +164,8 @@ describe('Endpoint pay3ds2 of PM', () => {
       fromNullable(checkResponse?.amount?.amount).getOrElse(0),
     );
     expect(
-      fromNullable(payResponse?.amount?.amount).getOrElse(0) + fromNullable(payResponse?.fee?.amount).getOrElse(0),
+      (fromNullable(payResponse?.amount?.amount).getOrElse(0) as number) +
+        (fromNullable(payResponse?.fee?.amount).getOrElse(0) as number),
     ).toEqual(fromNullable(payResponse?.grandTotal?.amount).getOrElse(0));
   });
 
