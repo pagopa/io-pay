@@ -1,3 +1,4 @@
+import { debug } from 'console';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { DeferredPromise } from 'italia-ts-commons/lib/promises';
 import { Client, createClient } from '../generated/definitions/pagopa/client';
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     (el as HTMLElement).innerText = useremail;
   }
 
-  await getDataFromSessionStorageTask('payment')
+  const checkResponse = await getDataFromSessionStorageTask('payment')
     .chain(transaction => checkStatusTask(transaction.token, paymentManagerClient))
     .chain(transactionStatusResponse => isNot3dsFlowTask(transactionStatusResponse))
     .fold(
@@ -81,6 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           .run(),
     )
     .run();
+
+  debug(checkResponse);
 
   // clear sessionStorage
   sessionStorage.clear();

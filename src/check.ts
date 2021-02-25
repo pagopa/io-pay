@@ -1,9 +1,11 @@
 /* eslint-disable complexity */
+import { debug } from 'console';
 import { toError } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { createClient, Client } from '../generated/definitions/pagopa/client';
+import { Wallet } from '../generated/definitions/pagopa/Wallet';
 import { modalWindows } from './js/modals';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
@@ -107,6 +109,25 @@ document.addEventListener('DOMContentLoaded', () => {
     async function (e) {
       e.preventDefault();
 
+      const threeDSData = {
+        browserJavaEnabled: navigator.javaEnabled(),
+        browserLanguage: navigator.language,
+        browserColorDepth: screen.colorDepth,
+        browserScreenHeight: screen.height,
+        browserScreenWidth: screen.width,
+        browserTZ: new Date().getTimezoneOffset(),
+        // Required ??
+        // browserAcceptHeader:
+        //  'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        // browserIP: '0.0.0.0',
+        browserUserAgent: navigator.userAgent,
+        acctId: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
+          ?.toString()
+          .trim()}`,
+        deliveryEmailAddress: fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
+        workPhone: '3336666666',
+      };
+
       // Pay
       await TE.tryCatch(
         () =>
@@ -117,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
               data: {
                 idWallet: wallet.idWallet,
                 cvv: fromNullable(sessionStorage.getItem('securityCode')).getOrElse(''),
+                threeDSData: JSON.stringify(threeDSData),
               },
             },
             language: 'it',
@@ -131,8 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
               myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakePayment'),
             );
             sessionStorage.setItem('payment', paymentResp);
-            // window.location.replace('response.html');
-            window.location.replace(JSON.parse(paymentResp).urlCheckout3ds);
+            window.location.replace('response.html');
           },
         )
         .run();

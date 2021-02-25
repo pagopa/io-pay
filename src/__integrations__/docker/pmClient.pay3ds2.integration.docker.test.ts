@@ -1,12 +1,16 @@
-import { debug } from 'console';
+// import { debug } from 'console';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
 import nodeFetch from 'node-fetch';
+import { DeferredPromise } from 'italia-ts-commons/lib/promises';
+// import { toError } from 'fp-ts/lib/Either';
+import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { createClient, Client } from '../../../generated/definitions/pagopa/client';
-import { retryingFetch } from '../../utils/fetch';
+import { constantPollingWithPromisePredicateFetch, retryingFetch } from '../../utils/fetch';
 import { getIdPayment } from '../../utils/testUtils';
 import { TypeEnum } from '../../../generated/definitions/pagopa/Wallet';
+import { TransactionStatusResponse } from '../../../generated/definitions/pagopa/TransactionStatusResponse';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
@@ -102,11 +106,11 @@ describe('Endpoint pay3ds2 of PM', () => {
           data: {
             type: TypeEnum.CREDIT_CARD,
             creditCard: {
-              brand: 'VISA',
+              brand: 'yyy',
               expireMonth: '03',
               expireYear: '25',
               holder: 'UserName UserSurname',
-              pan: '4024007182788397',
+              pan: '5133765016844455',
               securityCode: '666',
             },
             favourite: true,
@@ -121,14 +125,31 @@ describe('Endpoint pay3ds2 of PM', () => {
     );
   });
 
-  it.only('should return idWallet, idPayment and amount matching the ones in previous calls ', async () => {
+  it('should return idWallet, idPayment and amount matching the ones in previous calls ', async () => {
     // Pay
+    // Please note that the Pay request doesn't contain IP address and Browser Accepted Headers
     const payResponse = (
       await pmClient.pay3ds2UsingPOST({
         Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
         id: myIdPayment,
         payRequest: {
-          data: { idWallet: walletResponse?.idWallet, cvv: '666', threeDSData: '' },
+          data: {
+            idWallet: walletResponse?.idWallet,
+            cvv: '666',
+            threeDSData: JSON.stringify({
+              acctId: `ACCT_${walletResponse.idWallet?.toString().trim()}`,
+              browserColorDepth: 30,
+              browserJavaEnabled: false,
+              browserLanguage: 'it-IT',
+              browserScreenHeight: 1120,
+              browserScreenWidth: 1792,
+              browserTZ: -60,
+              browserUserAgent:
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36',
+              deliveryEmailAddress: 'username@domain.us',
+              workPhone: '3336666666',
+            }),
+          },
         },
         language: 'it',
       })
@@ -137,19 +158,85 @@ describe('Endpoint pay3ds2 of PM', () => {
       res => res.value?.data,
     );
 
-    debug(payResponse);
-
     expect(payResponse?.idWallet).toEqual(walletResponse?.idWallet);
     expect(payResponse?.nodoIdPayment).toEqual(myIdPayment);
     expect(fromNullable(payResponse?.amount?.amount).getOrElse(0)).toEqual(
       fromNullable(checkResponse?.amount?.amount).getOrElse(0),
     );
     expect(
-      (fromNullable(payResponse?.amount?.amount).getOrElse(0) as number) +
-        (fromNullable(payResponse?.fee?.amount).getOrElse(0) as number),
+      fromNullable(payResponse?.amount?.amount).getOrElse(0) + fromNullable(payResponse?.fee?.amount).getOrElse(0),
     ).toEqual(fromNullable(payResponse?.grandTotal?.amount).getOrElse(0));
+  });
 
-    expect(fromNullable(payResponse?.statusMessage).getOrElse('')).not.toEqual('Da autorizzare');
+  it('should execute STEP0 of 3ds2 flow', async () => {
+    // Pay
+    // Please note that the Pay request doesn't contain IP address and Browser Accepted Headers
+    const payResponse = (
+      await pmClient.pay3ds2UsingPOST({
+        Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
+        id: myIdPayment,
+        payRequest: {
+          data: {
+            idWallet: walletResponse?.idWallet,
+            cvv: '666',
+            threeDSData: JSON.stringify({
+              acctId: `ACCT_${walletResponse.idWallet?.toString().trim()}`,
+              browserColorDepth: 30,
+              browserJavaEnabled: false,
+              browserLanguage: 'it-IT',
+              browserScreenHeight: 1120,
+              browserScreenWidth: 1792,
+              browserTZ: -60,
+              browserUserAgent:
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36',
+              deliveryEmailAddress: 'username@domain.us',
+              workPhone: '3336666666',
+            }),
+          },
+        },
+        language: 'it',
+      })
+    ).fold(
+      () => fail(),
+      res => res.value?.data,
+    );
+
+    // CheckStatusUsingGET is designed to be executed in polling, so a polling client is needed
+    const paymentManagerClientWithPolling: Client = createClient({
+      baseUrl: `http://${PM_DOCK_HOST}:${PM_DOCK_PORT}`,
+      fetchApi: constantPollingWithPromisePredicateFetch(
+        DeferredPromise<boolean>().e1,
+        5,
+        300,
+        10000 as Millisecond,
+        async (r: Response): Promise<boolean> => {
+          const myJson = (await r.clone().json()) as TransactionStatusResponse;
+          // Stop the polling when this condition is false
+          return myJson.data.idStatus !== 15;
+        },
+      ),
+    });
+
+    await tryCatch(
+      () =>
+        paymentManagerClientWithPolling.checkStatusUsingGET({
+          id: fromNullable(payResponse?.token).getOrElse(''),
+        }),
+      () => undefined,
+    )
+      .fold(
+        () => undefined,
+        _ => {
+          const myCheck = _.fold(
+            () => undefined,
+            _ => (_.status === 200 ? _.value : undefined),
+          );
+          expect(myCheck?.data.idTransaction).toEqual(payResponse?.id);
+          expect(myCheck?.data.idPayment).toEqual(myIdPayment);
+          expect(myCheck?.data.idStatus).toEqual(15);
+        },
+      )
+      .run();
   });
 
   it('should return 404 when the idPayment is void', async () => {

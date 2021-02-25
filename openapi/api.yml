@@ -2561,6 +2561,8 @@ definitions:
         - idStatus
         - idTransaction
     properties:
+      methodUrl:
+        type: string
       acsUrl:
         type: string
       authorizationCode:
