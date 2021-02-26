@@ -1,10 +1,9 @@
-// import { debug } from 'console';
+import { debug } from 'console';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
 import nodeFetch from 'node-fetch';
 import { DeferredPromise } from 'italia-ts-commons/lib/promises';
-// import { toError } from 'fp-ts/lib/Either';
 import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { createClient, Client } from '../../../generated/definitions/pagopa/client';
 import { constantPollingWithPromisePredicateFetch, retryingFetch } from '../../utils/fetch';
@@ -232,6 +231,7 @@ describe('Endpoint pay3ds2 of PM', () => {
             () => undefined,
             _ => (_.status === 200 ? _.value : undefined),
           );
+          debug(myCheck);
           expect(myCheck?.data.idTransaction).toEqual(payResponse?.id);
           expect(myCheck?.data.idPayment).toEqual(myIdPayment);
           expect(myCheck?.data.idStatus).toEqual(15);
