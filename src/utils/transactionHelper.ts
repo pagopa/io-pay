@@ -5,25 +5,6 @@ import { Transaction } from '../../generated/definitions/pagopa/Transaction';
 import { TransactionStatusResponse } from '../../generated/definitions/pagopa/TransactionStatusResponse';
 import { GENERIC_STATUS, TX_ACCEPTED, UNKNOWN } from './TransactionStatesTypes';
 
-export const checkMethodTask = (
-  transactionId: string,
-  paymentManagerClientWithPolling: Client, // Must poll on Status == 15
-): TaskEither<UNKNOWN, TransactionStatusResponse> =>
-  tryCatch(
-    () =>
-      paymentManagerClientWithPolling.checkStatusUsingGET({
-        id: transactionId,
-      }),
-    () => UNKNOWN.value,
-  ).foldTaskEither(
-    err => fromLeft(err),
-    errorOrResponse =>
-      errorOrResponse.fold(
-        () => fromLeft(UNKNOWN.value),
-        responseType => (responseType.status !== 200 ? fromLeft(UNKNOWN.value) : taskEither.of(responseType.value)),
-      ),
-  );
-
 export const checkStatusTask = (
   transactionId: string,
   paymentManagerClient: Client,

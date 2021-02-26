@@ -8,7 +8,7 @@ import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
 import { initDropdowns } from './js/dropdowns';
 import { constantPollingWithPromisePredicateFetch } from './utils/fetch';
-import { checkMethodTask, getDataFromSessionStorageTask } from './utils/transactionHelper';
+import { checkStatusTask, getDataFromSessionStorageTask } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame } from './utils/iframe';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   );
 
   await getDataFromSessionStorageTask('payment')
-    .chain(transaction => checkMethodTask(transaction.token, paymentManagerClientWithPollingOnMethod))
+    .chain(transaction => checkStatusTask(transaction.token, paymentManagerClientWithPollingOnMethod))
     .fold(
       () => undefined,
       myTransaction =>
