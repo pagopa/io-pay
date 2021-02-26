@@ -1,0 +1,19 @@
+.dropdown.lang.ml-auto
+    a.btn.btn-dropdown.text-primary(href="#",role="button",data-target="langList", aria-expanded="false")
+        span.lang__current IT
+        svg.icon-expand.icon.icon-sm.icon-primary
+            use(href="/assets/icons/sprite.svg#it-expand")
+    .dropdown-mask.d-md-none &nbsp;
+    .dropdown-menu(id="langList")
+        .lang__select
+            span Seleziona una lingua:
+            svg.float-right.icon-expand.icon.icon-secondary
+                use(href="/assets/icons/sprite.svg#it-close")
+        .link-list-wrapper
+            ul.link-list
+                each l, index in languages
+                    li.list-item.d-none.d-md-block
+                        a.langSelector(href="#", data-langselect=l.label.toLowerCase(), title=l.label.toLowerCase())=l.label
+                each l, index in languages
+                    li.list-item.d-block.d-md-none
+                        a.langSelector(href="#", data-langselect=l.label.toLowerCase(), title=l.label.toLowerCase())=l.full

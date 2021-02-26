@@ -28,11 +28,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const creditcardformSubmit = creditcardform?.querySelectorAll("button[type='submit']")
     ? creditcardform.querySelectorAll("button[type='submit']")[0]
     : null;
-  const creditcardformNumber = document.getElementById('creditcardnumber') || null;
+  const creditcardformNumber = (document.getElementById('creditcardnumber') as HTMLInputElement) || null;
   const creditcardformHolderIcon = document.getElementById('creditcardholdericon') || null;
   const creditcardformExpiration = document.getElementById('creditcardexpirationdate') || null;
-  const creditcardformSecurecode = document.getElementById('creditcardsecurcode') || null;
+  const creditcardformSecurecode = (document.getElementById('creditcardsecurcode') as HTMLInputElement) || null;
   const modalAndTerm = document.getElementById('modal-inputcardterms') || null;
+  const creditcardsecurcodeError = document.getElementById('creditcardsecurcodeError') || null;
+  const creditcardsecurcodeLabel = document.getElementById('creditcardsecurcodeLabel') || null;
+  const securecodeErrorMessages = {
+    3: 'Inserisci 3 cifre',
+    4: 'Inserisci 4 cifre',
+  };
+  const securecodePlaceholders = {
+    3: '123',
+    4: '1234',
+  };
+  const securecodeLabels = {
+    3: 'codice di sicurezza',
+    4: 'CID (4 cifre)',
+  };
 
   // check if all fields are OK
   function fieldsCheck() {
@@ -59,6 +73,25 @@ document.addEventListener('DOMContentLoaded', () => {
       el.classList.remove('is-valid');
       el.classList.add('is-invalid');
       el.removeAttribute('data-checked');
+    }
+  }
+
+  // Custom validator for CVV
+  function checkCvvSize(): void {
+    const size = (creditcardformSecurecode && creditcardformSecurecode.getAttribute('data-validator-size')) || '3';
+    const cvvSize = parseInt(size, 10);
+    const value = creditcardformSecurecode.value || '';
+    const onlyNumbers = new RegExp('^\\d+$');
+
+    if (creditcardsecurcodeError) {
+      // eslint-disable-next-line functional/immutable-data
+      (creditcardsecurcodeError as HTMLElement).innerText = securecodeErrorMessages[cvvSize];
+    }
+
+    if (value.length === cvvSize && onlyNumbers.test(value)) {
+      toggleValid(creditcardformSecurecode, true);
+    } else {
+      toggleValid(creditcardformSecurecode, false);
     }
   }
 
@@ -114,10 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   obscureToggler.forEach(el => {
-    el.addEventListener('click', () => {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const toggler: any = this;
-      const target = toggler.getAttribute('data-obscuretarget') || null;
+    el.addEventListener('click', evt => {
+      const toggler = evt.target as Element;
+      const target = toggler?.getAttribute('data-obscuretarget') || null;
       if (target == null) {
         return;
       }
@@ -273,6 +305,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (creditCardValidation.isValid === true) {
       toggleValid(inputel, true);
+      if (creditCardValidation.card) {
+        creditcardformSecurecode.setAttribute('data-validator-size', creditCardValidation.card.code.size.toString());
+        // modify placeholder value with cvv size
+        creditcardformSecurecode.setAttribute('placeholder',
+          securecodePlaceholders[creditCardValidation.card.code.size]
+        );
+
+        if (creditcardsecurcodeLabel) {
+          // eslint-disable-next-line functional/immutable-data
+          creditcardsecurcodeLabel.innerText = securecodeLabels[creditCardValidation.card.code.size];
+        }
+      }
       holder = creditCardValidation?.card?.type.toLowerCase();
 
       const ccelem = creditcardformHolderIcon?.getElementsByClassName(holder || '');
@@ -284,6 +328,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       toggleValid(inputel, false);
       holder = null;
+    }
+    // if cvv field is filled, check the value
+    if (creditcardformSecurecode.value !== '') {
+      checkCvvSize();
     }
     fieldsCheck();
   });
@@ -303,20 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fieldsCheck();
   });
 
-  creditcardformSecurecode?.addEventListener('keyup', function () {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const inputel: any = this;
-    // const creditCardValidation = CreditCard.number(creditcardformNumber?.value);
-    const creditCardValidation = CreditCard.number(creditcardformNumber?.innerText);
-    const cvvSize = creditCardValidation.card !== null ? creditCardValidation.card.code.size : 3;
-
-    const cvvValidation = CreditCard.cvv(inputel.value, cvvSize);
-
-    if (cvvValidation.isValid === true) {
-      toggleValid(inputel, true);
-    } else {
-      toggleValid(inputel, false);
-    }
+  creditcardformSecurecode?.addEventListener('keyup', () => {
+    checkCvvSize();
     fieldsCheck();
   });
 });
