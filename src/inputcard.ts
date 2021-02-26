@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ? creditcardform.querySelectorAll("button[type='submit']")[0]
     : null;
   const creditcardformNumber = (document.getElementById('creditcardnumber') as HTMLInputElement) || null;
-  const creditcardformHolderIcon = document.getElementById('creditcardholdericon') || null;
+  const creditcardformHolderIcon = (document.getElementById('creditcardholdericon') as HTMLElement) || null;
   const creditcardformExpiration = document.getElementById('creditcardexpirationdate') || null;
   const creditcardformSecurecode = (document.getElementById('creditcardsecurcode') as HTMLInputElement) || null;
   const modalAndTerm = document.getElementById('modal-inputcardterms') || null;
@@ -270,46 +270,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // VALIDATIONS --------------------------
   // Name Surname (at least two words)
-  creditcardformName?.addEventListener('keyup', function () {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const inputel: any = this;
-    // var stringpattern = "(\\w.+\\s).+";
-    // const stringpattern = "^[A-Za-zÀ-ÖØ-öø-ÿ 'w -]+$";
+  creditcardformName?.addEventListener('keyup', evt => {
+    const inputel: HTMLInputElement = evt?.target as HTMLInputElement;
 
-    const regpatternCharacther = new RegExp("^[A-Za-zÀ-ÖØ-öø-ÿ 'w -].{1,42}$", 'i');
-    const regpatternAtLeastOneSpace = new RegExp('(\\w.+\\s).+', 'i');
+    const regpattern = new RegExp(/^[a-zA-Z]+[\s']+([a-zA-Z]+[\s']*){1,}$/);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    regpatternCharacther.test(inputel.value) === true && regpatternAtLeastOneSpace.test(inputel.value)
-      ? toggleValid(inputel, true)
-      : toggleValid(inputel, false);
+    if (regpattern.test(inputel.value) === true) {
+      toggleValid(inputel, true);
+    } else {
+      toggleValid(inputel, false);
+    }
     fieldsCheck();
   });
 
   // Creditcard specific
-  creditcardformNumber?.addEventListener('keyup', function () {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const inputel: any = this;
+  creditcardformNumber?.addEventListener('keyup', evt => {
+    const inputel = (evt.target as HTMLInputElement) || null;
     // eslint-disable-next-line functional/no-let
-    let holder = null;
-    const ccelems = creditcardformHolderIcon?.getElementsByClassName('.ccicon--custom');
+    let holder = '';
+    const ccelems = creditcardformHolderIcon?.querySelectorAll('use.ccicon--custom') || [];
     const creditCardValidation = CreditCard.number(inputel.value);
-
-    if (ccelems) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      ccelems.length > 0 &&
-        Array.from(ccelems).forEach(element => {
-          element.classList.remove('d-block');
-        });
+    if (ccelems && ccelems.length > 0) {
+      Array.from(ccelems).forEach(element => {
+        (element as HTMLElement).classList.remove('d-block');
+      });
     }
 
     if (creditCardValidation.isValid === true) {
       toggleValid(inputel, true);
       if (creditCardValidation.card) {
+        holder = creditCardValidation.card.type.toLowerCase() || '';
         creditcardformSecurecode.setAttribute('data-validator-size', creditCardValidation.card.code.size.toString());
         // modify placeholder value with cvv size
-        creditcardformSecurecode.setAttribute('placeholder',
-          securecodePlaceholders[creditCardValidation.card.code.size]
+        creditcardformSecurecode.setAttribute(
+          'placeholder',
+          securecodePlaceholders[creditCardValidation.card.code.size],
         );
 
         if (creditcardsecurcodeLabel) {
@@ -317,17 +312,14 @@ document.addEventListener('DOMContentLoaded', () => {
           creditcardsecurcodeLabel.innerText = securecodeLabels[creditCardValidation.card.code.size];
         }
       }
-      holder = creditCardValidation?.card?.type.toLowerCase();
-
-      const ccelem = creditcardformHolderIcon?.getElementsByClassName(holder || '');
+      const ccelem = creditcardformHolderIcon?.getElementsByClassName(holder);
 
       if (ccelem && ccelem.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        ccelem[0].classList.add('d-block');
+        (ccelem[0] as HTMLElement).classList.add('d-block');
       }
     } else {
       toggleValid(inputel, false);
-      holder = null;
+      holder = '';
     }
     // if cvv field is filled, check the value
     if (creditcardformSecurecode.value !== '') {
@@ -336,11 +328,14 @@ document.addEventListener('DOMContentLoaded', () => {
     fieldsCheck();
   });
 
-  creditcardformExpiration?.addEventListener('keyup', function () {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const inputel: any = this;
-
-    const dateValidation = CreditCard.expirationDate(inputel.value);
+  creditcardformExpiration?.addEventListener('keyup', evt => {
+    const inputel = evt?.target as HTMLInputElement;
+    if (inputel.value.length > 2 && inputel.value.indexOf('/') !== 2) {
+      // eslint-disable-next-line functional/immutable-data
+      inputel.value = inputel.value.slice(0, 2) + '/' + inputel.value.slice(2);
+    }
+    const value = inputel.value;
+    const dateValidation = CreditCard.expirationDate(value);
 
     if (dateValidation.isValid === true) {
       toggleValid(inputel, true);
