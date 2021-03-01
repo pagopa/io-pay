@@ -2,9 +2,7 @@ import { Server } from 'http';
 import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import express from 'express';
-import { fromNullable } from 'fp-ts/lib/Option';
 import { getIdPayment } from '../../utils/testUtils';
-import { TransactionResponse } from '../../../generated/definitions/pagopa/TransactionResponse';
 
 describe('IOPAY App', () => {
   const SRV_PORT = process.env.IOPAY_DEV_SERVER_PORT ? parseInt(process.env.IOPAY_DEV_SERVER_PORT, 10) : 1234;
@@ -49,7 +47,7 @@ describe('IOPAY App', () => {
     await myBrowser.close();
   });
 
-  it('should call pay when Paga is pressed on checkout Page', async () => {
+  it('should call pay3ds2 when Paga is pressed on checkout Page', async () => {
     // get a good idPayment, using PM control interface
     const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
 
@@ -78,7 +76,7 @@ describe('IOPAY App', () => {
     const creditCardPANFieldS = '#creditcardnumber';
     await page.waitForSelector(creditCardPANFieldS);
     await page.focus(creditCardPANFieldS);
-    await page.keyboard.type('4024007182788397'); // Should be 3ds
+    await page.keyboard.type('4024007190620228');
 
     const creditCardExpDateFieldS = '#creditcardexpirationdate';
     await page.waitForSelector(creditCardExpDateFieldS);
@@ -104,28 +102,15 @@ describe('IOPAY App', () => {
 
     await page.waitForSelector(payButtonS);
 
-    await Promise.all([
-      page.waitForResponse(response => response.request().method() === 'POST' && /pay/.test(response.request().url())),
+    const [pay3ds2Response] = await Promise.all([
+      page.waitForResponse(
+        response => response.request().method() === 'POST' && /pay3ds2/.test(response.request().url()),
+      ),
       page.click(payButtonS),
+      page.waitForNavigation(),
     ]);
 
-    const payData = await page.evaluate(() => sessionStorage.getItem('payment'));
-
-    expect(
-      fromNullable(payData)
-        .map(myString => JSON.parse(myString))
-        .getOrElse({}).nodoIdPayment,
-    ).toEqual(myIdPayment);
-
-    expect(
-      fromNullable(payData).map(myString => {
-        const payment = { data: JSON.parse(myString) } as TransactionResponse;
-        return (
-          (payment.data?.amount?.amount as number) + (payment.data?.fee?.amount as number) ===
-          (payment.data?.grandTotal?.amount as number)
-        );
-      }),
-    ).toBeTruthy();
+    expect(pay3ds2Response.status()).toEqual(200);
 
     await page.close();
   });

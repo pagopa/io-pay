@@ -1,9 +1,11 @@
 /* eslint-disable complexity */
+import { debug } from 'console';
 import { toError } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
-import { createClient } from '../generated/definitions/pagopa/client';
+import { createClient, Client } from '../generated/definitions/pagopa/client';
+import { Wallet } from '../generated/definitions/pagopa/Wallet';
 import { modalWindows } from './js/modals';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
@@ -13,7 +15,7 @@ import { initDropdowns } from './js/dropdowns';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
-  const pmClient = createClient({
+  const pmClient: Client = createClient({
     baseUrl: 'http://localhost:8080',
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
@@ -107,16 +109,36 @@ document.addEventListener('DOMContentLoaded', () => {
     async function (e) {
       e.preventDefault();
 
+      const threeDSData = {
+        browserJavaEnabled: navigator.javaEnabled(),
+        browserLanguage: navigator.language,
+        browserColorDepth: screen.colorDepth,
+        browserScreenHeight: screen.height,
+        browserScreenWidth: screen.width,
+        browserTZ: new Date().getTimezoneOffset(),
+        // Required ??
+        // browserAcceptHeader:
+        //  'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        // browserIP: '0.0.0.0',
+        browserUserAgent: navigator.userAgent,
+        acctId: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
+          ?.toString()
+          .trim()}`,
+        deliveryEmailAddress: fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
+        workPhone: '3336666666',
+      };
+
       // Pay
       await TE.tryCatch(
         () =>
-          pmClient.payUsingPOST({
+          pmClient.pay3ds2UsingPOST({
             Bearer: `Bearer ${sessionStorage.getItem('sessionToken')}`,
             id: checkData.idPayment,
             payRequest: {
               data: {
                 idWallet: wallet.idWallet,
                 cvv: fromNullable(sessionStorage.getItem('securityCode')).getOrElse(''),
+                threeDSData: JSON.stringify(threeDSData),
               },
             },
             language: 'it',

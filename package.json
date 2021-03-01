@@ -12,6 +12,7 @@
     "lint-api": "oval validate -p openapi/api.yml",
     "pretest:integration": "yarn build && yarn build:test-cases",
     "pretest:coverage-int": "yarn build && yarn build:test-cases",
+    "pretest:docker-int": "yarn build && yarn build:test-cases",
     "test:unit": "jest -c jest.config.unit.js --detectOpenHandles",
     "test:integration": "jest -c jest.config.integration.js --detectOpenHandles",
     "test:coverage-unit": "jest -c jest.config.unit.js --detectOpenHandles --coverage",
