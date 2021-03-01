@@ -50,7 +50,7 @@ paths:
         '422':
           description: Unprocessable Entity
         '500':
-          description: Generic Error  
+          description: Generic Error
   '/payments/{id}/actions/check-internal':
     get:
       tags:
@@ -205,13 +205,13 @@ paths:
           in: query
           description: language
           required: false
-          type: string  
+          type: string
           default: it
         - name: isList
           in: query
           description: to return only a result
           required: false
-          type: boolean  
+          type: boolean
           default: false
         - name: idWallet
           in: query
@@ -239,11 +239,11 @@ paths:
         '422':
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/ErrorResponse'        
+            $ref: '#/definitions/ErrorResponse'
         '500':
           description: Generic Error
           schema:
-            $ref: '#/definitions/ErrorResponse'  
+            $ref: '#/definitions/ErrorResponse'
       security:
         - Bearer: []
   '/psps/actions/get-buyer-bank/{idBuyer}':
@@ -537,7 +537,7 @@ paths:
         '422':
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/ErrorResponse'        
+            $ref: '#/definitions/ErrorResponse'
         '404':
           description: Not Found
           schema:
@@ -545,7 +545,7 @@ paths:
         '500':
           description: Generic Error
           schema:
-            $ref: '#/definitions/ErrorResponse'    
+            $ref: '#/definitions/ErrorResponse'
   '/transactions/{id}/actions/resume':
     post:
       tags:
@@ -585,7 +585,7 @@ paths:
           description: Not Found
       security:
         - Bearer: []
-  '/v4/transactions/{id}/actions/resume3ds2':
+  '/transactions/{id}/actions/resume3ds2':
     post:
       tags:
         - transaction-controller
@@ -697,7 +697,7 @@ paths:
         '422':
           description: Unprocessable Entity
         '500':
-          description: Generic Error  
+          description: Generic Error
       security:
         - Bearer: []
   /users/actions/change-email:
@@ -2068,9 +2068,9 @@ definitions:
   Payment:
     type: object
     required:
-        - amount
-        - id
-        - idPayment
+      - amount
+      - id
+      - idPayment
     properties:
       amount:
         $ref: '#/definitions/Amount'
@@ -2107,7 +2107,7 @@ definitions:
   PaymentResponse:
     type: object
     required:
-        - data
+      - data
     properties:
       data:
         $ref: '#/definitions/Payment'
@@ -2237,17 +2237,17 @@ definitions:
   ResourcesResponse:
     type: object
     title: ResourcesResponse
-    properties: 
-        is3ds2: 
-          type: string
-        SPID_CALLBACK_URL:
-          type: string 
-        urlImg:
-          type: string
-        creditCardPlaceholder:
-          type: string
-        termsAndConditions:
-          type: string
+    properties:
+      is3ds2:
+        type: string
+      SPID_CALLBACK_URL:
+        type: string
+      urlImg:
+        type: string
+      creditCardPlaceholder:
+        type: string
+      termsAndConditions:
+        type: string
   Resume:
     type: object
     properties:
@@ -2508,8 +2508,8 @@ definitions:
   Transaction:
     type: object
     required:
-        - idPayment
-        - token
+      - idPayment
+      - token
     properties:
       accountingStatus:
         type: integer
@@ -2626,7 +2626,16 @@ definitions:
         type: string
       threeDSMethodData:
         type: string
+      params:
+        $ref: '#/definitions/TransactionStatusParams' 
     title: TransactionStatus
+  TransactionStatusParams:
+    type: object
+    required:
+        - creq
+    properties:
+      creq:
+        type: string  
   TransactionStatusResponse:
     type: object
     required:
@@ -2917,4 +2926,4 @@ definitions:
       code:
         type: string
       message:
-        type: string  
+        type: string

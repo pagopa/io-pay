@@ -1,4 +1,4 @@
-function createForm(formName, formAction, formTarget, inputName, inputValue) {
+function createForm(formName, formAction, formTarget, inputs) {
   const form: HTMLFormElement = Object.assign(document.createElement('form'), {
     name: formName,
     action: formAction,
@@ -7,13 +7,14 @@ function createForm(formName, formAction, formTarget, inputName, inputValue) {
   });
 
   form.setAttribute('style', 'display:none');
-
-  const myInput: HTMLInputElement = Object.assign(document.createElement('input'), {
-    name: inputName,
-    value: inputValue,
-  });
-
-  form.appendChild(myInput);
+  for (const [name, value] of Object.entries(inputs)) {
+    form.appendChild(
+      Object.assign(document.createElement('input'), {
+        name,
+        value,
+      }),
+    );
+  }
 
   return form;
 }
@@ -32,13 +33,13 @@ export function createIFrame(container, id, name) {
   return iframe;
 }
 
-// start3ds2AuthStep(url, data: string, myIFrame | window, visible:bool)
-
 export function start3DS2MethodStep(threeDSMethodUrl, threeDSMethodData, myIFrame) {
   // container should be an iframe
   const html = document.createElement('html');
   const body = document.createElement('body');
-  const form = createForm('threeDSMethodForm', threeDSMethodUrl, myIFrame.name, 'threeDSMethodData', threeDSMethodData);
+  const form = createForm('threeDSMethodForm', threeDSMethodUrl, myIFrame.name, {
+    threeDSMethodData,
+  });
 
   body.appendChild(form);
   html.appendChild(body);
@@ -49,72 +50,9 @@ export function start3DS2MethodStep(threeDSMethodUrl, threeDSMethodData, myIFram
 
   return myIFrame;
 }
-/*
-init3DSChallengeRequest = function init3DSChallengeRequest(acsUrl, creqData, container) {
-  if (!acsUrl || !creqData || !container) {
-    throw Error('Not all required fields have value');
-  }
-  if (container instanceof HTMLIFrameElement === false) {
-    throw Error('Container is not of type iframe');
-  }
-  if (!container.name) {
-    throw Error('Container must have a name attribute');
-  }
 
-  var html = document.createElement('html');
-  var body = document.createElement('body');
-  var form = nca3DSWebSDK.createForm('challengeRequestForm', acsUrl, container.name, 'creq', creqData);
-
-  body.appendChild(form);
-  html.appendChild(body);
-  container.appendChild(html);
-
+export function start3DS2AcsChallengeStep(acsUrl, params, container) {
+  const form = createForm('acsChallengeForm', acsUrl, container.name, params);
+  container.appendChild(form);
   form.submit();
-
-  return container;
-};
-
-nca3DSWebSDK.prototype.createIframeAndInit3DSMethod = function createIframeAndInit3DSMethod(
-  threeDSMethodUrl,
-  threeDSMethodData,
-  frameName,
-  rootContainer,
-  onFrameLoadCallback,
-) {
-  var iFrame = nca3DSWebSDK.createIFrame(
-    rootContainer,
-    frameName,
-    'threeDSMethodIframe',
-    '0',
-    '0',
-    onFrameLoadCallback,
-  );
-  nca3DSWebSDK.init3DSMethod(threeDSMethodUrl, threeDSMethodData, iFrame);
-  return iFrame;
-};
-
-nca3DSWebSDK.prototype.createIFrameAndInit3DSChallengeRequest = function createIFrameAndInit3DSChallengeRequest(
-  acsUrl,
-  creqData,
-  challengeWindowSize,
-  frameName,
-  rootContainer,
-  onFrameLoadCallback,
-) {
-  var windowSize = nca3DSWebSDK.getWindowSize(challengeWindowSize);
-  var iFrame = nca3DSWebSDK.createIFrame(
-    rootContainer,
-    frameName,
-    'threeDSCReqIframe',
-    windowSize[0],
-    windowSize[1],
-    onFrameLoadCallback,
-  );
-  nca3DSWebSDK.init3DSChallengeRequest(acsUrl, creqData, iFrame);
-  return iFrame;
-};
-
-
-window.nca3DSWebSDK = new nca3DSWebSDK();
-// END SNIPPET: websdk-documentation
-*/
+}
