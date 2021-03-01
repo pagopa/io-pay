@@ -324,8 +324,6 @@ body {
       display: flex;
       margin: 0;
       padding: 0;
-      -ms-flex-pack: center;
-      justify-content: center;
     }
     &__item {
       display: -ms-inline-flexbox;
@@ -617,12 +615,14 @@ body {
 
   &__title {
     color: #17324d;
+    font-size: 1.25rem;
   }
   &__desc {
     color: #5c6f82;
     font-weight: 400;
   }
   &__content {
+    color: #17324d;
     margin-top: 1rem;
   }
 }
@@ -676,7 +676,12 @@ body {
   padding-bottom: 1rem;
   @include media-breakpoint-up(md) {
     border-radius: 4px;
-    width: 50vh;
+    width: 30vw;
+  }
+  .xl & {
+    @include media-breakpoint-up(md) {
+      width: 60vw;
+    }
   }
 }
 
@@ -686,6 +691,11 @@ body {
   @include media-breakpoint-up(md) {
     overflow-y: visible;
     padding: 1rem 2.5rem;
+  }
+  .xl & {
+    @include media-breakpoint-up(md) {
+      padding: 1rem 5rem;
+    }
   }
 }
 
