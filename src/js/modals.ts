@@ -11,10 +11,12 @@ const modalWindows = () => {
       return false;
     }
     const modalName = modalTarget.getAttribute('name');
+    const modalCss = elfrom.getAttribute('data-modal-css') || 'normal';
 
     // eslint-disable-next-line functional/immutable-data
     modals[modalName] = new Tingle.modal({
       footer: true,
+      cssClass: modalCss.split(' '),
       onOpen: () => {
         const customClose = modals[modalName].modalBox.querySelector('.modalwindow__close');
         if (customClose !== null) {
