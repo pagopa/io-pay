@@ -9,7 +9,6 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 import * as myFake from 'faker/locale/it';
 import { createClient, Client } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
-// import { TypeEnum } from '../../generated/definitions/pagopa/Wallet';
 
 import pm from './pm';
 
