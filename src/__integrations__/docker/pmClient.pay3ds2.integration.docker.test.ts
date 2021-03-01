@@ -1,4 +1,3 @@
-import { debug } from 'console';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
@@ -231,7 +230,6 @@ describe('Endpoint pay3ds2 of PM', () => {
             () => undefined,
             _ => (_.status === 200 ? _.value : undefined),
           );
-          debug(myCheck);
           expect(myCheck?.data.idTransaction).toEqual(payResponse?.id);
           expect(myCheck?.data.idPayment).toEqual(myIdPayment);
           expect(myCheck?.data.idStatus).toEqual(15);
