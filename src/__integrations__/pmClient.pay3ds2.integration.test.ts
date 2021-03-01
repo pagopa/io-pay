@@ -16,7 +16,7 @@ import pm from './pm';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
 
-describe('Endpoint pay of PM', () => {
+describe('Endpoint pay3ds2 of PM', () => {
   // Set the testing environment
 
   const PORT = process.env.PAYMENT_MANAGER_STUB_PORT ? parseInt(process.env.PAYMENT_MANAGER_STUB_PORT, 10) : 8080;
@@ -50,7 +50,7 @@ describe('Endpoint pay of PM', () => {
   it('should return idWallet, idPayment and amount matching the ones in previous calls ', async () => {
     // Pay
     const payResponse = (
-      await pmClient.payUsingPOST({
+      await pmClient.pay3ds2UsingPOST({
         Bearer: `Bearer ${mySessionToken}`,
         id: goodIdPayment,
         payRequest: {
@@ -74,7 +74,7 @@ describe('Endpoint pay of PM', () => {
   it('should return 404 when the idPayment is void', async () => {
     // Pay
     const payResponseStatus = (
-      await pmClient.payUsingPOST({
+      await pmClient.pay3ds2UsingPOST({
         Bearer: `Bearer ${mySessionToken}`,
         id: '',
         payRequest: {
@@ -93,7 +93,7 @@ describe('Endpoint pay of PM', () => {
   it('should return 422 when the idWallet is wrong', async () => {
     // Pay
     const payResponseStatus = (
-      await pmClient.payUsingPOST({
+      await pmClient.pay3ds2UsingPOST({
         Bearer: `Bearer ${mySessionToken}`,
         id: goodIdPayment,
         payRequest: {
@@ -112,7 +112,7 @@ describe('Endpoint pay of PM', () => {
   it('should return 422 when the idPayment is wrong', async () => {
     // Pay
     const payResponseStatus = (
-      await pmClient.payUsingPOST({
+      await pmClient.pay3ds2UsingPOST({
         Bearer: `Bearer ${mySessionToken}`,
         id: 'wrong_idPayment',
         payRequest: {
@@ -131,7 +131,7 @@ describe('Endpoint pay of PM', () => {
   it('should return 500 when the payRequest is empty', async () => {
     // Pay
     const payResponseStatus = (
-      await pmClient.payUsingPOST({
+      await pmClient.pay3ds2UsingPOST({
         Bearer: `Bearer ${mySessionToken}`,
         id: goodIdPayment,
         payRequest: {},
