@@ -1,15 +1,17 @@
+import { debug } from 'console';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
 import nodeFetch from 'node-fetch';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { DeferredPromise } from 'italia-ts-commons/lib/promises';
-// import { identity } from 'fp-ts/lib/function';
+import { identity } from 'fp-ts/lib/function';
+import { fromLeft, TaskEither, taskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { createClient, Client } from '../../../generated/definitions/pagopa/client';
 import { constantPollingWithPromisePredicateFetch, retryingFetch } from '../../utils/fetch';
 import { getIdPayment } from '../../utils/testUtils';
 import { TypeEnum } from '../../../generated/definitions/pagopa/Wallet';
 import { TransactionStatusResponse } from '../../../generated/definitions/pagopa/TransactionStatusResponse';
-import { fromLeft, taskEither, tryCatch } from 'fp-ts/lib/TaskEither';
+import { UNKNOWN } from '../../utils/TransactionStatesTypes';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
 
@@ -47,7 +49,7 @@ describe('Endpoint PUT wallet of PM', () => {
   // eslint-disable-next-line functional/no-let
   let myTransactionToken: string; // base64 string of idTransaction
   // eslint-disable-next-line functional/no-let
-  let checkTransactionResponseOK: boolean;
+  let checkTransactionResponse: TransactionStatusResponse;
 
   const retries: number = 10;
   const delay: number = 3000;
@@ -66,6 +68,25 @@ describe('Endpoint PUT wallet of PM', () => {
     const transactionStatus = TransactionStatusResponse.encode(await response.clone().json());
     return transactionStatus.data?.idStatus !== 17;
   };
+
+  const checkStatusTask = (
+    transactionId: string,
+    paymentManagerClient: Client,
+  ): TaskEither<UNKNOWN, TransactionStatusResponse> =>
+    tryCatch(
+      () =>
+        paymentManagerClient.checkStatusUsingGET({
+          id: transactionId,
+        }),
+      () => UNKNOWN.value,
+    ).foldTaskEither(
+      err => fromLeft(err),
+      errorOrResponse =>
+        errorOrResponse.fold(
+          () => fromLeft(UNKNOWN.value),
+          responseType => (responseType.status !== 200 ? fromLeft(UNKNOWN.value) : taskEither.of(responseType.value)),
+        ),
+    );
 
   beforeAll(async () => {
     // Start client
@@ -202,31 +223,13 @@ describe('Endpoint PUT wallet of PM', () => {
 
     myTransactionToken = fromNullable(payResponse?.token).getOrElse('-1');
 
-    // transaction check
-    const checkTransactionResponse = await tryCatch(
-      () =>
-        paymentManagerClientWithPolling_stepW.checkStatusUsingGET({
-          id: myTransactionToken,
-        }),
-      () => -1,
-    )
-      .foldTaskEither(
-        err => fromLeft(err),
-        errorOrResponse =>
-          errorOrResponse.fold(
-            () => fromLeft(-1),
-            responseType => (responseType.status !== 200 ? fromLeft(-1) : taskEither.of(responseType.value)),
-          ),
-      )
+    // transaction check 1
+    await checkStatusTask(myTransactionToken, paymentManagerClientWithPolling_stepW)
+      .fold(_ => debug('To handle error'), identity)
       .run();
-
-    checkTransactionResponseOK = checkTransactionResponse.isRight();
   });
 
   it('should return OK 200 response on first resume transaction after pay and switch on "Ritornando dal metodo 3ds2" status ', async () => {
-    // precondition
-    expect(checkTransactionResponseOK).toEqual(true);
-
     // resume
     const transactionResumeResponse = (
       await pmClient.resume3ds2UsingPOST({
@@ -243,28 +246,14 @@ describe('Endpoint PUT wallet of PM', () => {
     );
     expect(transactionResumeResponse).toEqual(200);
 
-    // transaction check
-    const checkTransactionResponse2 = await tryCatch(
-      () =>
-        paymentManagerClientWithPolling_stepR.checkStatusUsingGET({
-          id: myTransactionToken,
-        }),
-      () => -1,
-    )
-      .foldTaskEither(
-        err => fromLeft(err),
-        errorOrResponse =>
-          errorOrResponse.fold(
-            () => fromLeft(-1),
-            responseType => (responseType.status !== 200 ? fromLeft(-1) : taskEither.of(responseType.value)),
-          ),
+    // transaction check 2
+    await checkStatusTask(myTransactionToken, paymentManagerClientWithPolling_stepR)
+      .fold(
+        _ => debug('To handle error'),
+        r => (checkTransactionResponse = r),
       )
       .run();
 
-    expect(true).toEqual(checkTransactionResponse2.isRight());
+    expect(17).toEqual(checkTransactionResponse?.data?.idStatus);
   });
-
-  // WIP
-  // add resume3ds2
-  // add errors case scenario
 });
