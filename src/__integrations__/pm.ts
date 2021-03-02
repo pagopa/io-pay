@@ -401,7 +401,7 @@ walletRouter.get('/pp-restapi/v4/resources', function (req, res) {
   });
 });
 
-walletRouter.post('/pp-restapi/v4/payments/:id/actions/pay', function (req, res) {
+function payResponse(req, res) {
   fromPredicate(
     (myReq: typeof req) => /Bearer [\d\w]{128}/.test(fromNullable(myReq.headers.authorization).getOrElse('')),
     identity,
@@ -469,7 +469,10 @@ walletRouter.post('/pp-restapi/v4/payments/:id/actions/pay', function (req, res)
         },
       ),
   );
-});
+}
+
+walletRouter.post('/pp-restapi/v4/payments/:id/actions/pay', payResponse);
+walletRouter.post('/pp-restapi/v4/payments/:id/actions/pay3ds2', payResponse);
 
 walletRouter.get('/pp-restapi/v4/transactions/:id/actions/check', function (req, res) {
   const idTransaction = req.params.id;

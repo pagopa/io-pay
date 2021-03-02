@@ -75,7 +75,7 @@ describe('Endpoint PUT wallet of PM', () => {
       })
     ).fold(
       _ => fail(),
-      res => res.value?.data,
+      res => res.value,
     );
 
     // approve terms

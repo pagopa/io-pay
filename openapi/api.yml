@@ -50,7 +50,7 @@ paths:
         '422':
           description: Unprocessable Entity
         '500':
-          description: Generic Error  
+          description: Generic Error
   '/payments/{id}/actions/check-internal':
     get:
       tags:
@@ -148,6 +148,47 @@ paths:
           description: Not Found
       security:
         - Bearer: []
+  '/payments/{id}/actions/pay3ds2':
+    post:
+      tags:
+        - payments-controller
+      summary: 'valori authorizationCode: [ 00 - OK ] [ 02 - parametro duplicato ] [ 03 - formato messaggio errato, campo mancante o errato ][ 04 - MAC non corretto ] [ 06 - errore imprevisto durante l’elaborazione ][ 37 - codice di verifica mancante ] [ 40 - errore xml ] [ 41 - errore xml ] [ 98 - errore applicativo ] [ 99 - operazione fallita ]'
+      operationId: pay3ds2UsingPOST
+      consumes:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+        - in: body
+          name: payRequest
+          description: payRequest
+          required: true
+          schema:
+            $ref: '#/definitions/PayRequest'
+        - name: language
+          in: query
+          description: language
+          required: false
+          type: string
+          default: it
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TransactionResponse'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - Bearer: []
   /psps:
     get:
       tags:
@@ -164,13 +205,13 @@ paths:
           in: query
           description: language
           required: false
-          type: string  
+          type: string
           default: it
         - name: isList
           in: query
           description: to return only a result
           required: false
-          type: boolean  
+          type: boolean
           default: false
         - name: idWallet
           in: query
@@ -198,11 +239,11 @@ paths:
         '422':
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/ErrorResponse'        
+            $ref: '#/definitions/ErrorResponse'
         '500':
           description: Generic Error
           schema:
-            $ref: '#/definitions/ErrorResponse'  
+            $ref: '#/definitions/ErrorResponse'
       security:
         - Bearer: []
   '/psps/actions/get-buyer-bank/{idBuyer}':
@@ -496,7 +537,7 @@ paths:
         '422':
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/ErrorResponse'        
+            $ref: '#/definitions/ErrorResponse'
         '404':
           description: Not Found
           schema:
@@ -504,13 +545,52 @@ paths:
         '500':
           description: Generic Error
           schema:
-            $ref: '#/definitions/ErrorResponse'    
+            $ref: '#/definitions/ErrorResponse'
   '/transactions/{id}/actions/resume':
     post:
       tags:
         - transaction-controller
       summary: resume
       operationId: resumeUsingPOST
+      consumes:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          type: string
+        - in: body
+          name: resumeRequest
+          description: resumeRequest
+          required: true
+          schema:
+            $ref: '#/definitions/ResumeRequest'
+        - name: language
+          in: query
+          description: language
+          required: false
+          type: string
+          default: it
+      responses:
+        '200':
+          description: OK
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      security:
+        - Bearer: []
+  '/transactions/{id}/actions/resume3ds2':
+    post:
+      tags:
+        - transaction-controller
+      summary: resume3ds2
+      operationId: resume3ds2UsingPOST
       consumes:
         - application/json
       parameters:
@@ -617,7 +697,7 @@ paths:
         '422':
           description: Unprocessable Entity
         '500':
-          description: Generic Error  
+          description: Generic Error
       security:
         - Bearer: []
   /users/actions/change-email:
@@ -1974,6 +2054,8 @@ definitions:
         format: int64
       mobileToken:
         type: string
+      threeDSData:
+        type: string
       tipo:
         type: string
     title: Pay
@@ -1986,9 +2068,9 @@ definitions:
   Payment:
     type: object
     required:
-        - amount
-        - id
-        - idPayment
+      - amount
+      - id
+      - idPayment
     properties:
       amount:
         $ref: '#/definitions/Amount'
@@ -2025,7 +2107,7 @@ definitions:
   PaymentResponse:
     type: object
     required:
-        - data
+      - data
     properties:
       data:
         $ref: '#/definitions/Payment'
@@ -2155,21 +2237,23 @@ definitions:
   ResourcesResponse:
     type: object
     title: ResourcesResponse
-    properties: 
-        is3ds2: 
-          type: string
-        SPID_CALLBACK_URL:
-          type: string 
-        urlImg:
-          type: string
-        creditCardPlaceholder:
-          type: string
-        termsAndConditions:
-          type: string
+    properties:
+      is3ds2:
+        type: string
+      SPID_CALLBACK_URL:
+        type: string
+      urlImg:
+        type: string
+      creditCardPlaceholder:
+        type: string
+      termsAndConditions:
+        type: string
   Resume:
     type: object
     properties:
       esito:
+        type: string
+      methodCompleted:
         type: string
       paRes:
         type: string
@@ -2178,6 +2262,8 @@ definitions:
     title: Resume
   ResumeRequest:
     type: object
+    required:
+      - data
     properties:
       data:
         $ref: '#/definitions/Resume'
@@ -2421,6 +2507,9 @@ definitions:
     title: StartSpidSessionRequest
   Transaction:
     type: object
+    required:
+      - idPayment
+      - token
     properties:
       accountingStatus:
         type: integer
@@ -2527,15 +2616,30 @@ definitions:
       idTransaction:
         type: integer
         format: int64
+      methodUrl:
+        type: string
       paymentOrigin:
         type: string
       result:
         type: string
       statusMessage:
         type: string
+      threeDSMethodData:
+        type: string
+      params:
+        $ref: '#/definitions/TransactionStatusParams' 
     title: TransactionStatus
+  TransactionStatusParams:
+    type: object
+    required:
+        - creq
+    properties:
+      creq:
+        type: string  
   TransactionStatusResponse:
     type: object
+    required:
+      - data
     properties:
       data:
         $ref: '#/definitions/TransactionStatus'
@@ -2822,4 +2926,4 @@ definitions:
       code:
         type: string
       message:
-        type: string  
+        type: string
