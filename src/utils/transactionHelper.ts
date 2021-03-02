@@ -6,7 +6,7 @@ import { TransactionStatusResponse } from '../../generated/definitions/pagopa/Tr
 import { GENERIC_STATUS, TX_ACCEPTED, UNKNOWN } from './TransactionStatesTypes';
 
 export const resumeTransactionTask = (
-  methodCompleted: 'Y' | 'N',
+  methodCompleted: 'Y' | 'N' | undefined,
   sessionToken: string,
   idTransaction: string,
   paymentManagerClient: Client,
@@ -56,13 +56,6 @@ export const getTransactionFromSessionStorageTask = (key: string): TaskEither<UN
 export const getStringFromSessionStorageTask = (key: string): TaskEither<UNKNOWN, string> =>
   fromNullable(sessionStorage.getItem(key)).fold(fromLeft(UNKNOWN.value), data => taskEither.of(data));
 
-export const isNot3dsFlowTask = (
-  transactionStatusResponse: TransactionStatusResponse,
-): TaskEither<UNKNOWN, TransactionStatusResponse> =>
-  fromPredicate(
-    (transaction: TransactionStatusResponse) => fromNullable(transaction.data?.acsUrl).isNone(),
-    _ => UNKNOWN.value,
-  )(transactionStatusResponse);
 
 export const showErrorStatus = () => {
   document.body.classList.remove('loadingOperations');

@@ -17,6 +17,8 @@ import {
   getStringFromSessionStorageTask,
   resumeTransactionTask,
   checkStatusTask,
+  showErrorStatus,
+  showSuccessStatus,
 } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
 
@@ -52,6 +54,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         const myJson = (await r.clone().json()) as TransactionStatusResponse;
         // Stop the polling when this condition is false
         return fromNullable(myJson.data.acsUrl).isNone();
+      },
+    ),
+  });
+
+  const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
+    baseUrl: 'http://localhost:8080',
+    fetchApi: constantPollingWithPromisePredicateFetch(
+      DeferredPromise<boolean>().e1,
+      retries,
+      delay,
+      timeout,
+      async (r: Response): Promise<boolean> => {
+        const myJson = (await r.clone().json()) as TransactionStatusResponse;
+        // Stop the polling when this condition is false
+        return r.status === 200 && myJson.data?.finalStatus === false;
       },
     ),
   });
@@ -111,7 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     false,
   );
 
-  await fromPredicate(
+  await fromPredicate<Error, string>(
     idTransaction => idTransaction !== '',
     toError,
   )(getUrlParameter('id'))
@@ -134,8 +151,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           )
           .run();
       },
-      // 3. ACS RESUME step on 3ds2
-      async _ => sessionStorage.clear(),
+      // 3. ACS RESUME and CHECK FINAL STATUS POLLING step on 3ds2
+      async idTransaction =>
+        await getStringFromSessionStorageTask('sessionToken')
+          .chain(sessionToken => resumeTransactionTask(undefined, sessionToken, idTransaction, pmClient))
+          .chain(_ => checkStatusTask(idTransaction, paymentManagerClientWithPollingOnFinalStatus))
+
+          .fold(
+            _ => showErrorStatus(),
+            transactionStatusResponse => showSuccessStatus(transactionStatusResponse.data.idStatus),
+          )
+          .run(),
     )
     .run();
 });

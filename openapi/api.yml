@@ -2599,6 +2599,8 @@ definitions:
     title: TransactionResponse
   TransactionStatus:
     type: object
+    required:
+        - idStatus
     properties:
       acsUrl:
         type: string
