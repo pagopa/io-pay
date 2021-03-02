@@ -8,7 +8,6 @@ import { createClient, Client } from '../../../generated/definitions/pagopa/clie
 import { constantPollingWithPromisePredicateFetch, retryingFetch } from '../../utils/fetch';
 import { getIdPayment } from '../../utils/testUtils';
 import { TypeEnum } from '../../../generated/definitions/pagopa/Wallet';
-import { WalletResponse } from '../../../generated/definitions/pagopa/WalletResponse';
 import { TransactionStatusResponse } from '../../../generated/definitions/pagopa/TransactionStatusResponse';
 import { fromLeft, taskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
@@ -27,7 +26,9 @@ describe('Endpoint PUT wallet of PM', () => {
   // eslint-disable-next-line functional/no-let
   let pmClient: Client;
   // eslint-disable-next-line functional/no-let
-  let paymentManagerClientWithPolling: Client;
+  let paymentManagerClientWithPolling_stepW: Client;
+  // eslint-disable-next-line functional/no-let
+  let paymentManagerClientWithPolling_stepR: Client;
   // PRECONDITION: Before pay endpoint, execute the following flow
   // 1. get a valid idPayment
   // 2. check the payment
@@ -42,7 +43,7 @@ describe('Endpoint PUT wallet of PM', () => {
   // eslint-disable-next-line functional/no-let
   let startSessionResponse;
   // eslint-disable-next-line functional/no-let
-  let walletResponse: WalletResponse;
+  let walletResponse;
   // eslint-disable-next-line functional/no-let
   let myTransactionToken: string; // base64 string of idTransaction
   // eslint-disable-next-line functional/no-let
@@ -52,10 +53,18 @@ describe('Endpoint PUT wallet of PM', () => {
   const delay: number = 3000;
   const timeout: Millisecond = 20000 as Millisecond;
 
-  // This condition is used to retry polling check until it return 200 && finalStatus = true
-  const isTransientErrorGivenFinalStatus = async (response: Response): Promise<boolean> => {
+  // This condition is used to retry polling check until it return 15
+  // that means : "In attesa del metodo 3ds2"
+  const is_WAIT_3DS2_ACS_METHOD = async (response: Response): Promise<boolean> => {
     const transactionStatus = TransactionStatusResponse.encode(await response.clone().json());
-    return response.status === 200 && transactionStatus.data?.finalStatus === false;
+    return transactionStatus.data?.idStatus !== 15;
+  };
+
+  // This condition is used to retry polling check until it return 17
+  // that means : "Ritornando dal metodo 3ds2"
+  const is_RESUME_3DS2_ACS_METHOD = async (response: Response): Promise<boolean> => {
+    const transactionStatus = TransactionStatusResponse.encode(await response.clone().json());
+    return transactionStatus.data?.idStatus !== 17;
   };
 
   beforeAll(async () => {
@@ -65,14 +74,25 @@ describe('Endpoint PUT wallet of PM', () => {
       fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
     });
 
-    paymentManagerClientWithPolling = createClient({
-      baseUrl: 'http://localhost:8080',
+    paymentManagerClientWithPolling_stepW = createClient({
+      baseUrl: `http://${PM_DOCK_HOST}:${PM_DOCK_PORT}`,
       fetchApi: constantPollingWithPromisePredicateFetch(
         DeferredPromise<boolean>().e1,
         retries,
         delay,
         timeout,
-        isTransientErrorGivenFinalStatus,
+        is_WAIT_3DS2_ACS_METHOD,
+      ),
+    });
+
+    paymentManagerClientWithPolling_stepR = createClient({
+      baseUrl: `http://${PM_DOCK_HOST}:${PM_DOCK_PORT}`,
+      fetchApi: constantPollingWithPromisePredicateFetch(
+        DeferredPromise<boolean>().e1,
+        retries,
+        delay,
+        timeout,
+        is_RESUME_3DS2_ACS_METHOD,
       ),
     });
   });
@@ -146,16 +166,32 @@ describe('Endpoint PUT wallet of PM', () => {
       })
     ).fold(
       () => fail(),
-      res => WalletResponse.decode(res.value).getOrElse({ data: {} }),
+      res => res.value?.data,
     );
 
     // Pay
     const payResponse = (
-      await pmClient.payUsingPOST({
+      await pmClient.pay3ds2UsingPOST({
         Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
         id: myIdPayment,
         payRequest: {
-          data: { idWallet: walletResponse?.data?.idWallet, cvv: '666' },
+          data: {
+            idWallet: walletResponse?.idWallet,
+            cvv: '666',
+            threeDSData: JSON.stringify({
+              acctId: `ACCT_${walletResponse.idWallet?.toString().trim()}`,
+              browserColorDepth: 30,
+              browserJavaEnabled: false,
+              browserLanguage: 'it-IT',
+              browserScreenHeight: 1120,
+              browserScreenWidth: 1792,
+              browserTZ: -60,
+              browserUserAgent:
+                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36',
+              deliveryEmailAddress: 'username@domain.us',
+              workPhone: '3336666666',
+            }),
+          },
         },
         language: 'it',
       })
@@ -169,7 +205,7 @@ describe('Endpoint PUT wallet of PM', () => {
     // transaction check
     const checkTransactionResponse = await tryCatch(
       () =>
-        paymentManagerClientWithPolling.checkStatusUsingGET({
+        paymentManagerClientWithPolling_stepW.checkStatusUsingGET({
           id: myTransactionToken,
         }),
       () => -1,
@@ -187,17 +223,17 @@ describe('Endpoint PUT wallet of PM', () => {
     checkTransactionResponseOK = checkTransactionResponse.isRight();
   });
 
-  it('should return OK 200 response on resume transaction after check transaction response success ', async () => {
+  it('should return OK 200 response on first resume transaction after pay and switch on "Ritornando dal metodo 3ds2" status ', async () => {
     // precondition
     expect(checkTransactionResponseOK).toEqual(true);
 
     // resume
     const transactionResumeResponse = (
-      await pmClient.resumeUsingPOST({
+      await pmClient.resume3ds2UsingPOST({
         Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
         id: myTransactionToken,
         resumeRequest: {
-          data: {},
+          data: { methodCompleted: 'Y' },
         },
         language: 'it',
       })
@@ -207,7 +243,25 @@ describe('Endpoint PUT wallet of PM', () => {
     );
     expect(transactionResumeResponse).toEqual(200);
 
-    expect(true).toEqual(true);
+    // transaction check
+    const checkTransactionResponse2 = await tryCatch(
+      () =>
+        paymentManagerClientWithPolling_stepR.checkStatusUsingGET({
+          id: myTransactionToken,
+        }),
+      () => -1,
+    )
+      .foldTaskEither(
+        err => fromLeft(err),
+        errorOrResponse =>
+          errorOrResponse.fold(
+            () => fromLeft(-1),
+            responseType => (responseType.status !== 200 ? fromLeft(-1) : taskEither.of(responseType.value)),
+          ),
+      )
+      .run();
+
+    expect(true).toEqual(checkTransactionResponse2.isRight());
   });
 
   // WIP
