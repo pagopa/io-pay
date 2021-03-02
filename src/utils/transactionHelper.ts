@@ -56,7 +56,6 @@ export const getTransactionFromSessionStorageTask = (key: string): TaskEither<UN
 export const getStringFromSessionStorageTask = (key: string): TaskEither<UNKNOWN, string> =>
   fromNullable(sessionStorage.getItem(key)).fold(fromLeft(UNKNOWN.value), data => taskEither.of(data));
 
-
 export const showErrorStatus = () => {
   document.body.classList.remove('loadingOperations');
   document
