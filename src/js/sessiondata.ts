@@ -22,6 +22,7 @@ export async function actionsCheck() {
   const idPayment: string | null = checkDataStored != null ? JSON.parse(checkDataStored).idPayment : idPaymentByQS;
   // Trying to avoid a new call to endpoint if we've data stored
   if (idPaymentStored === null) {
+    // TODO: #MIXEVENT PAYMENT_CHECK_INIT - iif is the first time call check payemnt
     fromNullable(idPayment).fold(
       // If undefined
       await tryCatch(
@@ -29,17 +30,25 @@ export async function actionsCheck() {
           pmClient.checkPaymentUsingGET({
             id: fromNullable(idPayment).getOrElse(''),
           }),
+        // Error on call
+        // TODO: #RENDERING_ERROR - errore dovuto a variazione API ?
+        // TODO: #MIXEVENT PAYMENT_CHECK_INIT_ERR ???
         toError,
       )
         .fold(
-          () => undefined, // MANAGE ERRORS
+          // TODO: #RENDERING_ERROR - response error
+          // TODO: #MIXEVENT PAYMENT_CHECK_ERR
+          () => undefined,
           myResExt => {
             myResExt.fold(
-              () => undefined,
+              () => undefined, // empty data ???
               response => {
                 if (response.status === 200) {
                   sessionStorage.setItem('checkData', JSON.stringify(response.value.data));
+                  // TODO: #MIXEVENT PAYMENT_CHECK_SUCCESS
                 }
+                // TODO: missinig else #RENDERING_ERROR ( ex. status 500, ... )
+                // TODO: #MIXEVENT PAYMENT_CHECK_FAILURE
               },
             );
           },

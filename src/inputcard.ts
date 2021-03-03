@@ -111,13 +111,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // get and set terms of services
   async function setTermOfService() {
-    await TE.tryCatch(() => pmClient.getResourcesUsingGET({ language: 'it' }), toError)
+    // TODO: #MIXEVENT PAYMENT_RESOURCES_INIT
+    await TE.tryCatch(
+      () => pmClient.getResourcesUsingGET({ language: 'it' }),
+      // TODO: #RENDERING_ERROR - errore dovuto a variazione API ?
+      // TODO: #MIXEVENT PAYMENT_RESOURCES_INIT_ERR ???
+      toError,
+    )
       .fold(
+        // TODO: #RENDERING_ERROR - response error
+        // TODO: #MIXEVENT PAYMENT_RESOURCES_ERR
         () => undefined, // to be replaced with logic to handle failures
         myResExt => {
           const termini = myResExt.fold(
-            () => 'notFound :(',
+            () => 'notFound :(', // empty data ???
             myRes => (myRes.status === 200 ? myRes.value?.data?.termsAndConditions : 'notFound :('),
+            // TODO: #MIXEVENT PAYMENT_RESOURCES_SUCCESS
+            // TODO: #MIXEVENT PAYMENT_RESOURCES_FAILURE missing
           );
           const termsAndService = modalAndTerm?.querySelector('.modalwindow__content');
           if (termsAndService) {
@@ -140,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
       privacyTogglerInput.removeAttribute('checked');
       privacyTogglerInput.removeAttribute('data-checked');
     } else {
-      privacyTogglerInput.setAttribute('checked', '1'); // TODO: should be bool
+      privacyTogglerInput.setAttribute('checked', '1'); // FIXME: should be bool
       privacyTogglerInput.setAttribute('data-checked', '1');
     }
     fieldsCheck();
@@ -174,8 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const checkDataStored: string = sessionStorage.getItem('checkData') || '';
       const checkData = JSON.parse(checkDataStored);
 
-      // Start Session to Fetch session token
-
+      // 1. Start Session to Fetch session token
       const mySessionToken = await TE.tryCatch(
         () =>
           pmClient.startSessionUsingPOST({
@@ -205,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         )
         .run();
 
+      // 2. Approve Terms
       await TE.tryCatch(
         () =>
           pmClient.approveTermsUsingPOST({
@@ -230,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         )
         .run();
 
+      // 3. Wallet
       await TE.tryCatch(
         () =>
           pmClient.addWalletUsingPOST({

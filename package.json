@@ -87,8 +87,10 @@
     "whatwg-fetch": "^3.5.0"
   },
   "dependencies": {
+    "@types/mixpanel-browser": "^2.35.6",
     "assets": "^3.0.1",
-    "card-validator": "^8.1.0"
+    "card-validator": "^8.1.0",
+    "mixpanel-browser": "^2.41.0"
   },
   "resolutions": {
     "fp-ts": "1.17.4"
