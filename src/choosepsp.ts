@@ -1,7 +1,17 @@
+import * as TE from 'fp-ts/lib/TaskEither';
+// FAKE JSON
+// import psp from './assets/json/psp.json';
+import { Millisecond } from 'italia-ts-commons/lib/units';
+import { toError } from 'fp-ts/lib/Either';
+import { createClient } from '../generated/definitions/pagopa/client';
+import { retryingFetch } from './utils/fetch';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
-// FAKE JSON
-import psp from './assets/json/psp.json';
+
+const pmClient = createClient({
+  baseUrl: 'http://localhost:8080',
+  fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
   // idpayguard
@@ -9,6 +19,49 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // initHeader
   initHeader();
+
+  const walletStored = sessionStorage.getItem('wallet') || '';
+  const checkDataStored = sessionStorage.getItem('checkData') || '';
+  const sessionToken = sessionStorage.getItem('sessionToken') || '';
+
+  const checkData = JSON.parse(checkDataStored);
+  const wallet = JSON.parse(walletStored);
+
+  const idPayment = checkData.idPayment;
+  const Bearer = `Bearer ${sessionToken}`;
+  const paymentType = wallet.type;
+  const isList = true;
+  const language = 'it';
+  const idWallet = wallet.idWallet;
+
+  const psp = await TE.tryCatch(
+    () =>
+      pmClient.getPspListUsingGET({
+        Bearer,
+        paymentType,
+        isList,
+        idWallet,
+        language,
+        idPayment,
+      }),
+    toError,
+  )
+    .fold(
+      () => [], // to be replaced with logic to handle failures
+      myResExt =>
+        myResExt
+          .fold(
+            () => [],
+            myRes => (myRes.status === 200 ? myRes.value.data?.pspList : []),
+          )
+          .map(e => ({
+            name: e?.businessName,
+            label: e?.businessName,
+            image: e?.logoPSP,
+            commission: e?.fixedCost?.amount / Math.pow(10, e?.fixedCost?.decimalDigits),
+          })),
+    )
+    .run();
 
   function eventList(el: HTMLElement) {
     const pspActiveElement = document.querySelector('.windowcont__psp__item.active') as HTMLElement;
