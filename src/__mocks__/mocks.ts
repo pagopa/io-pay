@@ -47,3 +47,8 @@ export function getTermAndServices(lang: string): string {
     return getTermAndServices('it');
   }
 }
+
+export function track(event_name: string, properties?: any): void {
+  // eslint-disable-next-line no-console
+  console.log(event_name, properties);
+}

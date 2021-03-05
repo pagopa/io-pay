@@ -47,10 +47,16 @@ paths:
             $ref: '#/definitions/PaymentResponse'
         '404':
           description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '422':
           description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '500':
           description: Generic Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
   '/payments/{id}/actions/check-internal':
     get:
       tags:
@@ -381,10 +387,16 @@ paths:
             $ref: '#/definitions/ResourcesResponse'
         '401':
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '403':
           description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '404':
           description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
   '/resources/psp/{id}':
     get:
       tags:
@@ -1110,16 +1122,28 @@ paths:
             $ref: '#/definitions/Session'
         '201':
           description: Created
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '401':
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '403':
           description: Forbidden
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '404':
           description: Not Found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '422':
           description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/ErrorResponse'
         '500':
           description: Generic Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
   '/users/actions/validate-bo-reset-password/{id}':
     get:
       tags:

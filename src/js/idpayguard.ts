@@ -8,6 +8,6 @@ export default function idpayguard(): void {
   if (!paymentID) {
     // TO-DO
     // eslint-disable-next-line no-console
-    console.log('TO-DO prevedere exit in caso non ci sia paymentid');
+    // console.log('TO-DO prevedere exit in caso non ci sia paymentid'); // FIXME:
   }
 }

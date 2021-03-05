@@ -11,6 +11,29 @@ import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
 import { retryingFetch } from './utils/fetch';
 import { initDropdowns } from './js/dropdowns';
+import { track } from './__mocks__/mocks';
+import {
+  PAYMENT_APPROVE_TERMS_INIT,
+  PAYMENT_APPROVE_TERMS_NET_ERR,
+  PAYMENT_APPROVE_TERMS_RESP_ERR,
+  PAYMENT_APPROVE_TERMS_SUCCESS,
+  PAYMENT_APPROVE_TERMS_SVR_ERR,
+  PAYMENT_RESOURCES_INIT,
+  PAYMENT_RESOURCES_NET_ERR,
+  PAYMENT_RESOURCES_RESP_ERR,
+  PAYMENT_RESOURCES_SUCCESS,
+  PAYMENT_RESOURCES_SVR_ERR,
+  PAYMENT_START_SESSION_INIT,
+  PAYMENT_START_SESSION_NET_ERR,
+  PAYMENT_START_SESSION_RESP_ERR,
+  PAYMENT_START_SESSION_SUCCESS,
+  PAYMENT_START_SESSION_SVR_ERR,
+  PAYMENT_WALLET_INIT,
+  PAYMENT_WALLET_NET_ERR,
+  PAYMENT_WALLET_RESP_ERR,
+  PAYMENT_WALLET_SUCCESS,
+  PAYMENT_WALLET_SVR_ERR,
+} from './utils/mixpanelHelperInit';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -55,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (checkedFields?.length === creditcardformInputs?.length) {
       creditcardformSubmit?.removeAttribute('disabled');
     } else {
-      creditcardformSubmit?.setAttribute('disabled', '1'); // TODO: type should be bool
+      creditcardformSubmit?.setAttribute('disabled', '1'); // FIXME: type should be bool
     }
   }
 
@@ -111,23 +134,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // get and set terms of services
   async function setTermOfService() {
-    // TODO: #MIXEVENT PAYMENT_RESOURCES_INIT
+    track(PAYMENT_RESOURCES_INIT.value, { EVENT_ID: PAYMENT_RESOURCES_INIT.value });
     await TE.tryCatch(
       () => pmClient.getResourcesUsingGET({ language: 'it' }),
       // TODO: #RENDERING_ERROR - errore dovuto a variazione API ?
-      // TODO: #MIXEVENT PAYMENT_RESOURCES_INIT_ERR ???
-      toError,
+      e => {
+        track(PAYMENT_RESOURCES_NET_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_NET_ERR.value, e });
+        return toError;
+      },
     )
       .fold(
-        // TODO: #RENDERING_ERROR - response error
-        // TODO: #MIXEVENT PAYMENT_RESOURCES_ERR
-        () => undefined, // to be replaced with logic to handle failures
+        r => {
+          // TODO: #RENDERING_ERROR
+          track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value, r });
+        },
         myResExt => {
           const termini = myResExt.fold(
             () => 'notFound :(', // empty data ???
-            myRes => (myRes.status === 200 ? myRes.value?.data?.termsAndConditions : 'notFound :('),
-            // TODO: #MIXEVENT PAYMENT_RESOURCES_SUCCESS
-            // TODO: #MIXEVENT PAYMENT_RESOURCES_FAILURE missing
+            myRes => {
+              track(myRes.status === 200 ? PAYMENT_RESOURCES_SUCCESS.value : PAYMENT_RESOURCES_RESP_ERR.value, {
+                EVENT_ID: myRes.status === 200 ? PAYMENT_RESOURCES_SUCCESS.value : PAYMENT_RESOURCES_RESP_ERR.value,
+              });
+              return myRes.status === 200 ? myRes.value?.data?.termsAndConditions : 'notFound :(';
+            },
           );
           const termsAndService = modalAndTerm?.querySelector('.modalwindow__content');
           if (termsAndService) {
@@ -150,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
       privacyTogglerInput.removeAttribute('checked');
       privacyTogglerInput.removeAttribute('data-checked');
     } else {
-      privacyTogglerInput.setAttribute('checked', '1'); // FIXME: should be bool
+      privacyTogglerInput.setAttribute('checked', '1'); // TODO: should be bool
       privacyTogglerInput.setAttribute('data-checked', '1');
     }
     fieldsCheck();
@@ -184,6 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const checkDataStored: string = sessionStorage.getItem('checkData') || '';
       const checkData = JSON.parse(checkDataStored);
 
+      track(PAYMENT_START_SESSION_INIT.value, {
+        EVENT_ID: PAYMENT_START_SESSION_INIT.value,
+        idPayment: checkData.idPayment,
+      });
       // 1. Start Session to Fetch session token
       const mySessionToken = await TE.tryCatch(
         () =>
@@ -196,17 +229,39 @@ document.addEventListener('DOMContentLoaded', () => {
               },
             },
           }),
-        toError,
+        e => {
+          // TODO: #RENDERING_ERROR
+          track(PAYMENT_START_SESSION_NET_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value, e });
+          return toError;
+        },
       )
         .fold(
-          () => undefined, // to be replaced with logic to handle failures
+          r => {
+            // TODO: #RENDERING_ERROR
+            track(PAYMENT_START_SESSION_SVR_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value, r });
+          }, // to be replaced with logic to handle failures
           myResExt => {
             const sessionToken = myResExt.fold(
               () => 'fakeSessionToken',
-              myRes =>
-                myRes.status === 200
+              myRes => {
+                if (myRes.status === 200) {
+                  track(PAYMENT_START_SESSION_SUCCESS.value, {
+                    EVENT_ID: PAYMENT_START_SESSION_SUCCESS.value,
+                    sessionToken: myRes.value.sessionToken,
+                    idPayment: myRes.value.idPayment,
+                    email: myRes?.value?.user?.email,
+                  });
+                } else {
+                  track(PAYMENT_START_SESSION_RESP_ERR.value, {
+                    EVENT_ID: PAYMENT_START_SESSION_RESP_ERR.value,
+                    code: myRes?.value.code,
+                    message: myRes?.value.message,
+                  });
+                }
+                return myRes.status === 200
                   ? fromNullable(myRes.value.sessionToken).getOrElse('fakeSessionToken')
-                  : 'fakeSessionToken',
+                  : 'fakeSessionToken';
+              },
             );
             sessionStorage.setItem('sessionToken', sessionToken);
             return sessionToken;
@@ -214,6 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
         )
         .run();
 
+      track(PAYMENT_APPROVE_TERMS_INIT.value, {
+        EVENT_ID: PAYMENT_APPROVE_TERMS_INIT.value,
+        idPayment: checkData.idPayment,
+      });
       // 2. Approve Terms
       await TE.tryCatch(
         () =>
@@ -226,20 +285,47 @@ document.addEventListener('DOMContentLoaded', () => {
               },
             },
           }),
-        toError,
+        e => {
+          // TODO: #RENDERING_ERROR
+          track(PAYMENT_APPROVE_TERMS_NET_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value, e });
+          return toError;
+        },
       )
         .fold(
-          () => undefined, // to be replaced with logic to handle failures
+          r => {
+            // TODO: #RENDERING_ERROR
+            track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value, r });
+          }, // to be replaced with logic to handle failures
           myResExt => {
             const approvalState = myResExt.fold(
               () => 'noApproval',
-              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'noApproval'),
+              myRes => {
+                if (myRes.status === 200) {
+                  track(PAYMENT_APPROVE_TERMS_SUCCESS.value, {
+                    EVENT_ID: PAYMENT_APPROVE_TERMS_SUCCESS.value,
+                    acceptTerms: myRes?.value?.data?.acceptTerms,
+                    email: myRes?.value?.data?.email,
+                    idPayment: fromNullable(checkData.idPayment).getOrElse(''),
+                  });
+                } else {
+                  track(PAYMENT_APPROVE_TERMS_RESP_ERR.value, {
+                    EVENT_ID: PAYMENT_APPROVE_TERMS_RESP_ERR.value,
+                    code: myRes?.value?.code,
+                    message: myRes?.value?.message,
+                  });
+                }
+                return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'noApproval';
+              },
             );
             sessionStorage.setItem('approvalState', approvalState);
           },
         )
         .run();
 
+      track(PAYMENT_WALLET_INIT.value, {
+        EVENT_ID: PAYMENT_WALLET_INIT.value,
+        idPayment: checkData.idPayment,
+      });
       // 3. Wallet
       await TE.tryCatch(
         () =>
@@ -260,14 +346,38 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             language: 'it',
           }),
-        toError,
+        e => {
+          // TODO: #RENDERING_ERROR
+          track(PAYMENT_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_WALLET_NET_ERR.value, e });
+          return toError;
+        },
       )
         .fold(
-          () => void 0, // to be replaced with logic to handle failures
+          r => {
+            // TODO: #RENDERING_ERROR
+            track(PAYMENT_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_WALLET_SVR_ERR.value, r });
+          }, // to be replaced with logic to handle failures
           myResExt => {
             const walletResp = myResExt.fold(
               () => 'fakeCC',
-              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet'),
+              myRes => {
+                // console.log(JSON.stringify(myRes.value.data));
+                if (myRes.status === 200) {
+                  track(PAYMENT_WALLET_SUCCESS.value, {
+                    EVENT_ID: PAYMENT_WALLET_SUCCESS.value,
+                    idWallet: myRes.value.data.idWallet,
+                    idPayment: fromNullable(checkData.idPayment).getOrElse(''),
+                    idPsp: myRes?.value?.data?.psp?.idPsp,
+                  });
+                } else {
+                  track(PAYMENT_WALLET_RESP_ERR.value, {
+                    EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
+                    code: myRes?.value.code,
+                    message: myRes?.value.message,
+                  });
+                }
+                return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet';
+              },
             );
             sessionStorage.setItem('wallet', walletResp);
             sessionStorage.setItem('securityCode', (creditcardformSecurecode as HTMLInputElement).value);

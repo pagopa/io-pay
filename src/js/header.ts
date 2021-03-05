@@ -1,4 +1,4 @@
-// import mixpanel from 'mixpanel-browser';
+import { track } from '../__mocks__/mocks';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function initHeader() {
@@ -7,13 +7,6 @@ export function initHeader() {
   const importo = document.querySelectorAll("[data-sessiondata='importo']") || null;
   const dataStored: string | null = sessionStorage.getItem('checkData');
   const data = dataStored ? JSON.parse(dataStored) : null;
-
-  // // ini MIX
-  // mixpanel.init('c3db8f517102d7a7ebd670c9da3e05c4', {
-  //   api_host: 'https://api-eu.mixpanel.com',
-  // }); // secret
-
-  // mixpanel.track(`io-pay-blablabla`, { genre: 'hip-hop', 'duration in seconds': 42 });
 
   if (enteBeneficiario) {
     for (const el of Array.from(enteBeneficiario)) {

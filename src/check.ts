@@ -12,6 +12,14 @@ import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
 import { retryingFetch } from './utils/fetch';
 import { initDropdowns } from './js/dropdowns';
+import {
+  PAYMENT_PAY3DS2_INIT,
+  PAYMENT_PAY3DS2_NET_ERR,
+  PAYMENT_PAY3DS2_RESP_ERR,
+  PAYMENT_PAY3DS2_SUCCESS,
+  PAYMENT_PAY3DS2_SVR_ERR,
+} from './utils/mixpanelHelperInit';
+import { track } from './__mocks__/mocks';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -128,6 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
         workPhone: '3336666666',
       };
 
+      track(PAYMENT_PAY3DS2_INIT.value, {
+        EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
+        idPayment: checkData.idPayment,
+      });
       // Pay
       await TE.tryCatch(
         () =>
@@ -143,14 +155,38 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             language: 'it',
           }),
-        toError,
+        e => {
+          // TODO: #RENDERING_ERROR
+          track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value, e });
+          return toError;
+        },
       )
         .fold(
-          () => void 0, // to be replaced with logic to handle failures
+          r => {
+            // TODO: #RENDERING_ERROR
+            track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value, r });
+          }, // to be replaced with logic to handle failures
           myResExt => {
             const paymentResp = myResExt.fold(
               () => 'fakePayment',
-              myRes => (myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakePayment'),
+              myRes => {
+                if (myRes.status === 200) {
+                  track(PAYMENT_PAY3DS2_SUCCESS.value, {
+                    EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
+                    token: myRes?.value?.data?.token,
+                    idStatus: myRes?.value?.data?.idStatus,
+                    statusMessage: myRes?.value?.data?.statusMessage,
+                    idPayment: myRes?.value?.data?.nodoIdPayment,
+                  });
+                } else {
+                  track(PAYMENT_PAY3DS2_RESP_ERR.value, {
+                    EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
+                    code: myRes?.value.code,
+                    message: myRes?.value.message,
+                  });
+                }
+                return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakePayment';
+              },
             );
             sessionStorage.setItem('payment', paymentResp);
             window.location.replace('response.html');

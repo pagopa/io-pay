@@ -1,9 +1,17 @@
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
-import { toError } from 'fp-ts/lib/Either';
 import { tryCatch } from 'fp-ts/lib/TaskEither';
+import { toError } from 'fp-ts/lib/Either';
 import { createClient } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
+import { track } from '../__mocks__/mocks';
+import {
+  PAYMENT_CHECK_INIT,
+  PAYMENT_CHECK_NET_ERR,
+  PAYMENT_CHECK_RESP_ERR,
+  PAYMENT_CHECK_SUCCESS,
+  PAYMENT_CHECK_SVR_ERR,
+} from '../utils/mixpanelHelperInit';
 import { getUrlParameter } from './urlUtilities';
 
 export async function actionsCheck() {
@@ -22,7 +30,7 @@ export async function actionsCheck() {
   const idPayment: string | null = checkDataStored != null ? JSON.parse(checkDataStored).idPayment : idPaymentByQS;
   // Trying to avoid a new call to endpoint if we've data stored
   if (idPaymentStored === null) {
-    // TODO: #MIXEVENT PAYMENT_CHECK_INIT - iif is the first time call check payemnt
+    track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value, idPayment });
     fromNullable(idPayment).fold(
       // If undefined
       await tryCatch(
@@ -31,14 +39,17 @@ export async function actionsCheck() {
             id: fromNullable(idPayment).getOrElse(''),
           }),
         // Error on call
-        // TODO: #RENDERING_ERROR - errore dovuto a variazione API ?
-        // TODO: #MIXEVENT PAYMENT_CHECK_INIT_ERR ???
-        toError,
+        e => {
+          // TODO: #RENDERING_ERROR
+          track(PAYMENT_CHECK_NET_ERR.value, { EVENT_ID: PAYMENT_CHECK_NET_ERR.value, e });
+          return toError;
+        },
       )
         .fold(
-          // TODO: #RENDERING_ERROR - response error
-          // TODO: #MIXEVENT PAYMENT_CHECK_ERR
-          () => undefined,
+          r => {
+            // TODO: #RENDERING_ERROR
+            track(PAYMENT_CHECK_SVR_ERR.value, { EVENT_ID: PAYMENT_CHECK_SVR_ERR.value, r });
+          },
           myResExt => {
             myResExt.fold(
               () => undefined, // empty data ???
@@ -46,9 +57,19 @@ export async function actionsCheck() {
                 if (response.status === 200) {
                   sessionStorage.setItem('checkData', JSON.stringify(response.value.data));
                   // TODO: #MIXEVENT PAYMENT_CHECK_SUCCESS
+                  track(PAYMENT_CHECK_SUCCESS.value, {
+                    EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
+                    idPayment: response?.value?.data?.idPayment,
+                    amount: response?.value?.data?.amount,
+                  });
+                } else {
+                  // TODO: missinig else #RENDERING_ERROR
+                  track(PAYMENT_CHECK_RESP_ERR.value, {
+                    EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
+                    code: response?.value.code,
+                    message: response?.value.message,
+                  });
                 }
-                // TODO: missinig else #RENDERING_ERROR ( ex. status 500, ... )
-                // TODO: #MIXEVENT PAYMENT_CHECK_FAILURE
               },
             );
           },

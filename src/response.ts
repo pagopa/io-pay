@@ -21,6 +21,13 @@ import {
   showSuccessStatus,
 } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
+import {
+  THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
+  THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
+  THREEDSMETHODURL_STEP1_RESP_ERR,
+  THREEDSMETHODURL_STEP1_SUCCESS,
+} from './utils/mixpanelHelperInit';
+import { track } from './__mocks__/mocks';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
@@ -105,10 +112,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     'message',
     async function (e) {
       // Addresses must be static
+
       if (e.origin !== 'http://localhost:7071' || e.data !== '3DS.Notification.Received') {
+        track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+          EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
+          ORIGIN: e.origin,
+          RESPONSE: e.data,
+          token: '',
+        });
+        // eslint-disable-next-line sonarjs/no-redundant-jump
         return;
       } else {
-        debug('MESSAGE RECEIVED: ', e.data);
+        track(THREEDSMETHODURL_STEP1_SUCCESS.value, {
+          EVENT_ID: THREEDSMETHODURL_STEP1_SUCCESS.value,
+          token: '',
+        });
         await getTransactionFromSessionStorageTask('payment')
           .chain(transaction =>
             getStringFromSessionStorageTask('sessionToken')
@@ -152,16 +170,29 @@ document.addEventListener('DOMContentLoaded', async () => {
           .run();
       },
       // 3. ACS RESUME and CHECK FINAL STATUS POLLING step on 3ds2
-      async idTransaction =>
+      async idTransaction => {
         await getStringFromSessionStorageTask('sessionToken')
           .chain(sessionToken => resumeTransactionTask(undefined, sessionToken, idTransaction, pmClient))
           .chain(_ => checkStatusTask(idTransaction, paymentManagerClientWithPollingOnFinalStatus))
 
           .fold(
-            _ => showErrorStatus(),
-            transactionStatusResponse => showSuccessStatus(transactionStatusResponse.data.idStatus),
+            _ => {
+              track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
+                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
+                token: idTransaction,
+              });
+              showErrorStatus();
+            },
+            transactionStatusResponse => {
+              track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
+                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
+                token: idTransaction,
+              });
+              showSuccessStatus(transactionStatusResponse.data.idStatus);
+            },
           )
-          .run(),
+          .run();
+      },
     )
     .run();
 });
