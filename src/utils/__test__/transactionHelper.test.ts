@@ -1,11 +1,10 @@
-import { checkStatusTask, resumeTransactionTask } from '../transactionHelper';
-
 import * as myFake from 'faker/locale/it';
-import { Client, createClient } from '../../../generated/definitions/pagopa/client';
 import { Millisecond } from 'italia-ts-commons/lib/units';
-import { retryingFetch } from '../fetch';
 import nodeFetch from 'node-fetch';
 import { left, right } from 'fp-ts/lib/Either';
+import { checkStatusTask, resumeTransactionTask } from '../transactionHelper';
+import { Client, createClient } from '../../../generated/definitions/pagopa/client';
+import { retryingFetch } from '../fetch';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
