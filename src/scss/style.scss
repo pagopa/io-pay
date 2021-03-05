@@ -419,6 +419,9 @@ body {
       text-decoration: none;
       color: inherit;
     }
+    & > * {
+      pointer-events: none;
+    }
   }
   &__commission {
     font-size: 0.865rem;

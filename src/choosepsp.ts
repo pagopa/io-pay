@@ -1,19 +1,21 @@
-import { userSession } from './js/sessiondata';
-import { modalWindows } from './js/modals';
-
+import idpayguard from './js/idpayguard';
+import { initHeader } from './js/header';
+// FAKE JSON
 import psp from './assets/json/psp.json';
 
-document.addEventListener('DOMContentLoaded', () => {
-  userSession();
+document.addEventListener('DOMContentLoaded', async () => {
+  // idpayguard
+  idpayguard();
 
-  // init modals
-  modalWindows();
+  // initHeader
+  initHeader();
 
-  const eventList = (el: any) => {
-    positionel?.querySelector('.active')?.classList.remove('active');
+  function eventList(el: HTMLElement) {
+    const pspActiveElement = document.querySelector('.windowcont__psp__item.active') as HTMLElement;
+    pspActiveElement?.classList.remove('active');
     el.classList.add('active');
     documentSubmit?.removeAttribute('disabled');
-  };
+  }
 
   const template = document.querySelector('[data-template]');
   const positionel = template?.parentNode;
@@ -24,34 +26,41 @@ document.addEventListener('DOMContentLoaded', () => {
   pspOrdered.forEach(element => {
     const clonedItem = template?.cloneNode(true);
 
-    // clonedItem.querySelector('.windowcont__psp__label').innerText = element.label;
-    clonedItem?.parentElement?.querySelector('.windowcont__psp__label')?.setAttribute('innerText', element.label);
-
-    // clonedItem.querySelector('.windowcont__psp__commission span').innerText = `€ ${Intl.NumberFormat(
-    //    'it-IT',
-    // ).format(element.commission)}`;
-
-    clonedItem?.parentElement
-      ?.querySelector('.windowcont__psp__commission span')
-      ?.setAttribute('innerText', `€ ${Intl.NumberFormat('it-IT').format(element.commission)}`);
-
-    if (element?.tag && element.tag !== '') {
-      // clonedItem.querySelector('.windowcont__psp__tag span').innerText = element.tag;
-      clonedItem?.parentElement?.querySelector('.windowcont__psp__tag span')?.setAttribute('innerText', element.tag);
-    } else {
-      clonedItem?.parentElement?.querySelector('.windowcont__psp__tag span')?.remove();
-    }
-
-    clonedItem?.parentElement?.classList.add('d-block');
-
-    clonedItem?.addEventListener('click', e => {
-      e.preventDefault();
-      // eventList(this); ???
-      eventList(e);
-    });
-
     if (clonedItem) {
-      positionel?.appendChild(clonedItem);
+      const newEl = positionel?.appendChild(clonedItem) as HTMLElement;
+      const labelEl = newEl.querySelector('.windowcont__psp__label') as HTMLElement;
+      const commissionEl = newEl.querySelector('.windowcont__psp__commission span') as HTMLElement;
+      const tagEl = newEl.querySelector('.windowcont__psp__tag span') as HTMLElement;
+      if (labelEl) {
+        // eslint-disable-next-line functional/immutable-data
+        labelEl.innerText = element.label;
+      }
+      if (commissionEl) {
+        // eslint-disable-next-line functional/immutable-data
+        commissionEl.innerText = `€ ${Intl.NumberFormat('it-IT').format(element.commission)}`;
+      }
+      if (element?.tag && element.tag !== '' && tagEl) {
+        // eslint-disable-next-line functional/immutable-data
+        tagEl.innerText = element.tag;
+      } else {
+        tagEl.remove();
+      }
+
+      newEl.classList.add('d-block');
+
+      newEl.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const element = e?.target as HTMLElement;
+        if (element) {
+          eventList(element);
+        }
+      });
     }
+
+    documentSubmit?.addEventListener('click', (e: Event) => {
+      e.preventDefault();
+      // TO-DO CALL SERVICE
+    });
   });
 });
