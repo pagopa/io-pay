@@ -19,7 +19,8 @@ html(lang='it')
             .main.flex-fill.container
                 .row.justify-content-md-center
                     .windowcont.px-4.px-md-0
-                        
+                        h1.h2 Inserisci la tua email
+                        p.reset-font-size.text-muted Riceverai l'esito del pagamento a questo indirizzo
                         .emailform
                             form.my-5(id="emailform")
                                 .form-group.mb-2.mb-md-4
@@ -29,9 +30,9 @@ html(lang='it')
                                                 svg.icon.icon-sm
                                                     use(href="/assets/icons/sprite.svg#it-mail")
                                         label.sr-only(for="useremail", data-lang="textField.name.label") email
-                                        input.form-control(type="email", placeholder="In tuo indirizzo email", name="useremail",  id="useremail", required)
+                                        input.form-control(type="email", placeholder="Il tuo indirizzo email", name="useremail",  id="useremail", required)
                                         .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.name.label") email
-                                        .reset-flex-flow.text-muted.mt-1.custom-label--error Attenzione, l'indirizzo email sembra non corretto
+                                        .reset-flex-flow.text-muted.mt-1.custom-label--error Inserisci un indirizzo email valido
                                     
                                 .windowcont__bottom
                                     .container
