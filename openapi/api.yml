@@ -1110,8 +1110,6 @@ paths:
             $ref: '#/definitions/Session'
         '201':
           description: Created
-          schema:
-            $ref: '#/definitions/ErrorResponse'
         '401':
           description: Unauthorized
         '403':
