@@ -55,21 +55,3 @@ export const getTransactionFromSessionStorageTask = (key: string): TaskEither<UN
 
 export const getStringFromSessionStorageTask = (key: string): TaskEither<UNKNOWN, string> =>
   fromNullable(sessionStorage.getItem(key)).fold(fromLeft(UNKNOWN.value), data => taskEither.of(data));
-
-export const showErrorStatus = () => {
-  document.body.classList.remove('loadingOperations');
-  document
-    .querySelectorAll('[data-response]')
-    .forEach(i => (i.getAttribute('data-response') === '3' ? null : i.remove()));
-  // To improve
-};
-
-export const showSuccessStatus = (idStatus: GENERIC_STATUS) => {
-  document.body.classList.remove('loadingOperations');
-  TX_ACCEPTED.decode(idStatus).map(_ =>
-    document
-      .querySelectorAll('[data-response]')
-      .forEach(i => (i.getAttribute('data-response') === '1' ? null : i.remove())),
-  );
-  // To improve
-};
