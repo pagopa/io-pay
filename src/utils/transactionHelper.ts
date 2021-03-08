@@ -1,9 +1,9 @@
 import { fromNullable } from 'fp-ts/lib/Option';
-import { fromLeft, fromPredicate, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
+import { fromLeft, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { Client } from '../../generated/definitions/pagopa/client';
 import { Transaction } from '../../generated/definitions/pagopa/Transaction';
 import { TransactionStatusResponse } from '../../generated/definitions/pagopa/TransactionStatusResponse';
-import { GENERIC_STATUS, TX_ACCEPTED, UNKNOWN } from './TransactionStatesTypes';
+import { UNKNOWN } from './TransactionStatesTypes';
 
 export const resumeTransactionTask = (
   methodCompleted: 'Y' | 'N' | undefined,
@@ -55,21 +55,3 @@ export const getTransactionFromSessionStorageTask = (key: string): TaskEither<UN
 
 export const getStringFromSessionStorageTask = (key: string): TaskEither<UNKNOWN, string> =>
   fromNullable(sessionStorage.getItem(key)).fold(fromLeft(UNKNOWN.value), data => taskEither.of(data));
-
-export const showErrorStatus = () => {
-  document.body.classList.remove('loadingOperations');
-  document
-    .querySelectorAll('[data-response]')
-    .forEach(i => (i.getAttribute('data-response') === '3' ? null : i.remove()));
-  // To improve
-};
-
-export const showSuccessStatus = (idStatus: GENERIC_STATUS) => {
-  document.body.classList.remove('loadingOperations');
-  TX_ACCEPTED.decode(idStatus).map(_ =>
-    document
-      .querySelectorAll('[data-response]')
-      .forEach(i => (i.getAttribute('data-response') === '1' ? null : i.remove())),
-  );
-  // To improve
-};
