@@ -52,7 +52,7 @@ export function start3DS2MethodStep(threeDSMethodUrl, threeDSMethodData, myIFram
 }
 
 export function start3DS2AcsChallengeStep(acsUrl, params, container) {
-  const form = createForm('acsChallengeForm', acsUrl, container.name, params);
+  const form = createForm('acsChallengeForm', acsUrl, '_self', params);
   container.appendChild(form);
   form.submit();
 }
