@@ -17,8 +17,6 @@ import {
   getStringFromSessionStorageTask,
   resumeTransactionTask,
   checkStatusTask,
-  showErrorStatus,
-  showSuccessStatus,
 } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
 import {
@@ -28,6 +26,31 @@ import {
   THREEDSMETHODURL_STEP1_SUCCESS,
 } from './utils/mixpanelHelperInit';
 import { track } from './__mocks__/mocks';
+import { GENERIC_STATUS, TX_ACCEPTED } from './utils/TransactionStatesTypes';
+
+const showErrorStatus = () => {
+  document.body.classList.remove('loadingOperations');
+  document
+    .querySelectorAll('[data-response]')
+    .forEach(i => (i.getAttribute('data-response') === '3' ? null : i.remove()));
+  (document.getElementById('response__continue') as HTMLElement).setAttribute(
+    'href',
+    fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
+  );
+};
+
+const showSuccessStatus = (idStatus: GENERIC_STATUS) => {
+  document.body.classList.remove('loadingOperations');
+  TX_ACCEPTED.decode(idStatus).map(_ =>
+    document
+      .querySelectorAll('[data-response]')
+      .forEach(i => (i.getAttribute('data-response') === '1' ? null : i.remove())),
+  );
+  (document.getElementById('response__continue') as HTMLElement).setAttribute(
+    'href',
+    fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
+  );
+};
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {

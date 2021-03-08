@@ -2071,6 +2071,7 @@ definitions:
       - amount
       - id
       - idPayment
+      - urlRedirectEc
     properties:
       amount:
         $ref: '#/definitions/Amount'

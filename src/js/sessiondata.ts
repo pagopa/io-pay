@@ -28,6 +28,8 @@ export async function actionsCheck() {
   const idPaymentStored: string | null = checkDataStored ? JSON.parse(checkDataStored).idPayment : null;
   const idPaymentByQS: string | null = getUrlParameter('p') !== '' ? getUrlParameter('p') : null;
   const idPayment: string | null = checkDataStored != null ? JSON.parse(checkDataStored).idPayment : idPaymentByQS;
+  const origin: string | null = getUrlParameter('origin') !== '' ? getUrlParameter('origin') : null;
+
   // Trying to avoid a new call to endpoint if we've data stored
   if (idPaymentStored === null) {
     track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value, idPayment });
@@ -62,12 +64,20 @@ export async function actionsCheck() {
                     idPayment: response?.value?.data?.idPayment,
                     amount: response?.value?.data?.amount,
                   });
+                  sessionStorage.setItem(
+                    'originUrlRedirect',
+                    fromNullable(origin).getOrElse(response.value.data.urlRedirectEc),
+                  );
                 } else {
                   // TODO: missinig else #RENDERING_ERROR
                   track(PAYMENT_CHECK_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
-                    code: response?.value.code,
-                    message: response?.value.message,
+                    /* code: response.value,
+                    message: response?.value.message, */
+                    // In the else branch the response is not an error, so it
+                    // doesn't have code and message properties
+                    code: PAYMENT_CHECK_SVR_ERR.value,
+                    message: `payment/check returned ${response.status}`,
                   });
                 }
               },
