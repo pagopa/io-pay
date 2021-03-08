@@ -1,7 +1,4 @@
 import * as t from 'io-ts';
-import mixpanel from 'mixpanel-browser';
-import { track } from '../__mocks__/mocks';
-
 export const PAYMENT_CHECK_INIT = t.literal('PAYMENT_CHECK_INIT');
 export type PAYMENT_CHECK_INIT = t.TypeOf<typeof PAYMENT_CHECK_INIT>;
 
