@@ -1,9 +1,9 @@
 import { fromNullable } from 'fp-ts/lib/Option';
-import { fromLeft, fromPredicate, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
+import { fromLeft, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { Client } from '../../generated/definitions/pagopa/client';
 import { Transaction } from '../../generated/definitions/pagopa/Transaction';
 import { TransactionStatusResponse } from '../../generated/definitions/pagopa/TransactionStatusResponse';
-import { GENERIC_STATUS, TX_ACCEPTED, UNKNOWN } from './TransactionStatesTypes';
+import { UNKNOWN } from './TransactionStatesTypes';
 
 export const resumeTransactionTask = (
   methodCompleted: 'Y' | 'N' | undefined,
