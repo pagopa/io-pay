@@ -2071,6 +2071,7 @@ definitions:
       - amount
       - id
       - idPayment
+      - urlRedirectEc
     properties:
       amount:
         $ref: '#/definitions/Amount'
@@ -2599,6 +2600,8 @@ definitions:
     title: TransactionResponse
   TransactionStatus:
     type: object
+    required:
+        - idStatus
     properties:
       acsUrl:
         type: string

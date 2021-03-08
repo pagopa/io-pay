@@ -19,6 +19,31 @@ import {
   checkStatusTask,
 } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
+import { GENERIC_STATUS, TX_ACCEPTED } from './utils/TransactionStatesTypes';
+
+const showErrorStatus = () => {
+  document.body.classList.remove('loadingOperations');
+  document
+    .querySelectorAll('[data-response]')
+    .forEach(i => (i.getAttribute('data-response') === '3' ? null : i.remove()));
+  (document.getElementById('response__continue') as HTMLElement).setAttribute(
+    'href',
+    fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
+  );
+};
+
+const showSuccessStatus = (idStatus: GENERIC_STATUS) => {
+  document.body.classList.remove('loadingOperations');
+  TX_ACCEPTED.decode(idStatus).map(_ =>
+    document
+      .querySelectorAll('[data-response]')
+      .forEach(i => (i.getAttribute('data-response') === '1' ? null : i.remove())),
+  );
+  (document.getElementById('response__continue') as HTMLElement).setAttribute(
+    'href',
+    fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
+  );
+};
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
@@ -52,6 +77,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         const myJson = (await r.clone().json()) as TransactionStatusResponse;
         // Stop the polling when this condition is false
         return fromNullable(myJson.data.acsUrl).isNone();
+      },
+    ),
+  });
+
+  const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
+    baseUrl: 'http://localhost:8080',
+    fetchApi: constantPollingWithPromisePredicateFetch(
+      DeferredPromise<boolean>().e1,
+      retries,
+      delay,
+      timeout,
+      async (r: Response): Promise<boolean> => {
+        const myJson = (await r.clone().json()) as TransactionStatusResponse;
+        // Stop the polling when this condition is false
+        return r.status === 200 && myJson.data?.finalStatus === false;
       },
     ),
   });
@@ -111,7 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     false,
   );
 
-  await fromPredicate(
+  await fromPredicate<Error, string>(
     idTransaction => idTransaction !== '',
     toError,
   )(getUrlParameter('id'))
@@ -134,8 +174,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           )
           .run();
       },
-      // 3. ACS RESUME step on 3ds2
-      async _ => sessionStorage.clear(),
+      // 3. ACS RESUME and CHECK FINAL STATUS POLLING step on 3ds2
+      async idTransaction =>
+        await getStringFromSessionStorageTask('sessionToken')
+          .chain(sessionToken => resumeTransactionTask(undefined, sessionToken, idTransaction, pmClient))
+          .chain(_ => checkStatusTask(idTransaction, paymentManagerClientWithPollingOnFinalStatus))
+
+          .fold(
+            _ => showErrorStatus(),
+            transactionStatusResponse => showSuccessStatus(transactionStatusResponse.data.idStatus),
+          )
+          .run(),
     )
     .run();
 });

@@ -20,6 +20,8 @@ export async function actionsCheck() {
   const idPaymentStored: string | null = checkDataStored ? JSON.parse(checkDataStored).idPayment : null;
   const idPaymentByQS: string | null = getUrlParameter('p') !== '' ? getUrlParameter('p') : null;
   const idPayment: string | null = checkDataStored != null ? JSON.parse(checkDataStored).idPayment : idPaymentByQS;
+  const origin: string | null = getUrlParameter('origin') !== '' ? getUrlParameter('origin') : null;
+
   // Trying to avoid a new call to endpoint if we've data stored
   if (idPaymentStored === null) {
     fromNullable(idPayment).fold(
@@ -39,6 +41,10 @@ export async function actionsCheck() {
               response => {
                 if (response.status === 200) {
                   sessionStorage.setItem('checkData', JSON.stringify(response.value.data));
+                  sessionStorage.setItem(
+                    'originUrlRedirect',
+                    fromNullable(origin).getOrElse(response.value.data.urlRedirectEc),
+                  );
                 }
               },
             );
