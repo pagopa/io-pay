@@ -1,6 +1,6 @@
 import { toError } from 'fp-ts/lib/Either';
 import { fromNullable } from 'fp-ts/lib/Option';
-import { fromLeft, fromPredicate, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
+import { fromLeft, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
 import { Client } from '../../generated/definitions/pagopa/client';
 import { Transaction } from '../../generated/definitions/pagopa/Transaction';
 import { TransactionStatusResponse } from '../../generated/definitions/pagopa/TransactionStatusResponse';
@@ -17,7 +17,7 @@ import {
   TRANSACTION_RESUME3DS2_STEP1_RESP_ERR,
   TRANSACTION_RESUME3DS2_STEP1_SUCCESS,
 } from './mixpanelHelperInit';
-import { GENERIC_STATUS, TX_ACCEPTED, UNKNOWN } from './TransactionStatesTypes';
+import { UNKNOWN } from './TransactionStatesTypes';
 
 export const resumeTransactionTask = (
   methodCompleted: 'Y' | 'N' | undefined,
@@ -46,7 +46,7 @@ export const resumeTransactionTask = (
     err => {
       // TODO: #RENDERING_ERROR
       track(TRANSACTION_RESUME3DS2_STEP1_SVR_ERR.value, { EVENT_ID: TRANSACTION_RESUME3DS2_STEP1_SVR_ERR.value, err });
-      return fromLeft(err);
+      return fromLeft(UNKNOWN.value);
     }, // to be replaced with logic to handle failures
     errorOrResponse =>
       errorOrResponse.fold(
@@ -60,8 +60,10 @@ export const resumeTransactionTask = (
           } else {
             track(TRANSACTION_RESUME3DS2_STEP1_RESP_ERR.value, {
               EVENT_ID: TRANSACTION_RESUME3DS2_STEP1_RESP_ERR.value,
-              code: responseType?.value.code,
-              message: responseType?.value.message,
+              // code: responseType?.value.code,
+              // message: responseType?.value.message,
+              code: -2,
+              message: 'ERR MSG',
             });
           }
           return responseType.status !== 200 ? fromLeft(UNKNOWN.value) : taskEither.of(responseType.status);
@@ -92,7 +94,7 @@ export const checkStatusTask = (
     err => {
       // TODO: #RENDERING_ERROR
       track(TRANSACTION_POLLING_M_CHECK_SVR_ERR.value, { EVENT_ID: TRANSACTION_POLLING_M_CHECK_SVR_ERR.value, err });
-      return fromLeft(err);
+      return fromLeft(UNKNOWN.value);
     }, // to be replaced with logic to handle failures
     errorOrResponse =>
       errorOrResponse.fold(
