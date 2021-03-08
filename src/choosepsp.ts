@@ -1,12 +1,11 @@
 import * as TE from 'fp-ts/lib/TaskEither';
-// FAKE JSON
-// import psp from './assets/json/psp.json';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { toError } from 'fp-ts/lib/Either';
 import { createClient } from '../generated/definitions/pagopa/client';
 import { retryingFetch } from './utils/fetch';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
+import { modalWindows } from './js/modals';
 
 const pmClient = createClient({
   baseUrl: 'http://localhost:8080',
@@ -19,6 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // initHeader
   initHeader();
+
+  // init modals
+  modalWindows();
 
   const walletStored = sessionStorage.getItem('wallet') || '';
   const checkDataStored = sessionStorage.getItem('checkData') || '';
@@ -58,7 +60,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             name: e?.businessName,
             label: e?.businessName,
             image: e?.logoPSP,
-            commission: e?.fixedCost?.amount / Math.pow(10, e?.fixedCost?.decimalDigits),
+            commission:
+              e?.fixedCost?.amount && e?.fixedCost?.decimalDigits
+                ? e?.fixedCost?.amount / Math.pow(10, e?.fixedCost?.decimalDigits)
+                : 0,
           })),
     )
     .run();
@@ -73,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const template = document.querySelector('[data-template]');
   const positionel = template?.parentNode;
   // eslint-disable-next-line functional/immutable-data
-  const pspOrdered = psp.sort((a, b) => (a.commission > b.commission ? 1 : -1));
+  const pspOrdered = psp ? psp.sort((a, b) => (a.commission > b.commission ? 1 : -1)) : [];
   const documentSubmit = document.querySelector('.windowcont__psp__submit');
 
   pspOrdered.forEach(element => {
@@ -83,20 +88,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newEl = positionel?.appendChild(clonedItem) as HTMLElement;
       const labelEl = newEl.querySelector('.windowcont__psp__label') as HTMLElement;
       const commissionEl = newEl.querySelector('.windowcont__psp__commission span') as HTMLElement;
-      const tagEl = newEl.querySelector('.windowcont__psp__tag span') as HTMLElement;
       if (labelEl) {
         // eslint-disable-next-line functional/immutable-data
-        labelEl.innerText = element.label;
+        labelEl.innerText = element.label || '';
       }
       if (commissionEl) {
         // eslint-disable-next-line functional/immutable-data
         commissionEl.innerText = `€ ${Intl.NumberFormat('it-IT').format(element.commission)}`;
-      }
-      if (element?.tag && element.tag !== '' && tagEl) {
-        // eslint-disable-next-line functional/immutable-data
-        tagEl.innerText = element.tag;
-      } else {
-        tagEl.remove();
       }
 
       newEl.classList.add('d-block');
@@ -113,7 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     documentSubmit?.addEventListener('click', (e: Event) => {
       e.preventDefault();
-      // TO-DO CALL SERVICE
+      // TO-DO CALL SERVICE WITH PUT METHOD
     });
   });
 });
