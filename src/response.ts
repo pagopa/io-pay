@@ -45,62 +45,76 @@ const showSuccessStatus = (idStatus: GENERIC_STATUS) => {
   );
 };
 
+/**
+ * Polling configuration params
+ */
+const retries: number = 10;
+const delay: number = 3000;
+const timeout: Millisecond = 20000 as Millisecond;
+
+/**
+ * Payment Manager Client with polling until the transaction has the methodUrl
+ * and it is in a non final state.
+ */
+const paymentManagerClientWithPollingOnMethod: Client = createClient({
+  baseUrl: 'http://localhost:8080',
+  fetchApi: constantPollingWithPromisePredicateFetch(
+    DeferredPromise<boolean>().e1,
+    retries,
+    delay,
+    timeout,
+    async (r: Response): Promise<boolean> => {
+      const myJson = (await r.clone().json()) as TransactionStatusResponse;
+      return myJson.data.finalStatus === false && fromNullable(myJson.data.methodUrl).isNone();
+    },
+  ),
+});
+
+/**
+ * Payment Manager Client with polling until the transaction has the acsUrl
+ * and it is in a non final state
+ */
+const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
+  baseUrl: 'http://localhost:8080',
+  fetchApi: constantPollingWithPromisePredicateFetch(
+    DeferredPromise<boolean>().e1,
+    retries,
+    delay,
+    timeout,
+    async (r: Response): Promise<boolean> => {
+      const myJson = (await r.clone().json()) as TransactionStatusResponse;
+      return myJson.data.finalStatus === false && fromNullable(myJson.data.acsUrl).isNone();
+    },
+  ),
+});
+
+/**
+ * Payment Manager Client with polling until the transaction is in a final state.
+ */
+const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
+  baseUrl: 'http://localhost:8080',
+  fetchApi: constantPollingWithPromisePredicateFetch(
+    DeferredPromise<boolean>().e1,
+    retries,
+    delay,
+    timeout,
+    async (r: Response): Promise<boolean> => {
+      const myJson = (await r.clone().json()) as TransactionStatusResponse;
+      return r.status === 200 && myJson.data.finalStatus === false;
+    },
+  ),
+});
+
+/**
+ * Payment Manager Client.
+ */
+const pmClient: Client = createClient({
+  baseUrl: 'http://localhost:8080',
+  fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+});
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
-  const retries: number = 10;
-  const delay: number = 3000;
-  const timeout: Millisecond = 20000 as Millisecond;
-
-  const paymentManagerClientWithPollingOnMethod: Client = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: constantPollingWithPromisePredicateFetch(
-      DeferredPromise<boolean>().e1,
-      retries,
-      delay,
-      timeout,
-      async (r: Response): Promise<boolean> => {
-        const myJson = (await r.clone().json()) as TransactionStatusResponse;
-        // Stop the polling when this condition is false
-        return fromNullable(myJson.data.methodUrl).isNone();
-      },
-    ),
-  });
-
-  const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: constantPollingWithPromisePredicateFetch(
-      DeferredPromise<boolean>().e1,
-      retries,
-      delay,
-      timeout,
-      async (r: Response): Promise<boolean> => {
-        const myJson = (await r.clone().json()) as TransactionStatusResponse;
-        // Stop the polling when this condition is false
-        return fromNullable(myJson.data.acsUrl).isNone();
-      },
-    ),
-  });
-
-  const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: constantPollingWithPromisePredicateFetch(
-      DeferredPromise<boolean>().e1,
-      retries,
-      delay,
-      timeout,
-      async (r: Response): Promise<boolean> => {
-        const myJson = (await r.clone().json()) as TransactionStatusResponse;
-        // Stop the polling when this condition is false
-        return r.status === 200 && myJson.data?.finalStatus === false;
-      },
-    ),
-  });
-
-  const pmClient: Client = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
-  });
-
   document.body.classList.add('loadingOperations');
 
   // idpayguard
@@ -127,25 +141,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener(
     'message',
     async function (e) {
-      // Addresses must be static
-      if (e.origin !== 'http://localhost:7071' || e.data !== '3DS.Notification.Received') {
-        return;
-      } else {
-        debug('MESSAGE RECEIVED: ', e.data);
-        await getTransactionFromSessionStorageTask('payment')
-          .chain(transaction =>
-            getStringFromSessionStorageTask('sessionToken')
-              .chain(sessionToken => resumeTransactionTask('Y', sessionToken, transaction.token, pmClient))
-              .chain(_ => checkStatusTask(transaction.token, paymentManagerClientWithPollingOnPreAcs)),
-          )
+      await fromPredicate<Error, MessageEvent<any>>(
+        e1 => e1.origin === 'http://localhost:7071' && e1.data === '3DS.Notification.Received',
+        toError,
+      )(e)
+        .fold(
+          _ => null, // TODO error handle
+          _ =>
+            getTransactionFromSessionStorageTask('payment')
+              .chain(transaction =>
+                getStringFromSessionStorageTask('sessionToken')
+                  .chain(sessionToken => resumeTransactionTask('Y', sessionToken, transaction.token, pmClient))
+                  .chain(_ => checkStatusTask(transaction.token, paymentManagerClientWithPollingOnPreAcs)),
+              )
 
-          .fold(
-            _ => debug('To handle error'),
-            transactionStatus =>
-              start3DS2AcsChallengeStep(transactionStatus.data.acsUrl, transactionStatus.data.params, document.body),
-          )
-          .run();
-      }
+              .fold(
+                _ => debug('To handle error'),
+                transactionStatus =>
+                  start3DS2AcsChallengeStep(
+                    transactionStatus.data.acsUrl,
+                    transactionStatus.data.params,
+                    document.body,
+                  ),
+              )
+              .run(),
+        )
+        .run();
     },
 
     false,
