@@ -1,7 +1,9 @@
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { toError } from 'fp-ts/lib/Either';
+import { fromNullable } from 'fp-ts/lib/Option';
 import { createClient } from '../generated/definitions/pagopa/client';
+import { WalletResponse } from '../generated/definitions/pagopa/WalletResponse';
 import { retryingFetch } from './utils/fetch';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
@@ -12,6 +14,7 @@ const pmClient = createClient({
   fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
 });
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
   // idpayguard
   idpayguard();
@@ -36,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const language = 'it';
   const idWallet = wallet.idWallet;
 
-  const psp = await TE.tryCatch(
+  const pspL = await TE.tryCatch(
     () =>
       pmClient.getPspListUsingGET({
         Bearer,
@@ -49,24 +52,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     toError,
   )
     .fold(
-      () => [], // to be replaced with logic to handle failures
+      () => undefined, // to be replaced with logic to handle failures
       myResExt =>
-        myResExt
-          .fold(
-            () => [],
-            myRes => (myRes.status === 200 ? myRes.value.data?.pspList : []),
-          )
-          .map(e => ({
-            name: e?.businessName,
-            label: e?.businessName,
-            image: e?.logoPSP,
-            commission:
-              e?.fixedCost?.amount && e?.fixedCost?.decimalDigits
-                ? e?.fixedCost?.amount / Math.pow(10, e?.fixedCost?.decimalDigits)
-                : 0,
-          })),
+        myResExt.fold(
+          () => [],
+          myRes => (myRes?.status === 200 ? myRes?.value?.data?.pspList : []),
+        ),
     )
     .run();
+
+  const psp = pspL?.map(e => ({
+    name: e?.businessName,
+    label: e?.businessName,
+    image: e?.logoPSP,
+    commission:
+      e?.fixedCost?.amount && e?.fixedCost?.decimalDigits
+        ? e?.fixedCost?.amount / Math.pow(10, e?.fixedCost?.decimalDigits)
+        : 0,
+    idPsp: e?.id,
+  }));
 
   function eventList(el: HTMLElement) {
     const pspActiveElement = document.querySelector('.windowcont__psp__item.active') as HTMLElement;
@@ -97,6 +101,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         commissionEl.innerText = `€ ${Intl.NumberFormat('it-IT').format(element.commission)}`;
       }
 
+      newEl.setAttribute('idpsp', fromNullable(element.idPsp).getOrElse(-1).toString());
+
       newEl.classList.add('d-block');
 
       newEl.addEventListener('click', e => {
@@ -109,9 +115,42 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    documentSubmit?.addEventListener('click', (e: Event) => {
-      e.preventDefault();
-      // TO-DO CALL SERVICE WITH PUT METHOD
-    });
+    documentSubmit?.addEventListener(
+      'click',
+      async (e: Event) => {
+        e.preventDefault();
+        // TO-DO CALL SERVICE WITH PUT METHOD
+        const idPsp = document.querySelector('.windowcont__psp__list .active') as HTMLElement;
+
+        await TE.tryCatch(
+          () =>
+            pmClient.updateWalletUsingPUT({
+              Bearer,
+              id: idWallet,
+              walletRequest: {
+                data: {
+                  // eslint-disable-next-line radix
+                  idPsp: parseInt(fromNullable(idPsp.getAttribute('idpsp')).getOrElse('-1')), // Just set the ID of the new PSP
+                },
+              },
+            }),
+          toError,
+        )
+          .fold(
+            () => undefined, // to be replaced with logic to handle failures
+            myResExt =>
+              myResExt.fold(
+                () => undefined,
+                res => {
+                  const updateWalletRsp = WalletResponse.decode(res.value).getOrElse({ data: {} });
+                  sessionStorage.setItem('wallet', JSON.stringify(updateWalletRsp.data));
+                  window.location.replace('check.html');
+                },
+              ),
+          )
+          .run();
+      },
+      true,
+    );
   });
 });
