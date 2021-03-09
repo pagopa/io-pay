@@ -114,43 +114,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
     }
-
-    documentSubmit?.addEventListener(
-      'click',
-      async (e: Event) => {
-        e.preventDefault();
-        // TO-DO CALL SERVICE WITH PUT METHOD
-        const idPsp = document.querySelector('.windowcont__psp__list .active') as HTMLElement;
-
-        await TE.tryCatch(
-          () =>
-            pmClient.updateWalletUsingPUT({
-              Bearer,
-              id: idWallet,
-              walletRequest: {
-                data: {
-                  // eslint-disable-next-line radix
-                  idPsp: parseInt(fromNullable(idPsp.getAttribute('idpsp')).getOrElse('-1')), // Just set the ID of the new PSP
-                },
-              },
-            }),
-          toError,
-        )
-          .fold(
-            () => undefined, // to be replaced with logic to handle failures
-            myResExt =>
-              myResExt.fold(
-                () => undefined,
-                res => {
-                  const updateWalletRsp = WalletResponse.decode(res.value).getOrElse({ data: {} });
-                  sessionStorage.setItem('wallet', JSON.stringify(updateWalletRsp.data));
-                  window.location.replace('check.html');
-                },
-              ),
-          )
-          .run();
-      },
-      true,
-    );
   });
+  documentSubmit?.addEventListener(
+    'click',
+    async (e: Event) => {
+      e.preventDefault();
+      const idPsp = document.querySelector('.windowcont__psp__list .active') as HTMLElement;
+      // update Wallet
+      await TE.tryCatch(
+        () =>
+          pmClient.updateWalletUsingPUT({
+            Bearer,
+            id: idWallet,
+            walletRequest: {
+              data: {
+                // eslint-disable-next-line radix
+                idPsp: parseInt(fromNullable(idPsp.getAttribute('idpsp')).getOrElse('-1')), // Just set the ID of the new PSP
+              },
+            },
+          }),
+        toError,
+      )
+        .fold(
+          () => undefined, // to be replaced with logic to handle failures
+          myResExt =>
+            myResExt.fold(
+              () => undefined,
+              res => {
+                const updateWalletRsp = WalletResponse.decode(res.value).getOrElse({ data: {} });
+                sessionStorage.setItem('wallet', JSON.stringify(updateWalletRsp.data));
+                window.location.replace('check.html');
+              },
+            ),
+        )
+        .run();
+    },
+    true,
+  );
 });
