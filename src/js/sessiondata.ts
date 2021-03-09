@@ -4,7 +4,7 @@ import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { toError } from 'fp-ts/lib/Either';
 import { createClient } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
-import { track } from '../__mocks__/mocks';
+import { mixpanel } from '../__mocks__/mocks';
 import {
   PAYMENT_CHECK_INIT,
   PAYMENT_CHECK_NET_ERR,
@@ -32,7 +32,7 @@ export async function actionsCheck() {
 
   // Trying to avoid a new call to endpoint if we've data stored
   if (idPaymentStored === null) {
-    track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value, idPayment });
+    mixpanel.track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value, idPayment });
     fromNullable(idPayment).fold(
       // If undefined
       await tryCatch(
@@ -43,14 +43,14 @@ export async function actionsCheck() {
         // Error on call
         e => {
           // TODO: #RENDERING_ERROR
-          track(PAYMENT_CHECK_NET_ERR.value, { EVENT_ID: PAYMENT_CHECK_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_CHECK_NET_ERR.value, { EVENT_ID: PAYMENT_CHECK_NET_ERR.value, e });
           return toError;
         },
       )
         .fold(
           r => {
             // TODO: #RENDERING_ERROR
-            track(PAYMENT_CHECK_SVR_ERR.value, { EVENT_ID: PAYMENT_CHECK_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, { EVENT_ID: PAYMENT_CHECK_SVR_ERR.value, r });
           },
           myResExt => {
             myResExt.fold(
@@ -59,7 +59,7 @@ export async function actionsCheck() {
                 if (response.status === 200) {
                   sessionStorage.setItem('checkData', JSON.stringify(response.value.data));
                   // TODO: #MIXEVENT PAYMENT_CHECK_SUCCESS
-                  track(PAYMENT_CHECK_SUCCESS.value, {
+                  mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                     EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                     idPayment: response?.value?.data?.idPayment,
                     amount: response?.value?.data?.amount,
@@ -70,7 +70,7 @@ export async function actionsCheck() {
                   );
                 } else {
                   // TODO: missinig else #RENDERING_ERROR
-                  track(PAYMENT_CHECK_RESP_ERR.value, {
+                  mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
                     /* code: response.value,
                     message: response?.value.message, */

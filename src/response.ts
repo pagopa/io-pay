@@ -25,7 +25,7 @@ import {
   THREEDSMETHODURL_STEP1_RESP_ERR,
   THREEDSMETHODURL_STEP1_SUCCESS,
 } from './utils/mixpanelHelperInit';
-import { track } from './__mocks__/mocks';
+import { mixpanel } from './__mocks__/mocks';
 import { GENERIC_STATUS, TX_ACCEPTED } from './utils/TransactionStatesTypes';
 
 const showErrorStatus = () => {
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Addresses must be static
 
       if (e.origin !== 'http://localhost:7071' || e.data !== '3DS.Notification.Received') {
-        track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+        mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
           EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
           ORIGIN: e.origin,
           RESPONSE: e.data,
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // eslint-disable-next-line sonarjs/no-redundant-jump
         return;
       } else {
-        track(THREEDSMETHODURL_STEP1_SUCCESS.value, {
+        mixpanel.track(THREEDSMETHODURL_STEP1_SUCCESS.value, {
           EVENT_ID: THREEDSMETHODURL_STEP1_SUCCESS.value,
           token: '',
         });
@@ -200,14 +200,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           .fold(
             _ => {
-              track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
+              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
                 EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
                 token: idTransaction,
               });
               showErrorStatus();
             },
             transactionStatusResponse => {
-              track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
+              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                 EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
                 token: idTransaction,
               });

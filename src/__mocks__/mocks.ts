@@ -48,7 +48,9 @@ export function getTermAndServices(lang: string): string {
   }
 }
 
-export function track(event_name: string, properties?: any): void {
-  // eslint-disable-next-line no-console
-  console.log(event_name, properties);
-}
+export const mixpanel = {
+  track(event_name: string, properties?: any): void {
+    // eslint-disable-next-line no-console
+    console.log(event_name, properties);
+  },
+};

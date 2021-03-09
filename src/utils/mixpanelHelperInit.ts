@@ -1,7 +1,6 @@
 import * as t from 'io-ts';
 export const PAYMENT_CHECK_INIT = t.literal('PAYMENT_CHECK_INIT');
 export type PAYMENT_CHECK_INIT = t.TypeOf<typeof PAYMENT_CHECK_INIT>;
-
 export const PAYMENT_CHECK_NET_ERR = t.literal('PAYMENT_CHECK_NET_ERR');
 export type PAYMENT_CHECK_NET_ERR = t.TypeOf<typeof PAYMENT_CHECK_NET_ERR>;
 export const PAYMENT_CHECK_SVR_ERR = t.literal('PAYMENT_CHECK_SVR_ERR');
