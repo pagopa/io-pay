@@ -267,6 +267,11 @@ body {
       min-width: 15%;
     }
   }
+  &__dx__info {
+    body.multiplePayment & {
+      display: none !important;
+    }
+  }
 }
 .topbar {
   font-size: 0.875rem;
@@ -290,6 +295,7 @@ body {
   body.page--inputcard,
   body.page--index & {
     font-size: 0.875rem;
+    margin-top: 8rem;
   }
 
   .input-group-prepend {
@@ -461,7 +467,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.85);
     position: fixed;
     z-index: 8999;
     display: none;
@@ -545,7 +551,7 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.85);
     position: fixed;
     z-index: 8999;
     display: block;
@@ -763,6 +769,141 @@ body {
   filter: none;
 }
 
+#openMultiplePaymentWindow {
+  display: none;
+  height: 2rem;
+  width: 2rem;
+  @include media-breakpoint-up(md) {
+    position: absolute;
+    top: 0.25rem;
+    right: -1.75rem;
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+
+  body.multiplePayment & {
+    display: block;
+  }
+}
+#multiplePaymentWindow {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  display: none;
+  align-items: flex-end;
+  flex-direction: column;
+  &.show {
+    display: flex;
+    .mpmodal {
+      -webkit-animation: slide-top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      animation: slide-top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      @include media-breakpoint-up(md) {
+        -webkit-animation: slide-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        animation: slide-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      }
+    }
+  }
+}
+.mpmodal {
+  background-color: #fff;
+  padding: 2rem 1.5rem;
+  position: absolute;
+  bottom: 0;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  width: 100%;
+  user-select: none;
+  height: 70vh;
+
+  @include media-breakpoint-up(md) {
+    width: 33vw;
+    height: 100vh;
+    position: relative;
+    bottom: auto;
+    border-radius: 0;
+  }
+  &__list {
+    overflow-y: auto;
+  }
+  &__title {
+    font-size: 1.5rem;
+    color: #17324d;
+    font-weight: 700;
+    @include media-breakpoint-up(md) {
+      font-size: 2rem;
+    }
+  }
+  &__item {
+    display: none;
+    &__header {
+      cursor: pointer;
+      & > * {
+        pointer-events: none;
+      }
+    }
+    &__detail {
+      display: none;
+      .mpmodal__item__header.expanded + & {
+        display: block;
+      }
+    }
+    &__expand {
+      fill: #0073e6;
+      .mpmodal__item__header.expanded & {
+        display: none;
+      }
+    }
+    &__collapse {
+      fill: #0073e6;
+      display: none;
+      .mpmodal__item__header.expanded & {
+        display: block;
+      }
+    }
+    &__title {
+      color: #17324d;
+      font-weight: 600;
+      font-size: 1.1rem;
+      max-width: 80%;
+      margin-right: 0.5rem;
+      @include media-breakpoint-up(md) {
+        margin-right: auto;
+      }
+    }
+    &__amount {
+      color: #0073e6;
+      font-weight: 600;
+      font-size: 1rem;
+      white-space: pre;
+    }
+    &__tot {
+      color: #17324d;
+      font-weight: 600;
+      font-size: 1.3rem;
+    }
+  }
+  &__label {
+    color: #5c6f82;
+  }
+  &__value {
+    color: #17324d;
+    font-weight: 600;
+  }
+  &__row {
+    border-bottom: 1px solid #e6e9f2;
+    padding: 0.75rem 0;
+  }
+  &__tip {
+    font-size: 0.9rem;
+    color: #5c6f82;
+    line-height: 1.3;
+  }
+}
+
 // MODAL animations
 
 @keyframes scale {
@@ -817,5 +958,26 @@ body {
   100% {
     -webkit-transform: translateY(0);
     transform: translateY(0);
+  }
+}
+
+@-webkit-keyframes slide-left {
+  0% {
+    -webkit-transform: translateX(120%);
+    transform: translateX(120%);
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+}
+@keyframes slide-left {
+  0% {
+    -webkit-transform: translateX(120%);
+    transform: translateX(120%);
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
   }
 }
