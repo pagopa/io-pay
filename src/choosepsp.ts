@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newEl = positionel?.appendChild(clonedItem) as HTMLElement;
       const labelEl = newEl.querySelector('.windowcont__psp__label') as HTMLElement;
       const commissionEl = newEl.querySelector('.windowcont__psp__commission span') as HTMLElement;
+      const logoEl = newEl.querySelector('.windowcont__psp__logo') as HTMLImageElement;
       if (labelEl) {
         // eslint-disable-next-line functional/immutable-data
         labelEl.innerText = element.label || '';
@@ -99,6 +100,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (commissionEl) {
         // eslint-disable-next-line functional/immutable-data
         commissionEl.innerText = `€ ${Intl.NumberFormat('it-IT').format(element.commission)}`;
+      }
+      if (logoEl && element.image) {
+        logoEl.setAttribute('src', element.image);
+      } else {
+        logoEl.remove();
       }
 
       newEl.setAttribute('idpsp', fromNullable(element.idPsp).getOrElse(-1).toString());
