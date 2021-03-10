@@ -11,11 +11,12 @@ import { initHeader } from './js/header';
 import idpayguard from './js/idpayguard';
 import { retryingFetch } from './utils/fetch';
 import { initDropdowns } from './js/dropdowns';
+import { getConfigOrThrow } from './utils/config';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
   const pmClient = createClient({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
 

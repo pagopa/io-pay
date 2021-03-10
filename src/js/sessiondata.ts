@@ -4,6 +4,7 @@ import { toError } from 'fp-ts/lib/Either';
 import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { createClient } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
+import { getConfigOrThrow } from '../utils/config';
 import { getUrlParameter } from './urlUtilities';
 
 export async function actionsCheck() {
@@ -11,7 +12,7 @@ export async function actionsCheck() {
 
   // This instance on PM Client calls the  of PM
   const pmClient = createClient({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
   // const checkData = checkdata;
