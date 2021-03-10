@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           )
 
           .fold(
-            _ => debug('To handle error'),
+            _ => undefined,
             transactionStatus =>
               start3DS2AcsChallengeStep(transactionStatus.data.acsUrl, transactionStatus.data.params, document.body),
           )

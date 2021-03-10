@@ -2,6 +2,7 @@ import { Server } from 'http';
 import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import express from 'express';
+import { fromNullable } from 'fp-ts/lib/Option';
 import { getIdPayment } from '../../utils/testUtils';
 import {
   PAYMENT_CHECK_INIT,
@@ -17,7 +18,16 @@ import {
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_SUCCESS,
   TRANSACTION_POLLING_M_CHECK_INIT,
+  THREEDSMETHODURL_STEP1_REQ,
+  THREEDSMETHODURL_STEP1_SUCCESS,
+  TRANSACTION_RESUME3DS2_INIT,
+  TRANSACTION_RESUME3DS2_SUCCESS,
+  TRANSACTION_POLLING_M_CHECK_SUCCESS,
+  THREEDSACSCHALLENGEURL_STEP2_REQ,
+  THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
 } from '../../utils/mixpanelHelperInit';
+import { TransactionStatusResponse } from '../../../generated/definitions/pagopa/TransactionStatusResponse';
+import { TX_ACCEPTED } from '../../utils/TransactionStatesTypes';
 
 // eslint-disable-next-line functional/no-let
 let nEv: number = -1;
@@ -35,8 +45,25 @@ const nEventsFlow = [
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_SUCCESS,
   TRANSACTION_POLLING_M_CHECK_INIT,
+  TRANSACTION_POLLING_M_CHECK_SUCCESS,
+  THREEDSMETHODURL_STEP1_REQ,
+  THREEDSMETHODURL_STEP1_SUCCESS,
+  TRANSACTION_RESUME3DS2_INIT,
+  TRANSACTION_RESUME3DS2_SUCCESS,
+  TRANSACTION_POLLING_M_CHECK_INIT,
+  TRANSACTION_POLLING_M_CHECK_SUCCESS,
+  THREEDSACSCHALLENGEURL_STEP2_REQ,
+  TRANSACTION_RESUME3DS2_INIT,
+  TRANSACTION_RESUME3DS2_SUCCESS,
+  TRANSACTION_POLLING_M_CHECK_INIT,
+  TRANSACTION_POLLING_M_CHECK_SUCCESS,
+  THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
 ];
 
+// set test timeout to support entire payment flow
+jest.setTimeout(30000);
+
+// eslint-disable-next-line sonarjs/cognitive-complexity
 describe('mixpanel sequence events page check', () => {
   const SRV_PORT = process.env.IOPAY_DEV_SERVER_PORT ? parseInt(process.env.IOPAY_DEV_SERVER_PORT, 10) : 1234;
   const SRV_HOST = process.env.IOPAY_DEV_SERVER_HOST as string;
@@ -80,7 +107,7 @@ describe('mixpanel sequence events page check', () => {
     await myBrowser.close();
   });
 
-  it('should call mixpanel init and success events on check page', async () => {
+  it('should call mixpanel init and success events for payment workflow', async () => {
     // get a good idPayment, using PM control interface
     const myIdPayment = await getIdPayment(PM_DOCK_HOST, PM_DOCK_CTRL_PORT.toString());
     const page = await myBrowser.newPage();
@@ -93,7 +120,9 @@ describe('mixpanel sequence events page check', () => {
 
     page.on('console', message => {
       const eventId = `${message.text().substring(0, message.text().indexOf(' '))}`;
-      expect(nEventsFlow[++nEv]?.decode(eventId).isRight()).toEqual(true);
+      if (message.type() === 'log') {
+        expect(nEventsFlow[++nEv]?.value).toEqual(eventId);
+      }
     });
 
     // check
@@ -155,6 +184,54 @@ describe('mixpanel sequence events page check', () => {
     ]);
 
     expect(pay3ds2Response.status()).toEqual(200);
+
+    // polling method Step and Acs redirect
+    // eslint-disable-next-line functional/no-let
+    let waitForMethodUrl = true;
+
+    while (waitForMethodUrl) {
+      const [transactionCheck] = await Promise.all([
+        page.waitForResponse(
+          response => response.request().method() === 'GET' && /actions\/check/.test(response.request().url()),
+        ),
+      ]);
+      const jsonResponse = (await transactionCheck.json()) as TransactionStatusResponse;
+
+      waitForMethodUrl = jsonResponse.data.finalStatus === false && fromNullable(jsonResponse.data.methodUrl).isNone();
+    }
+
+    // Submit in ACS page and return on response page
+    const acsSubmit = '#formChallenge > .btn.btn-primary';
+
+    await page.waitForSelector(acsSubmit);
+    await page.click(acsSubmit);
+
+    // Polling to wait final transaction result
+    // eslint-disable-next-line functional/no-let
+    let waitForFinalStatus = true;
+    // eslint-disable-next-line functional/no-let
+    let jsonResponse;
+
+    while (waitForFinalStatus) {
+      const [transactionCheck] = await Promise.all([
+        page.waitForResponse(
+          response => response.request().method() === 'GET' && /actions\/check/.test(response.request().url()),
+        ),
+      ]);
+      jsonResponse = (await transactionCheck.json()) as TransactionStatusResponse;
+
+      waitForFinalStatus = jsonResponse.data.finalStatus === false;
+    }
+
+    // Check final succes result of transaction
+    expect(jsonResponse.data.finalStatus).toEqual(true);
+    expect(jsonResponse.data.idStatus).toEqual(TX_ACCEPTED.value);
+    const finalResult =
+      'body > div > div.container.flex-fill.main > div > div > div.windowcont__response > div > div.h3.text-center';
+    await page.waitForSelector(finalResult);
+    const element = await page.$(finalResult);
+    const successDescription = await page.evaluate(el => el.textContent, element);
+    expect(successDescription).toContain("Grazie, l'operazione è stata eseguita con successo!");
 
     await page.close();
   });

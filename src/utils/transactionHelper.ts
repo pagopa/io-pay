@@ -11,11 +11,11 @@ import {
   TRANSACTION_POLLING_M_CHECK_SVR_ERR,
   TRANSACTION_POLLING_M_CHECK_SUCCESS,
   TRANSACTION_POLLING_M_CHECK_RESP_ERR,
-  TRANSACTION_RESUME3DS2_STEP1_INIT,
-  TRANSACTION_RESUME3DS2_STEP1_NET_ERR,
-  TRANSACTION_RESUME3DS2_STEP1_SVR_ERR,
-  TRANSACTION_RESUME3DS2_STEP1_RESP_ERR,
-  TRANSACTION_RESUME3DS2_STEP1_SUCCESS,
+  TRANSACTION_RESUME3DS2_INIT,
+  TRANSACTION_RESUME3DS2_NET_ERR,
+  TRANSACTION_RESUME3DS2_SVR_ERR,
+  TRANSACTION_RESUME3DS2_RESP_ERR,
+  TRANSACTION_RESUME3DS2_SUCCESS,
 } from './mixpanelHelperInit';
 import { UNKNOWN } from './TransactionStatesTypes';
 
@@ -25,8 +25,8 @@ export const resumeTransactionTask = (
   idTransaction: string,
   paymentManagerClient: Client,
 ): TaskEither<UNKNOWN, number> => {
-  mixpanel.track(TRANSACTION_RESUME3DS2_STEP1_INIT.value, {
-    EVENT_ID: TRANSACTION_RESUME3DS2_STEP1_INIT.value,
+  mixpanel.track(TRANSACTION_RESUME3DS2_INIT.value, {
+    EVENT_ID: TRANSACTION_RESUME3DS2_INIT.value,
     token: idTransaction,
     methodCompleted,
   });
@@ -39,8 +39,8 @@ export const resumeTransactionTask = (
       }),
     e => {
       // TODO: #RENDERING_ERROR
-      mixpanel.track(TRANSACTION_RESUME3DS2_STEP1_NET_ERR.value, {
-        EVENT_ID: TRANSACTION_RESUME3DS2_STEP1_NET_ERR.value,
+      mixpanel.track(TRANSACTION_RESUME3DS2_NET_ERR.value, {
+        EVENT_ID: TRANSACTION_RESUME3DS2_NET_ERR.value,
         e,
       });
       return toError;
@@ -48,8 +48,8 @@ export const resumeTransactionTask = (
   ).foldTaskEither(
     err => {
       // TODO: #RENDERING_ERROR
-      mixpanel.track(TRANSACTION_RESUME3DS2_STEP1_SVR_ERR.value, {
-        EVENT_ID: TRANSACTION_RESUME3DS2_STEP1_SVR_ERR.value,
+      mixpanel.track(TRANSACTION_RESUME3DS2_SVR_ERR.value, {
+        EVENT_ID: TRANSACTION_RESUME3DS2_SVR_ERR.value,
         err,
       });
       return fromLeft(UNKNOWN.value);
@@ -59,13 +59,13 @@ export const resumeTransactionTask = (
         () => fromLeft(UNKNOWN.value),
         responseType => {
           if (responseType.status === 200) {
-            mixpanel.track(TRANSACTION_RESUME3DS2_STEP1_SUCCESS.value, {
-              EVENT_ID: TRANSACTION_RESUME3DS2_STEP1_SUCCESS.value,
+            mixpanel.track(TRANSACTION_RESUME3DS2_SUCCESS.value, {
+              EVENT_ID: TRANSACTION_RESUME3DS2_SUCCESS.value,
               token: idTransaction,
             });
           } else {
-            mixpanel.track(TRANSACTION_RESUME3DS2_STEP1_RESP_ERR.value, {
-              EVENT_ID: TRANSACTION_RESUME3DS2_STEP1_RESP_ERR.value,
+            mixpanel.track(TRANSACTION_RESUME3DS2_RESP_ERR.value, {
+              EVENT_ID: TRANSACTION_RESUME3DS2_RESP_ERR.value,
               // code: responseType?.value.code,
               // message: responseType?.value.message,
               code: -2,
