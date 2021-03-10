@@ -12,6 +12,7 @@ import {
   PAYMENT_CHECK_SUCCESS,
   PAYMENT_CHECK_SVR_ERR,
 } from '../utils/mixpanelHelperInit';
+import { getConfigOrThrow } from '../utils/config';
 import { getUrlParameter } from './urlUtilities';
 
 export async function actionsCheck() {
@@ -19,7 +20,7 @@ export async function actionsCheck() {
 
   // This instance on PM Client calls the  of PM
   const pmClient = createClient({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
   // const checkData = checkdata;

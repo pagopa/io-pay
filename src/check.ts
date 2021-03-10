@@ -1,5 +1,4 @@
 /* eslint-disable complexity */
-import { debug } from 'console';
 import { toError } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
@@ -20,11 +19,12 @@ import {
   PAYMENT_PAY3DS2_SVR_ERR,
 } from './utils/mixpanelHelperInit';
 import { mixpanel } from './__mocks__/mocks';
+import { getConfigOrThrow } from './utils/config';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
   const pmClient: Client = createClient({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
 
@@ -178,14 +178,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     statusMessage: myRes?.value?.data?.statusMessage,
                     idPayment: myRes?.value?.data?.nodoIdPayment,
                   });
+                  return JSON.stringify(myRes.value.data);
                 } else {
                   mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
-                    code: myRes?.value?.code,
-                    message: myRes?.value?.message,
+                    code: PAYMENT_PAY3DS2_RESP_ERR.value,
+                    message: PAYMENT_PAY3DS2_RESP_ERR.value,
                   });
+                  return 'fakePayment';
                 }
-                return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakePayment';
               },
             );
             sessionStorage.setItem('payment', paymentResp);

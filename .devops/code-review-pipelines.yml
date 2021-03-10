@@ -73,6 +73,17 @@ stages:
             yarn generate
           displayName: 'Generate definitions'
 
+        - bash: |
+            export $(grep -v '^#' .env.local | xargs)
+            echo 'IO_PAY_PAYMENT_MANAGER_HOST: $IO_PAY_PAYMENT_MANAGER_HOST'
+            echo 'IO_PAY_FUNCTIONS_HOST: $IO_PAY_FUNCTIONS_HOST'
+            chmod +x env.sh && source env.sh
+            yarn build
+          env:
+            IO_PAY_PAYMENT_MANAGER_HOST: $(IO_PAY_PAYMENT_MANAGER_HOST)
+            IO_PAY_FUNCTIONS_HOST: $(IO_PAY_FUNCTIONS_HOST)
+          displayName: 'Build files'
+          
         - script: |
             yarn test:coverage
           displayName: 'Unit tests exec'
