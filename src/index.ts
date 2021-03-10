@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (checkedFields?.length === emailformInputs?.length) {
       emailformSubmit?.removeAttribute('disabled');
     } else {
-      emailformSubmit?.setAttribute('disabled', '1'); // TODO: type should be bool
+      emailformSubmit?.setAttribute('disabled', '1'); // FIXME: type should be bool
     }
   }
   // Event to check e-mail field value when user wrote something
