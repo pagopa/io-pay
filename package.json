@@ -25,7 +25,7 @@
     "build:test-cases": "parcel build src/__integrations__/testCases/* --out-dir distTest",
     "build:index": "parcel build src/index.ts ",
     "build:template": "parcel build src/*.pug",
-    "prestart": "ts-node script/generateTestingUrl.ts",
+    "prestart": "export $(grep -v '^#' .env.local | xargs) && chmod +x env.sh && source env.sh && ts-node script/generateTestingUrl.ts",
     "start": "parcel src/*.pug",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md"
@@ -42,6 +42,7 @@
     "@types/parcel-bundler": "^1.12.3",
     "@types/puppeteer": "^5.4.2",
     "@types/tingle.js": "^0.13.1",
+    "@types/mixpanel-browser": "^2.35.6",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "abort-controller": "^3.0.0",
@@ -88,7 +89,8 @@
   },
   "dependencies": {
     "assets": "^3.0.1",
-    "card-validator": "^8.1.0"
+    "card-validator": "^8.1.0",
+    "mixpanel-browser": "^2.41.0"
   },
   "resolutions": {
     "fp-ts": "1.17.4"

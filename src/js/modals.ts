@@ -17,6 +17,7 @@ const modalWindows = () => {
     modals[modalName] = new Tingle.modal({
       footer: true,
       cssClass: modalCss.split(' '),
+      closeMethods: ['button'],
       onOpen: () => {
         const customClose = modals[modalName].modalBox.querySelector('.modalwindow__close');
         if (customClose !== null) {

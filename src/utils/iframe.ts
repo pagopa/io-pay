@@ -1,3 +1,6 @@
+import { mixpanel } from '../__mocks__/mocks';
+import { THREEDSACSCHALLENGEURL_STEP2_REQ, THREEDSMETHODURL_STEP1_REQ } from './mixpanelHelperInit';
+
 function createForm(formName, formAction, formTarget, inputs) {
   const form: HTMLFormElement = Object.assign(document.createElement('form'), {
     name: formName,
@@ -35,6 +38,9 @@ export function createIFrame(container, id, name) {
 
 export function start3DS2MethodStep(threeDSMethodUrl, threeDSMethodData, myIFrame) {
   // container should be an iframe
+  mixpanel.track(THREEDSMETHODURL_STEP1_REQ.value, {
+    EVENT_ID: THREEDSMETHODURL_STEP1_REQ.value,
+  });
   const html = document.createElement('html');
   const body = document.createElement('body');
   const form = createForm('threeDSMethodForm', threeDSMethodUrl, myIFrame.name, {
@@ -52,6 +58,10 @@ export function start3DS2MethodStep(threeDSMethodUrl, threeDSMethodData, myIFram
 }
 
 export function start3DS2AcsChallengeStep(acsUrl, params, container) {
+  mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_REQ.value, {
+    EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_REQ.value,
+    acsUrl,
+  });
   const form = createForm('acsChallengeForm', acsUrl, '_self', params);
   container.appendChild(form);
   form.submit();

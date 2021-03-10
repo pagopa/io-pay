@@ -7,6 +7,7 @@ html(lang='it')
         link(href="scss/style.scss",rel="stylesheet")
         script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
         script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
+        script(src="env-config.js")
         script(src="check.ts")
         meta(charset="utf-8")
         meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
@@ -23,7 +24,7 @@ html(lang='it')
                                 .h3.ml-auto(id="check__totamount") 
                             .windowcont__paywith.d-flex.py-2.mt-2
                                 .font-weight-bold Paga con:
-                                a(href="inputcard.pug").text-decoration-none.font-weight-bold.ml-auto Modifica
+                                a(href="choosepsp.pug").text-decoration-none.font-weight-bold.ml-auto Modifica
                             .windowcont__recapcc.mt-2.mb-4
                                 .windowcont__recapcc__inner.p-4.rounded.shadow.d-flex.flex-column.justify-content-between
                                     .text-monospace(id="check__creditcardnumber") 

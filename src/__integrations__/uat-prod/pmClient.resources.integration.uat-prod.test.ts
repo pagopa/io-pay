@@ -88,12 +88,12 @@ describe('Endpoint resources test suite for UAT/PROD PM', () => {
         err => (err.pop()?.value as Response)?.status,
         myRes => myRes.value?.data?.is3ds2,
       ),
-    ).toEqual('false');
+    ).toEqual('true');
     expect(
       (await pmClientPROD.getResourcesUsingGET({ language: 'it' })).fold(
         err => (err.pop()?.value as Response)?.status,
         myRes => myRes.value?.data?.is3ds2,
       ),
-    ).toEqual('false');
+    ).toEqual('true');
   });
 });

@@ -19,7 +19,17 @@ import {
   checkStatusTask,
 } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
+import {
+  THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
+  THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
+  THREEDSMETHODURL_STEP1_RESP_ERR,
+  THREEDSMETHODURL_STEP1_SUCCESS,
+} from './utils/mixpanelHelperInit';
+import { mixpanel } from './__mocks__/mocks';
 import { GENERIC_STATUS, TX_ACCEPTED } from './utils/TransactionStatesTypes';
+import { getConfigOrThrow } from './utils/config';
+
+const config = getConfigOrThrow();
 
 const showErrorStatus = () => {
   document.body.classList.remove('loadingOperations');
@@ -142,13 +152,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     'message',
     async function (e) {
       await fromPredicate<Error, MessageEvent<any>>(
+        // Addresses must be static
         e1 => e1.origin === 'http://localhost:7071' && e1.data === '3DS.Notification.Received',
         toError,
       )(e)
         .fold(
-          _ => null, // TODO error handle
           _ =>
-            getTransactionFromSessionStorageTask('payment')
+            mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+              EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
+              ORIGIN: e.origin,
+              RESPONSE: e.data,
+              token: '',
+            }), // TODO error handle
+          _ => {
+            mixpanel.track(THREEDSMETHODURL_STEP1_SUCCESS.value, {
+              EVENT_ID: THREEDSMETHODURL_STEP1_SUCCESS.value,
+              token: '',
+            });
+            void getTransactionFromSessionStorageTask('payment')
               .chain(transaction =>
                 getStringFromSessionStorageTask('sessionToken')
                   .chain(sessionToken => resumeTransactionTask('Y', sessionToken, transaction.token, pmClient))
@@ -164,7 +185,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.body,
                   ),
               )
-              .run(),
+              .run();
+          },
         )
         .run();
     },
@@ -196,16 +218,29 @@ document.addEventListener('DOMContentLoaded', async () => {
           .run();
       },
       // 3. ACS RESUME and CHECK FINAL STATUS POLLING step on 3ds2
-      async idTransaction =>
+      async idTransaction => {
         await getStringFromSessionStorageTask('sessionToken')
           .chain(sessionToken => resumeTransactionTask(undefined, sessionToken, idTransaction, pmClient))
           .chain(_ => checkStatusTask(idTransaction, paymentManagerClientWithPollingOnFinalStatus))
 
           .fold(
-            _ => showErrorStatus(),
-            transactionStatusResponse => showSuccessStatus(transactionStatusResponse.data.idStatus),
+            _ => {
+              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
+                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
+                token: idTransaction,
+              });
+              showErrorStatus();
+            },
+            transactionStatusResponse => {
+              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
+                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
+                token: idTransaction,
+              });
+              showSuccessStatus(transactionStatusResponse.data.idStatus);
+            },
           )
-          .run(),
+          .run();
+      },
     )
     .run();
 });
