@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     documentSubmit?.removeAttribute('disabled');
   }
 
-  const template = document.querySelector('[data-template]');
+  const template = document.querySelector('[data-template="pspitem"]');
   const positionel = template?.parentNode;
   // eslint-disable-next-line functional/immutable-data
   const pspOrdered = psp ? psp.sort((a, b) => (a.commission > b.commission ? 1 : -1)) : [];
