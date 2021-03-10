@@ -19,7 +19,7 @@ import {
   PAYMENT_PAY3DS2_SUCCESS,
   PAYMENT_PAY3DS2_SVR_ERR,
 } from './utils/mixpanelHelperInit';
-import { track } from './__mocks__/mocks';
+import { mixpanel } from './__mocks__/mocks';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         workPhone: '3336666666',
       };
 
-      track(PAYMENT_PAY3DS2_INIT.value, {
+      mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
         EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
         idPayment: checkData.idPayment,
       });
@@ -157,21 +157,21 @@ document.addEventListener('DOMContentLoaded', () => {
           }),
         e => {
           // TODO: #RENDERING_ERROR
-          track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value, e });
           return toError;
         },
       )
         .fold(
           r => {
             // TODO: #RENDERING_ERROR
-            track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value, r });
           }, // to be replaced with logic to handle failures
           myResExt => {
             const paymentResp = myResExt.fold(
               () => 'fakePayment',
               myRes => {
                 if (myRes.status === 200) {
-                  track(PAYMENT_PAY3DS2_SUCCESS.value, {
+                  mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
                     token: myRes?.value?.data?.token,
                     idStatus: myRes?.value?.data?.idStatus,
@@ -179,10 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     idPayment: myRes?.value?.data?.nodoIdPayment,
                   });
                 } else {
-                  track(PAYMENT_PAY3DS2_RESP_ERR.value, {
+                  mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
-                    code: myRes?.value.code,
-                    message: myRes?.value.message,
+                    code: myRes?.value?.code,
+                    message: myRes?.value?.message,
                   });
                 }
                 return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakePayment';
