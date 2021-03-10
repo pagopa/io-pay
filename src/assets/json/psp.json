@@ -1,30 +1,114 @@
 [
-    {
-        "name":"Intesa Sanpaolo",
-        "label":"Intesa Sanpaolo",
-        "image":"",
-        "commission":1.25,
-        "tag": "Donazioni"
-    },
-    {
-        "name":"Unicredit",
-        "label":"Unicredit",
-        "image":"",
-        "commission":2,
-        "tag":""
-    },
-    {
-        "name":"Postepay",
-        "label":"Postepay",
-        "image":"",
-        "commission":0.5,
-        "tag": "Donazioni"
-    },
-    {
-        "name":"Nexi",
-        "label":"Intesa Sanpaolo",
-        "image":"",
-        "commission":1,
-        "tag":""
-    }
+  {
+    "name": "Intesa Sanpaolo",
+    "label": "Intesa Sanpaolo",
+    "image": "",
+    "commission": 1.25,
+    "tag": "Donazioni"
+  },
+  {
+    "name": "Unicredit",
+    "label": "Unicredit",
+    "image": "",
+    "commission": 2,
+    "tag": ""
+  },
+  {
+    "name": "Postepay",
+    "label": "Postepay",
+    "image": "",
+    "commission": 0.5,
+    "tag": "Donazioni"
+  },
+  {
+    "name": "Nexi",
+    "label": "Intesa Sanpaolo",
+    "image": "",
+    "commission": 1,
+    "tag": ""
+  }
 ]
+// {
+//   "pspList": [
+//     {
+//       "id": 8,
+//       "idPsp": "POSTE1",
+//       "businessName": "Poste Italiane",
+//       "paymentType": "CP",
+//       "idIntermediary": "BANCOPOSTA",
+//       "idChannel": "POSTE1",
+//       "logoPSP": "http://pagopa-dev:8080/pp-restapi/v4/resources/psp/8",
+//       "serviceLogo": "http://pagopa-dev:8080/pp-restapi/v4/resources/service/8",
+//       "serviceName": "nomeServizio 02 poste (MOD0)",
+//       "fixedCost": {
+//         "currency": "EUR",
+//         "amount": 1,
+//         "decimalDigits": 2
+//       },
+//       "appChannel": false,
+//       "serviceAvailability": "disponibilitaServizio FRANCESE",
+//       "urlInfoChannel": "http://www.test.sia.eu",
+//       "paymentModel": 0,
+//       "idCard": 11008,
+//       "lingua": "IT",
+//       "codiceAbi": "06220",
+//       "isPspOnus": false,
+//       "directAcquirer": false,
+//       "solvedByPan": false
+//     },
+//     {
+//       "id": 11,
+//       "idPsp": "Digital stamp enabled PSP",
+//       "businessName": "Poste Italiane",
+//       "paymentType": "CP",
+//       "idIntermediary": "BANCOPOSTA",
+//       "idChannel": "POSTE1",
+//       "logoPSP": "http://pagopa-dev:8080/pp-restapi/v4/resources/psp/11",
+//       "serviceLogo": "http://pagopa-dev:8080/pp-restapi/v4/resources/service/11",
+//       "serviceName": "poste - DS Enabled",
+//       "fixedCost": {
+//         "currency": "EUR",
+//         "amount": 625,
+//         "decimalDigits": 2
+//       },
+//       "appChannel": false,
+//       "serviceAvailability": "Pagamento Bollo Digitale tramite Poste",
+//       "urlInfoChannel": "http://www.test.sia.eu",
+//       "paymentModel": 1,
+//       "flagStamp": true,
+//       "idCard": 11008,
+//       "lingua": "IT",
+//       "codiceAbi": "06220",
+//       "isPspOnus": false,
+//       "directAcquirer": false,
+//       "solvedByPan": false
+//     },
+//     {
+//       "id": 22,
+//       "idPsp": "NEXI_Visa",
+//       "businessName": "Psp NEXI 2",
+//       "paymentType": "CP",
+//       "idIntermediary": "Psp Nexi",
+//       "idChannel": "NEXI (Visa)",
+//       "logoPSP": "http://pagopa-dev:8080/pp-restapi/v4/resources/psp/22",
+//       "serviceLogo": "http://pagopa-dev:8080/pp-restapi/v4/resources/service/22",
+//       "serviceName": "NEXI (Visa)",
+//       "fixedCost": {
+//         "currency": "EUR",
+//         "amount": 111,
+//         "decimalDigits": 2
+//       },
+//       "appChannel": false,
+//       "serviceAvailability": "NEXI",
+//       "paymentModel": 1,
+//       "flagStamp": true,
+//       "idCard": 99997,
+//       "lingua": "IT",
+//       "codiceAbi": "99997",
+//       "isPspOnus": false,
+//       "directAcquirer": true,
+//       "solvedByPan": false
+//     }
+//   ],
+//   "myBankSellerBankList": []
+// }
