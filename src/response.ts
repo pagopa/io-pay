@@ -20,6 +20,9 @@ import {
 } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
 import { GENERIC_STATUS, TX_ACCEPTED } from './utils/TransactionStatesTypes';
+import { getConfigOrThrow } from './utils/config';
+
+const config = getConfigOrThrow();
 
 const showErrorStatus = () => {
   document.body.classList.remove('loadingOperations');
@@ -52,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const timeout: Millisecond = 20000 as Millisecond;
 
   const paymentManagerClientWithPollingOnMethod: Client = createClient({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: constantPollingWithPromisePredicateFetch(
       DeferredPromise<boolean>().e1,
       retries,
@@ -67,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: constantPollingWithPromisePredicateFetch(
       DeferredPromise<boolean>().e1,
       retries,
@@ -82,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: constantPollingWithPromisePredicateFetch(
       DeferredPromise<boolean>().e1,
       retries,
@@ -97,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const pmClient: Client = createClient({
-    baseUrl: 'http://localhost:8080',
+    baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
   });
 
@@ -128,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     'message',
     async function (e) {
       // Addresses must be static
-      if (e.origin !== 'http://localhost:7071' || e.data !== '3DS.Notification.Received') {
+      if (e.origin !== config.IO_PAY_FUNCTIONS_HOST || e.data !== '3DS.Notification.Received') {
         return;
       } else {
         debug('MESSAGE RECEIVED: ', e.data);
