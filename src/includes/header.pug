@@ -8,12 +8,16 @@ header.position-fixed.header.bg-white.shadow.py-3.py-md-2.px-4.d-flex
             svg(width="46", height="48")
                 title Logo Ente
                 use(href="/assets/icons/app.svg#institutions-milano")
-    .topbar.d-flex.flex-fill.flex-column.align-items-end.align-items-md-center.justify-content-center.mr-2
-        .topbar__name.text-center.d-none.d-md-inline-flex(data-sessiondata="enteBeneficiario") 
-        .topbar__obj.text-center.font-weight-bold.my-1.d-none.d-md-inline-flex(data-sessiondata="subject") 
-        .topbar__amount.font-weight-bold(data-sessiondata="importo")   
+    .topbar.d-flex.flex-fill.flex-md-column.align-items-center.justify-content-end.justify-content-md-center.mr-2
+        .topbar__name.text-center.d-none.d-md-inline-flex(data-sessiondata="enteBeneficiario")
+        .topbar__obj__wrapper.position-relative.order-2.order-md-1
+            .topbar__obj.text-center.font-weight-bold.my-1.d-none.d-md-inline-flex(data-sessiondata="subject")
+            svg.icon.icon-sm.icon-primary.ml-2.ml-md-1.cursor-pointer(id="openMultiplePaymentWindow")
+                title= "Info"
+                use(href="/assets/icons/sprite.svg#it-info-circle")
+        .topbar__amount.font-weight-bold.order-1.order-md-2(data-sessiondata="importo")
     .header__dx.d-flex
-        .align-items-center.d-flex.d-md-none
+        .header__dx__info.align-items-center.d-flex.d-md-none
             a.btn-dropdown(href="#",role="button",data-target="paymentdash", aria-expanded="false")
                 svg.icon.icon-primary
                     use(href="/assets/icons/sprite.svg#it-info-circle")

@@ -1,0 +1,34 @@
+div(id="multiplePaymentWindow")
+    .mpmodal.d-flex.flex-column
+        .d-flex.align-items-center.mb-2
+            .mpmodal__title Pagamento multiplo
+            svg.icon.ml-auto.mpmodal__close.cursor-pointer
+                use(href="/assets/icons/sprite.svg#it-close")
+        .mpmodal__list
+            .mpmodal__item(data-template="mpitem")
+                .mpmodal__row.d-flex.align-items-md-end.mpmodal__item__header
+                    .mpmodal__item__title.text-truncate
+                    .mpmodal__item__amount.ml-auto
+                    svg.mpmodal__item__expand(height="24", width="28")
+                        title= "Espandi"
+                        use(href="/assets/icons/sprite.svg#it-expand")
+                    svg.mpmodal__item__collapse(height="24", width="28")
+                        title= "Espandi"
+                        use(href="/assets/icons/sprite.svg#it-collapse")
+                .mpmodal__item__detail
+                    .mpmodal__row
+                        .mpmodal__label Destinatario Avviso
+                        .mpmodal__item__name.mpmodal__value
+                    .mpmodal__row
+                        .mpmodal__label Codice Fiscale Destinatario
+                        .mpmodal__item__fc.mpmodal__value
+                    .mpmodal__row
+                        .d-flex.justify-content-between.align-items-baseline.mb-1
+                            .mpmodal__value Importo aggiornato
+                            .mpmodal__item__tot
+                        .mpmodal__tip Il sistema pagoPA aggiorna automaticamente l’importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarti così more o altri interessi.
+                    .mpmodal__row.d-flex.justify-content-between.align-items-baseline
+                        .mpmodal__label Codice IUV
+                        .mpmodal__item__iuv.mpmodal__value
+        .mpmodal__footer.d-none.d-md-block.mt-auto.pt-2
+            a.btn.btn-outline-primary.d-block.mpmodal__close(href="#", title="Chiudi") Chiudi
