@@ -134,7 +134,6 @@ describe('Credit card submission form', () => {
     const sessionStorageState = await Promise.all([
       page.evaluate(() => sessionStorage.getItem('wallet')),
       page.evaluate(() => sessionStorage.getItem('sessionToken')),
-      page.evaluate(() => sessionStorage.getItem('approvalState')),
     ]);
 
     // Assert response payload, stored in Session Storage, is correct

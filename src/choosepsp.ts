@@ -3,12 +3,12 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 import { toError } from 'fp-ts/lib/Either';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { createClient } from '../generated/definitions/pagopa/client';
-import { WalletResponse } from '../generated/definitions/pagopa/WalletResponse';
 import { retryingFetch } from './utils/fetch';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
 import { modalWindows } from './js/modals';
 import { getConfigOrThrow } from './utils/config';
+import { WalletSession } from './sessionData/WalletSession';
 
 const pmClient = createClient({
   baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
@@ -148,9 +148,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             myResExt.fold(
               () => undefined,
               res => {
-                const updateWalletRsp = WalletResponse.decode(res.value).getOrElse({ data: {} });
-                sessionStorage.setItem('wallet', JSON.stringify(updateWalletRsp.data));
-                window.location.replace('check.html');
+                WalletSession.decode(res.value).fold(
+                  _ => undefined,
+                  wallet => {
+                    sessionStorage.setItem('wallet', JSON.stringify(wallet));
+                    window.location.replace('check.html');
+                  },
+                );
               },
             ),
         )
