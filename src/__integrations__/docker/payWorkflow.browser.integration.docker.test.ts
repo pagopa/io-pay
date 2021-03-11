@@ -109,7 +109,7 @@ describe('IOPAY App', () => {
       page.click(payButtonS),
     ]);
 
-    const payData = await page.evaluate(() => sessionStorage.getItem('payment'));
+    const payData = await page.evaluate(() => sessionStorage.getItem('idTransaction'));
 
     expect(
       fromNullable(payData)

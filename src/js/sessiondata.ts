@@ -13,6 +13,7 @@ import {
   PAYMENT_CHECK_SVR_ERR,
 } from '../utils/mixpanelHelperInit';
 import { getConfigOrThrow } from '../utils/config';
+import { PaymentSession } from '../sessionData/PaymentSession';
 import { getUrlParameter } from './urlUtilities';
 
 export async function actionsCheck() {
@@ -57,8 +58,10 @@ export async function actionsCheck() {
             myResExt.fold(
               () => undefined, // empty data ???
               response => {
-                if (response.status === 200) {
-                  sessionStorage.setItem('checkData', JSON.stringify(response.value.data));
+                const maybePayment = PaymentSession.decode(response.value?.data);
+
+                if (response.status === 200 && maybePayment.isRight()) {
+                  sessionStorage.setItem('checkData', JSON.stringify(maybePayment.value));
                   // TODO: #MIXEVENT PAYMENT_CHECK_SUCCESS
                   mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                     EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
