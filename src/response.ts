@@ -67,7 +67,7 @@ const timeout: Millisecond = 20000 as Millisecond;
  * and it is in a non final state.
  */
 const paymentManagerClientWithPollingOnMethod: Client = createClient({
-  baseUrl: 'http://localhost:8080',
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -85,7 +85,7 @@ const paymentManagerClientWithPollingOnMethod: Client = createClient({
  * and it is in a non final state
  */
 const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
-  baseUrl: 'http://localhost:8080',
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -102,7 +102,7 @@ const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
  * Payment Manager Client with polling until the transaction is in a final state.
  */
 const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
-  baseUrl: 'http://localhost:8080',
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -119,7 +119,7 @@ const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
  * Payment Manager Client.
  */
 const pmClient: Client = createClient({
-  baseUrl: 'http://localhost:8080',
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
 });
 
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function (e) {
       await fromPredicate<Error, MessageEvent<any>>(
         // Addresses must be static
-        e1 => e1.origin === 'http://localhost:7071' && e1.data === '3DS.Notification.Received',
+        e1 => e1.origin === getConfigOrThrow().IO_PAY_FUNCTIONS_HOST && e1.data === '3DS.Notification.Received',
         toError,
       )(e)
         .fold(

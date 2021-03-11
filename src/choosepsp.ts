@@ -8,9 +8,10 @@ import { retryingFetch } from './utils/fetch';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
 import { modalWindows } from './js/modals';
+import { getConfigOrThrow } from './utils/config';
 
 const pmClient = createClient({
-  baseUrl: 'http://localhost:8080',
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
 });
 
