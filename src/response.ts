@@ -19,7 +19,17 @@ import {
   checkStatusTask,
 } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
+import {
+  THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
+  THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
+  THREEDSMETHODURL_STEP1_RESP_ERR,
+  THREEDSMETHODURL_STEP1_SUCCESS,
+} from './utils/mixpanelHelperInit';
+import { mixpanel } from './__mocks__/mocks';
 import { GENERIC_STATUS, TX_ACCEPTED } from './utils/TransactionStatesTypes';
+import { getConfigOrThrow } from './utils/config';
+
+const config = getConfigOrThrow();
 
 const showErrorStatus = () => {
   document.body.classList.remove('loadingOperations');
@@ -45,62 +55,76 @@ const showSuccessStatus = (idStatus: GENERIC_STATUS) => {
   );
 };
 
+/**
+ * Polling configuration params
+ */
+const retries: number = 10;
+const delay: number = 3000;
+const timeout: Millisecond = 20000 as Millisecond;
+
+/**
+ * Payment Manager Client with polling until the transaction has the methodUrl
+ * and it is in a non final state.
+ */
+const paymentManagerClientWithPollingOnMethod: Client = createClient({
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  fetchApi: constantPollingWithPromisePredicateFetch(
+    DeferredPromise<boolean>().e1,
+    retries,
+    delay,
+    timeout,
+    async (r: Response): Promise<boolean> => {
+      const myJson = (await r.clone().json()) as TransactionStatusResponse;
+      return myJson.data.finalStatus === false && fromNullable(myJson.data.methodUrl).isNone();
+    },
+  ),
+});
+
+/**
+ * Payment Manager Client with polling until the transaction has the acsUrl
+ * and it is in a non final state
+ */
+const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  fetchApi: constantPollingWithPromisePredicateFetch(
+    DeferredPromise<boolean>().e1,
+    retries,
+    delay,
+    timeout,
+    async (r: Response): Promise<boolean> => {
+      const myJson = (await r.clone().json()) as TransactionStatusResponse;
+      return myJson.data.finalStatus === false && fromNullable(myJson.data.acsUrl).isNone();
+    },
+  ),
+});
+
+/**
+ * Payment Manager Client with polling until the transaction is in a final state.
+ */
+const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  fetchApi: constantPollingWithPromisePredicateFetch(
+    DeferredPromise<boolean>().e1,
+    retries,
+    delay,
+    timeout,
+    async (r: Response): Promise<boolean> => {
+      const myJson = (await r.clone().json()) as TransactionStatusResponse;
+      return r.status === 200 && myJson.data.finalStatus === false;
+    },
+  ),
+});
+
+/**
+ * Payment Manager Client.
+ */
+const pmClient: Client = createClient({
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+});
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
-  const retries: number = 10;
-  const delay: number = 3000;
-  const timeout: Millisecond = 20000 as Millisecond;
-
-  const paymentManagerClientWithPollingOnMethod: Client = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: constantPollingWithPromisePredicateFetch(
-      DeferredPromise<boolean>().e1,
-      retries,
-      delay,
-      timeout,
-      async (r: Response): Promise<boolean> => {
-        const myJson = (await r.clone().json()) as TransactionStatusResponse;
-        // Stop the polling when this condition is false
-        return fromNullable(myJson.data.methodUrl).isNone();
-      },
-    ),
-  });
-
-  const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: constantPollingWithPromisePredicateFetch(
-      DeferredPromise<boolean>().e1,
-      retries,
-      delay,
-      timeout,
-      async (r: Response): Promise<boolean> => {
-        const myJson = (await r.clone().json()) as TransactionStatusResponse;
-        // Stop the polling when this condition is false
-        return fromNullable(myJson.data.acsUrl).isNone();
-      },
-    ),
-  });
-
-  const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: constantPollingWithPromisePredicateFetch(
-      DeferredPromise<boolean>().e1,
-      retries,
-      delay,
-      timeout,
-      async (r: Response): Promise<boolean> => {
-        const myJson = (await r.clone().json()) as TransactionStatusResponse;
-        // Stop the polling when this condition is false
-        return r.status === 200 && myJson.data?.finalStatus === false;
-      },
-    ),
-  });
-
-  const pmClient: Client = createClient({
-    baseUrl: 'http://localhost:8080',
-    fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
-  });
-
   document.body.classList.add('loadingOperations');
 
   // idpayguard
@@ -127,25 +151,44 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener(
     'message',
     async function (e) {
-      // Addresses must be static
-      if (e.origin !== 'http://localhost:7071' || e.data !== '3DS.Notification.Received') {
-        return;
-      } else {
-        debug('MESSAGE RECEIVED: ', e.data);
-        await getTransactionFromSessionStorageTask('payment')
-          .chain(transaction =>
-            getStringFromSessionStorageTask('sessionToken')
-              .chain(sessionToken => resumeTransactionTask('Y', sessionToken, transaction.token, pmClient))
-              .chain(_ => checkStatusTask(transaction.token, paymentManagerClientWithPollingOnPreAcs)),
-          )
+      await fromPredicate<Error, MessageEvent<any>>(
+        // Addresses must be static
+        e1 => e1.origin === getConfigOrThrow().IO_PAY_FUNCTIONS_HOST && e1.data === '3DS.Notification.Received',
+        toError,
+      )(e)
+        .fold(
+          _ =>
+            mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+              EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
+              ORIGIN: e.origin,
+              RESPONSE: e.data,
+              token: '',
+            }), // TODO error handle
+          _ => {
+            mixpanel.track(THREEDSMETHODURL_STEP1_SUCCESS.value, {
+              EVENT_ID: THREEDSMETHODURL_STEP1_SUCCESS.value,
+              token: '',
+            });
+            void getTransactionFromSessionStorageTask('payment')
+              .chain(transaction =>
+                getStringFromSessionStorageTask('sessionToken')
+                  .chain(sessionToken => resumeTransactionTask('Y', sessionToken, transaction.token, pmClient))
+                  .chain(_ => checkStatusTask(transaction.token, paymentManagerClientWithPollingOnPreAcs)),
+              )
 
-          .fold(
-            _ => debug('To handle error'),
-            transactionStatus =>
-              start3DS2AcsChallengeStep(transactionStatus.data.acsUrl, transactionStatus.data.params, document.body),
-          )
-          .run();
-      }
+              .fold(
+                _ => debug('To handle error'),
+                transactionStatus =>
+                  start3DS2AcsChallengeStep(
+                    transactionStatus.data.acsUrl,
+                    transactionStatus.data.params,
+                    document.body,
+                  ),
+              )
+              .run();
+          },
+        )
+        .run();
     },
 
     false,
@@ -175,16 +218,29 @@ document.addEventListener('DOMContentLoaded', async () => {
           .run();
       },
       // 3. ACS RESUME and CHECK FINAL STATUS POLLING step on 3ds2
-      async idTransaction =>
+      async idTransaction => {
         await getStringFromSessionStorageTask('sessionToken')
           .chain(sessionToken => resumeTransactionTask(undefined, sessionToken, idTransaction, pmClient))
           .chain(_ => checkStatusTask(idTransaction, paymentManagerClientWithPollingOnFinalStatus))
 
           .fold(
-            _ => showErrorStatus(),
-            transactionStatusResponse => showSuccessStatus(transactionStatusResponse.data.idStatus),
+            _ => {
+              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
+                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
+                token: idTransaction,
+              });
+              showErrorStatus();
+            },
+            transactionStatusResponse => {
+              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
+                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
+                token: idTransaction,
+              });
+              showSuccessStatus(transactionStatusResponse.data.idStatus);
+            },
           )
-          .run(),
+          .run();
+      },
     )
     .run();
 });

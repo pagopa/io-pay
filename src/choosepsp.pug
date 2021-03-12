@@ -5,6 +5,7 @@ html(lang='it')
         link(href="scss/style.scss",rel="stylesheet")
         script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
         script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
+        script(src="env-config.js")
         script(src="choosepsp.ts")
         meta(charset="utf-8")
         meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
@@ -24,13 +25,12 @@ html(lang='it')
                                 .windowcont__psp__list.my-5
                                     a.windowcont__psp__item(href="#", data-template="pspitem")
                                         .d-flex.mb-2
-                                            img(src="https://via.placeholder.com/161x36?text=BANK") 
+                                            img.windowcont__psp__logo(src="") 
                                             .ml-auto.windowcont__psp__tag
-                                                span Donazione
                                         .d-flex
-                                            .windowcont__psp__label Intesa Sanpaolo
+                                            .windowcont__psp__label
                                             .windowcont__psp__commission.ml-auto Costo transazione: 
-                                                span € 123
+                                                span
                             
                             .windowcont__bottom
                                 .container

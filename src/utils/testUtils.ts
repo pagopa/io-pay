@@ -18,3 +18,23 @@ export async function getIdPayment(pmControlHost: string, pmControlPort: string)
   await myBrowser.close();
   return idPayment;
 }
+
+export async function setMethodChallengeSteps(pmControlHost: string, pmControlPort: string) {
+  const myBrowser = await launch({ headless: true });
+  const page = await myBrowser.newPage();
+  await page.goto(`http://${pmControlHost}:${pmControlPort}/3ds2.0-manager/home`);
+
+  await page.waitForSelector('.row #step0');
+  await page.click('.row #step0');
+
+  await page.waitForSelector('.container > .row:nth-child(2) > .form-inline > .form-group > .btn');
+  await page.click('.container > .row:nth-child(2) > .form-inline > .form-group > .btn');
+
+  await page.waitForSelector('.form-inline > #fieldsetStep1 #step1');
+  await page.click('.form-inline > #fieldsetStep1 #step1');
+
+  await page.waitForSelector('.row > .form-inline > #fieldsetStep1 > .form-group > .btn');
+  await page.click('.row > .form-inline > #fieldsetStep1 > .form-group > .btn');
+
+  await myBrowser.close();
+}
