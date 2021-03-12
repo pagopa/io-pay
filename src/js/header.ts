@@ -14,7 +14,7 @@ export function initHeader() {
     initMultiplePayment(data);
   }
 
-  if (enteBeneficiario && !multiplePayment) {
+  if (enteBeneficiario && !multiplePayment && data) {
     for (const el of Array.from(enteBeneficiario)) {
       // eslint-disable-next-line functional/immutable-data
       (el as HTMLElement).innerText = data?.detailsList[0].enteBeneficiario;
@@ -26,7 +26,7 @@ export function initHeader() {
       (el as HTMLElement).innerText = multiplePayment ? multiplePaymentString : data.subject;
     }
   }
-  if (importo) {
+  if (importo && data) {
     const prettifiedAmount = parseInt(data?.amount.amount.toString(), 10) / 100;
     for (const el of Array.from(importo)) {
       // eslint-disable-next-line functional/immutable-data
