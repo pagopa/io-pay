@@ -12,11 +12,7 @@ import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
 import { initDropdowns } from './js/dropdowns';
 import { constantPollingWithPromisePredicateFetch, retryingFetch } from './utils/fetch';
-import {
-  getStringFromSessionStorageTask,
-  resumeTransactionTask,
-  checkStatusTask,
-} from './utils/transactionHelper';
+import { getStringFromSessionStorageTask, resumeTransactionTask, checkStatusTask } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
 import {
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
