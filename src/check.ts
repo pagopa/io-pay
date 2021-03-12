@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
               },
             );
-            sessionStorage.setItem('payment', paymentResp);
+            sessionStorage.setItem('idTransaction', JSON.parse(paymentResp).token);
             window.location.replace('response.html');
           },
         )

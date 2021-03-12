@@ -12,12 +12,7 @@ import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
 import { initDropdowns } from './js/dropdowns';
 import { constantPollingWithPromisePredicateFetch, retryingFetch } from './utils/fetch';
-import {
-  getTransactionFromSessionStorageTask,
-  getStringFromSessionStorageTask,
-  resumeTransactionTask,
-  checkStatusTask,
-} from './utils/transactionHelper';
+import { getStringFromSessionStorageTask, resumeTransactionTask, checkStatusTask } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
 import {
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
@@ -67,7 +62,7 @@ const timeout: Millisecond = 20000 as Millisecond;
  * and it is in a non final state.
  */
 const paymentManagerClientWithPollingOnMethod: Client = createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -85,7 +80,7 @@ const paymentManagerClientWithPollingOnMethod: Client = createClient({
  * and it is in a non final state
  */
 const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -102,7 +97,7 @@ const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
  * Payment Manager Client with polling until the transaction is in a final state.
  */
 const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -119,7 +114,7 @@ const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
  * Payment Manager Client.
  */
 const pmClient: Client = createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
 });
 
@@ -153,7 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function (e) {
       await fromPredicate<Error, MessageEvent<any>>(
         // Addresses must be static
-        e1 => e1.origin === getConfigOrThrow().IO_PAY_FUNCTIONS_HOST && e1.data === '3DS.Notification.Received',
+        e1 => e1.origin === config.IO_PAY_FUNCTIONS_HOST && e1.data === '3DS.Notification.Received',
         toError,
       )(e)
         .fold(
@@ -169,11 +164,11 @@ document.addEventListener('DOMContentLoaded', async () => {
               EVENT_ID: THREEDSMETHODURL_STEP1_SUCCESS.value,
               token: '',
             });
-            void getTransactionFromSessionStorageTask('payment')
-              .chain(transaction =>
+            void getStringFromSessionStorageTask('idTransaction')
+              .chain(idTransaction =>
                 getStringFromSessionStorageTask('sessionToken')
-                  .chain(sessionToken => resumeTransactionTask('Y', sessionToken, transaction.token, pmClient))
-                  .chain(_ => checkStatusTask(transaction.token, paymentManagerClientWithPollingOnPreAcs)),
+                  .chain(sessionToken => resumeTransactionTask('Y', sessionToken, idTransaction, pmClient))
+                  .chain(_ => checkStatusTask(idTransaction, paymentManagerClientWithPollingOnPreAcs)),
               )
 
               .fold(
@@ -201,8 +196,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     .fold(
       async _ => {
         // 1. METHOD step on 3ds2
-        await getTransactionFromSessionStorageTask('payment')
-          .chain(transaction => checkStatusTask(transaction.token, paymentManagerClientWithPollingOnMethod))
+        await getStringFromSessionStorageTask('idTransaction')
+          .chain(idTransaction => checkStatusTask(idTransaction, paymentManagerClientWithPollingOnMethod))
           .fold(
             () => undefined,
             transactionStatus =>

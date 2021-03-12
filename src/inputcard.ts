@@ -35,6 +35,7 @@ import {
   PAYMENT_WALLET_SVR_ERR,
 } from './utils/mixpanelHelperInit';
 import { getConfigOrThrow } from './utils/config';
+import { WalletSession } from './sessionData/WalletSession';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -301,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
             mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value, r });
           }, // to be replaced with logic to handle failures
           myResExt => {
-            const approvalState = myResExt.fold(
+            myResExt.fold(
               () => 'noApproval',
               myRes => {
                 if (myRes.status === 200) {
@@ -321,7 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'noApproval';
               },
             );
-            sessionStorage.setItem('approvalState', approvalState);
           },
         )
         .run();
@@ -383,8 +383,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet';
               },
             );
-            sessionStorage.setItem('wallet', walletResp);
-            sessionStorage.setItem('securityCode', (creditcardformSecurecode as HTMLInputElement).value);
+
+            WalletSession.decode(JSON.parse(walletResp)).map(wallet => {
+              sessionStorage.setItem('wallet', JSON.stringify(wallet));
+            });
+
             window.location.replace('check.html');
           },
         )
