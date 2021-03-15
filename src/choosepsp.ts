@@ -9,6 +9,14 @@ import { initHeader } from './js/header';
 import { modalWindows } from './js/modals';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
+import { mixpanel } from './__mocks__/mocks';
+import {
+  PAYMENT_PSPLIST_INIT,
+  PAYMENT_PSPLIST_NET_ERR,
+  PAYMENT_PSPLIST_RESP_ERR,
+  PAYMENT_PSPLIST_SUCCESS,
+  PAYMENT_PSPLIST_SVR_ERR,
+} from './utils/mixpanelHelperInit';
 
 const pmClient = createClient({
   baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
@@ -40,6 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const language = 'it';
   const idWallet = wallet.idWallet;
 
+  mixpanel.track(PAYMENT_PSPLIST_INIT.value, { EVENT_ID: PAYMENT_PSPLIST_INIT.value });
   const pspL = await TE.tryCatch(
     () =>
       pmClient.getPspListUsingGET({
@@ -50,14 +59,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         language,
         idPayment,
       }),
-    toError,
+    e => {
+      // TODO: #RENDERING_ERROR
+      mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value, e });
+      return toError;
+    },
   )
     .fold(
-      () => undefined, // to be replaced with logic to handle failures
+      r => {
+        // TODO: #RENDERING_ERROR
+        mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value, r });
+        return undefined;
+      },
       myResExt =>
         myResExt.fold(
           () => [],
-          myRes => (myRes?.status === 200 ? myRes?.value?.data?.pspList : []),
+          myRes => {
+            if (myRes?.status === 200) {
+              mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
+                EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
+                pspListNum: myRes?.value?.data?.pspList?.length,
+              });
+              return myRes?.value?.data?.pspList;
+            } else {
+              mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
+                EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
+                code: PAYMENT_PSPLIST_RESP_ERR.value,
+                message: `getpsps returned ${myRes.status}`,
+              });
+              return [];
+            }
+          },
         ),
     )
     .run();

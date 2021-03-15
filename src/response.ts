@@ -172,7 +172,11 @@ document.addEventListener('DOMContentLoaded', async () => {
               )
 
               .fold(
-                _ => debug('To handle error'),
+                _ =>
+                  mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+                    EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
+                    PHASE: 'resume_check',
+                  }), // TODO error handle
                 transactionStatus =>
                   start3DS2AcsChallengeStep(
                     transactionStatus.data.acsUrl,
@@ -199,7 +203,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         await getStringFromSessionStorageTask('idTransaction')
           .chain(idTransaction => checkStatusTask(idTransaction, paymentManagerClientWithPollingOnMethod))
           .fold(
-            () => undefined,
+            _ =>
+              mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+                EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
+                PHASE: 'check',
+              }), // TODO error handle
             transactionStatus =>
               fromNullable(transactionStatus.data.threeDSMethodData).fold(none, threeDSMethodData => {
                 sessionStorage.setItem('threeDSMethodData', threeDSMethodData);
