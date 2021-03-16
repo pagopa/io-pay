@@ -16,6 +16,11 @@ import {
   PAYMENT_PSPLIST_RESP_ERR,
   PAYMENT_PSPLIST_SUCCESS,
   PAYMENT_PSPLIST_SVR_ERR,
+  PAYMENT_UPD_WALLET_INIT,
+  PAYMENT_UPD_WALLET_NET_ERR,
+  PAYMENT_UPD_WALLET_RESP_ERR,
+  PAYMENT_UPD_WALLET_SUCCESS,
+  PAYMENT_UPD_WALLET_SVR_ERR,
 } from './utils/mixpanelHelperInit';
 
 const pmClient = createClient({
@@ -149,6 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.stopPropagation();
         const element = e?.target as HTMLElement;
         if (element) {
+          console.log(element);
           eventList(element);
         }
       });
@@ -160,6 +166,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       e.preventDefault();
       const idPsp = document.querySelector('.windowcont__psp__list .active') as HTMLElement;
       // update Wallet
+      mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
+        EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
+        idPayment: checkData.idPayment,
+      });
       await TE.tryCatch(
         () =>
           pmClient.updateWalletUsingPUT({
@@ -172,17 +182,34 @@ document.addEventListener('DOMContentLoaded', async () => {
               },
             },
           }),
-        toError,
+        e => {
+          // TODO: #RENDERING_ERROR
+          mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value, e });
+          return toError;
+        },
       )
         .fold(
-          () => undefined, // to be replaced with logic to handle failures
+          r => {
+            // TODO: #RENDERING_ERROR
+            mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value, r });
+          },
           myResExt =>
             myResExt.fold(
-              () => undefined,
+              e =>
+                mixpanel.track(PAYMENT_UPD_WALLET_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_UPD_WALLET_RESP_ERR.value,
+                  e,
+                }),
               res => {
-                WalletSession.decode(res.value).fold(
+                WalletSession.decode(res?.value?.data).fold(
                   _ => undefined,
                   wallet => {
+                    mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
+                      EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
+                      idWallet: wallet.idWallet,
+                      idPayment: fromNullable(checkData.idPayment).getOrElse(''),
+                      psp: wallet.psp,
+                    });
                     sessionStorage.setItem('wallet', JSON.stringify(wallet));
                     window.location.replace('check.html');
                   },
