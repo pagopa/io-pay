@@ -42,6 +42,10 @@ const nEventsFlow = [
   PAYMENT_APPROVE_TERMS_SUCCESS,
   PAYMENT_WALLET_INIT,
   PAYMENT_WALLET_SUCCESS,
+  // PAYMENT_PSPLIST_INIT
+  // PAYMENT_PSPLIST_SUCCESS
+  // PAYMENT_UPD_WALLET_INIT
+  // PAYMENT_UPD_WALLET_SUCCESS
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_SUCCESS,
   TRANSACTION_POLLING_M_CHECK_INIT,
@@ -171,6 +175,22 @@ describe('mixpanel sequence events page check', () => {
     await page.click(submitWalletbuttonS);
     await page.waitForNavigation();
 
+    // Modifica psp
+    // const changePsp = '#checkout > .windowcont__paywith > .text-decoration-none';
+    // await page.waitForSelector(changePsp);
+    // await page.click(changePsp);
+    // await page.waitForNavigation();
+
+    // Select new psp
+    // const seclectPsp = '#psplist > .mt-2.mt-md-0 > .windowcont__psp > .windowcont__psp__list > .windowcont__psp__item';
+    // await page.waitForSelector(seclectPsp);
+    // await page.click(seclectPsp);
+    // await page.waitForNavigation();
+
+    // Confirm psp
+    // TODO:
+
+    // button "Paga € XXX.YYY,ZZ"
     const payButtonS = '#checkout > .windowcont__bottom > .container > .windowcont__bottom__wrap > .btn-primary';
 
     await page.waitForSelector(payButtonS);
