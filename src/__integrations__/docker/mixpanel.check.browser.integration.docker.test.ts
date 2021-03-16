@@ -25,6 +25,10 @@ import {
   TRANSACTION_POLLING_M_CHECK_SUCCESS,
   THREEDSACSCHALLENGEURL_STEP2_REQ,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
+  PAYMENT_PSPLIST_INIT,
+  PAYMENT_PSPLIST_SUCCESS,
+  PAYMENT_UPD_WALLET_INIT,
+  PAYMENT_UPD_WALLET_SUCCESS,
 } from '../../utils/mixpanelHelperInit';
 import { TransactionStatusResponse } from '../../../generated/definitions/pagopa/TransactionStatusResponse';
 import { TX_ACCEPTED } from '../../utils/TransactionStatesTypes';
@@ -42,10 +46,10 @@ const nEventsFlow = [
   PAYMENT_APPROVE_TERMS_SUCCESS,
   PAYMENT_WALLET_INIT,
   PAYMENT_WALLET_SUCCESS,
-  // PAYMENT_PSPLIST_INIT
-  // PAYMENT_PSPLIST_SUCCESS
-  // PAYMENT_UPD_WALLET_INIT
-  // PAYMENT_UPD_WALLET_SUCCESS
+  PAYMENT_PSPLIST_INIT,
+  PAYMENT_PSPLIST_SUCCESS,
+  PAYMENT_UPD_WALLET_INIT,
+  PAYMENT_UPD_WALLET_SUCCESS,
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_SUCCESS,
   TRANSACTION_POLLING_M_CHECK_INIT,
@@ -176,19 +180,26 @@ describe('mixpanel sequence events page check', () => {
     await page.waitForNavigation();
 
     // Modifica psp
-    // const changePsp = '#checkout > .windowcont__paywith > .text-decoration-none';
-    // await page.waitForSelector(changePsp);
-    // await page.click(changePsp);
-    // await page.waitForNavigation();
+    const changePsp = '#checkout > .windowcont__paywith > .text-decoration-none';
+    await page.waitForSelector(changePsp);
+
+    const [psplista] = await Promise.all([
+      page.waitForResponse(response => response.request().method() === 'GET' && /psps/.test(response.request().url())),
+      page.click(changePsp),
+      page.waitForNavigation(),
+    ]);
+    expect(psplista.status()).toEqual(200);
 
     // Select new psp
-    // const seclectPsp = '#psplist > .mt-2.mt-md-0 > .windowcont__psp > .windowcont__psp__list > .windowcont__psp__item';
-    // await page.waitForSelector(seclectPsp);
-    // await page.click(seclectPsp);
-    // await page.waitForNavigation();
+    const selectPsp =
+      '#psplist > .mt-2 > .windowcont__psp > .windowcont__psp__list > .windowcont__psp__item:nth-child(2)';
+    await page.waitForSelector(selectPsp);
+    await page.click(selectPsp);
 
     // Confirm psp
-    // TODO:
+    const confirmPsp = '.windowcont__bottom > .container > .windowcont__bottom__wrap > .btn-primary';
+    await page.waitForSelector(confirmPsp);
+    await page.click(confirmPsp);
 
     // button "Paga € XXX.YYY,ZZ"
     const payButtonS = '#checkout > .windowcont__bottom > .container > .windowcont__bottom__wrap > .btn-primary';
