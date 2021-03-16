@@ -154,7 +154,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.stopPropagation();
         const element = e?.target as HTMLElement;
         if (element) {
-          console.log(element);
           eventList(element);
         }
       });
@@ -201,7 +200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   e,
                 }),
               res => {
-                WalletSession.decode(res?.value?.data).fold(
+                WalletSession.decode(res.value?.data).fold(
                   _ => undefined,
                   wallet => {
                     mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
