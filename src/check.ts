@@ -24,7 +24,7 @@ import { getConfigOrThrow } from './utils/config';
 import { getBrowserInfoTask } from './utils/checkHelper';
 
 const iopayportalClient: IoPayPortalClient.Client = IoPayPortalClient.createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  baseUrl: getConfigOrThrow().IO_PAY_FUNCTIONS_HOST,
   fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
 });
 
