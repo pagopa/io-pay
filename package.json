@@ -4,9 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "pagopa_api": "openapi/api.yml",
+  "iopayportal_api": "openapi/io-pay-portal.yaml",
   "scripts": {
     "generate": "npm-run-all generate:*",
     "generate:pagopa-api-client": "rimraf generated/definitions/pagopa && mkdir -p generated/definitions/pagopa && gen-api-models --api-spec $npm_package_pagopa_api --out-dir ./generated/definitions/pagopa --no-strict --request-types --response-decoders --client",
+    "generate:iopayportal-api-client": "rimraf generated/definitions/iopayportal && mkdir -p generated/definitions/iopayportal && gen-api-models --api-spec $npm_package_iopayportal_api --out-dir ./generated/definitions/iopayportal --no-strict --request-types --response-decoders --client",
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "lint-api": "oval validate -p openapi/api.yml",
