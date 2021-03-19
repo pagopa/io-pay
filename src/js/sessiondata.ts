@@ -16,6 +16,8 @@ import { getConfigOrThrow } from '../utils/config';
 import { PaymentSession } from '../sessionData/PaymentSession';
 import { getUrlParameter } from './urlUtilities';
 
+import { ErrorsType, errorHandler } from './errorhandler';
+
 export async function actionsCheck() {
   document.body.classList.add('loading');
 
@@ -44,14 +46,14 @@ export async function actionsCheck() {
           }),
         // Error on call
         e => {
-          // TODO: #RENDERING_ERROR
+          errorHandler(ErrorsType.CONNECTION);
           mixpanel.track(PAYMENT_CHECK_NET_ERR.value, { EVENT_ID: PAYMENT_CHECK_NET_ERR.value, e });
           return toError;
         },
       )
         .fold(
           r => {
-            // TODO: #RENDERING_ERROR
+            errorHandler(ErrorsType.SERVER);
             mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, { EVENT_ID: PAYMENT_CHECK_SVR_ERR.value, r });
           },
           myResExt => {
@@ -73,7 +75,7 @@ export async function actionsCheck() {
                     fromNullable(origin).getOrElse(response.value.data.urlRedirectEc),
                   );
                 } else {
-                  // TODO: missinig else #RENDERING_ERROR
+                  errorHandler(ErrorsType.GENERIC_ERROR);
                   mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
                     /* code: response.value,
