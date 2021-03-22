@@ -2,8 +2,8 @@ import { getUrlParameter } from './urlUtilities';
 
 // PaymentID: from sessionstorage or by querystring
 export default function idpayguard(): void {
-  const checkData = sessionStorage.getItem('checkData') || '';
-  const paymentIDStored: string | null = JSON.parse(checkData).idPayment || null;
+  const idPayment = JSON.parse(sessionStorage.getItem('checkData') || '').idPayment;
+  const paymentIDStored: string | null = idPayment || null;
   const paymentByQS: string | null = getUrlParameter('p') !== '' ? getUrlParameter('p') : null;
   const paymentID: string | null = paymentIDStored !== null ? paymentIDStored : paymentByQS;
   if (paymentID === null) {
