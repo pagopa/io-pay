@@ -1,5 +1,5 @@
 import { fromLeft, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
-import { BrowserInfoResponse } from '../../generated/definitions/functions/BrowserInfoResponse';
+import { BrowserInfoResponse } from '../../generated/definitions/iopayportal/BrowserInfoResponse';
 import { Client } from '../../generated/definitions/iopayportal/client';
 
 export const getBrowserInfoTask = (iopayportalClient: Client): TaskEither<string, BrowserInfoResponse> =>
