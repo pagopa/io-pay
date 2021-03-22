@@ -36,6 +36,7 @@ import {
 } from './utils/mixpanelHelperInit';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
+import { ErrorsType, errorHandler } from './js/errorhandler';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -139,15 +140,15 @@ document.addEventListener('DOMContentLoaded', () => {
     mixpanel.track(PAYMENT_RESOURCES_INIT.value, { EVENT_ID: PAYMENT_RESOURCES_INIT.value });
     await TE.tryCatch(
       () => pmClient.getResourcesUsingGET({ language: 'it' }),
-      // TODO: #RENDERING_ERROR - errore dovuto a variazione API ?
       e => {
+        errorHandler(ErrorsType.CONNECTION);
         mixpanel.track(PAYMENT_RESOURCES_NET_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_NET_ERR.value, e });
         return toError;
       },
     )
       .fold(
         r => {
-          // TODO: #RENDERING_ERROR
+          errorHandler(ErrorsType.SERVER);
           mixpanel.track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value, r });
         },
         myResExt => {
@@ -235,14 +236,14 @@ document.addEventListener('DOMContentLoaded', () => {
             },
           }),
         e => {
-          // TODO: #RENDERING_ERROR
+          errorHandler(ErrorsType.CONNECTION);
           mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value, e });
           return toError;
         },
       )
         .fold(
           r => {
-            // TODO: #RENDERING_ERROR
+            errorHandler(ErrorsType.SERVER);
             mixpanel.track(PAYMENT_START_SESSION_SVR_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value, r });
           }, // to be replaced with logic to handle failures
           myResExt => {
@@ -257,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     email: myRes?.value?.user?.email,
                   });
                 } else {
+                  errorHandler(ErrorsType.GENERIC_ERROR);
                   mixpanel.track(PAYMENT_START_SESSION_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_START_SESSION_RESP_ERR.value,
                     code: myRes?.value.code,
@@ -291,14 +293,14 @@ document.addEventListener('DOMContentLoaded', () => {
             },
           }),
         e => {
-          // TODO: #RENDERING_ERROR
+          errorHandler(ErrorsType.CONNECTION);
           mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value, e });
           return toError;
         },
       )
         .fold(
           r => {
-            // TODO: #RENDERING_ERROR
+            errorHandler(ErrorsType.SERVER);
             mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value, r });
           }, // to be replaced with logic to handle failures
           myResExt => {
@@ -313,6 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     idPayment: fromNullable(checkData.idPayment).getOrElse(''),
                   });
                 } else {
+                  errorHandler(ErrorsType.GENERIC_ERROR);
                   mixpanel.track(PAYMENT_APPROVE_TERMS_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_APPROVE_TERMS_RESP_ERR.value,
                     code: myRes?.value?.code,
@@ -351,14 +354,14 @@ document.addEventListener('DOMContentLoaded', () => {
             language: 'it',
           }),
         e => {
-          // TODO: #RENDERING_ERROR
+          errorHandler(ErrorsType.CONNECTION);
           mixpanel.track(PAYMENT_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_WALLET_NET_ERR.value, e });
           return toError;
         },
       )
         .fold(
           r => {
-            // TODO: #RENDERING_ERROR
+            errorHandler(ErrorsType.SERVER);
             mixpanel.track(PAYMENT_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_WALLET_SVR_ERR.value, r });
           }, // to be replaced with logic to handle failures
           myResExt => {
@@ -374,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     idPsp: myRes?.value?.data?.psp?.idPsp,
                   });
                 } else {
+                  errorHandler(ErrorsType.INVALID_CARD);
                   mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
                     code: myRes?.value.code,
