@@ -368,7 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const walletResp = myResExt.fold(
               () => 'fakeCC',
               myRes => {
-                // console.log(JSON.stringify(myRes.value.data));
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_WALLET_SUCCESS.value, {
                     EVENT_ID: PAYMENT_WALLET_SUCCESS.value,
@@ -380,8 +379,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   errorHandler(ErrorsType.INVALID_CARD);
                   mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
-                    code: myRes?.value.code,
-                    message: myRes?.value.message,
+                    code: myRes.value?.code,
+                    message: myRes.value?.message,
                   });
                 }
                 return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet';
