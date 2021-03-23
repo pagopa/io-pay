@@ -18,7 +18,7 @@ trigger: none
 # Execute agents (jobs) on latest Ubuntu version.
 # To change OS for a specific, ovverride "pool" attribute inside the job definition
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'ubuntu-latest'
 
 stages:
   - stage: Build
