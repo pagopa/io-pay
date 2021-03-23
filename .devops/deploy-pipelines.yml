@@ -1,7 +1,7 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
 
 variables:
-  NODE_VERSION: '12.18.3'
+  NODE_VERSION: '12.19.1'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 parameters:
@@ -24,7 +24,7 @@ pr: none
 # runtime, the pipeline is currently configured to use a Windows hosted image for
 # the build and deploy.
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'ubuntu-latest'
 
 resources:
   repositories:
