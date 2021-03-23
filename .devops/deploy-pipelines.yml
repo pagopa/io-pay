@@ -24,7 +24,7 @@ pr: none
 # runtime, the pipeline is currently configured to use a Windows hosted image for
 # the build and deploy.
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-2019'
 
 resources:
   repositories:
@@ -76,6 +76,8 @@ stages:
   - stage: Prepare_artifact
     dependsOn:
       - Release
+    pool:
+      vmImage: 'ubuntu-latest'  
     jobs:
       - job: 'make_build'
         steps:
