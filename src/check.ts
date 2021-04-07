@@ -20,6 +20,7 @@ import {
 } from './utils/mixpanelHelperInit';
 import { mixpanel } from './__mocks__/mocks';
 import { getConfigOrThrow } from './utils/config';
+import { ErrorsType, errorHandler } from './js/errorhandler';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -156,14 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
             language: 'it',
           }),
         e => {
-          // TODO: #RENDERING_ERROR
+          errorHandler(ErrorsType.CONNECTION);
           mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value, e });
           return toError;
         },
       )
         .fold(
           r => {
-            // TODO: #RENDERING_ERROR
+            errorHandler(ErrorsType.SERVER);
             mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value, r });
           }, // to be replaced with logic to handle failures
           myResExt => {
@@ -180,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   });
                   return JSON.stringify(myRes.value.data);
                 } else {
+                  errorHandler(ErrorsType.GENERIC_ERROR);
                   mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
                     code: PAYMENT_PAY3DS2_RESP_ERR.value,
