@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         browserColorDepth: screen.colorDepth.toString(),
         browserScreenHeight: screen.height.toString(),
         browserScreenWidth: screen.width.toString(),
-        browserTZ: new Date().getTimezoneOffset(),
+        browserTZ: new Date().getTimezoneOffset().toString(),
         browserAcceptHeader: browserInfo.accept,
         browserIP: browserInfo.ip,
         browserUserAgent: navigator.userAgent,
