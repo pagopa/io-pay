@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             id: checkData.idPayment,
             payRequest: {
               data: {
-                tipo: "web",
+                tipo: 'web',
                 idWallet: wallet.idWallet,
                 cvv: fromNullable(sessionStorage.getItem('securityCode')).getOrElse(''),
                 threeDSData: JSON.stringify(threeDSData),
