@@ -1,0 +1,41 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: IO pay portal API
+  contact:
+    name: IO team
+    url: https://forum.italia.it/c/progetto-io
+  description: >
+    Documentation of the IO Pay Portal Function API here.
+host: localhost
+basePath: "/api/payportal/v1"
+schemes:
+  - https
+paths:
+  "/browsers/current/info":
+    get:
+      operationId: GetBrowsersInfo
+      description: Get info of the current browser used by the user
+      responses:
+        "200":
+          description: Browser info retrieved
+          schema:
+            $ref: "#/definitions/BrowserInfoResponse"
+        "400":
+          description: Bad request   
+        "500":
+          description: generic error           
+definitions:
+    BrowserInfoResponse:
+      type: object
+      required:
+          - ip
+          - useragent
+          - accept
+      properties:
+        ip:
+          type: string
+        useragent:
+          type: string
+        accept:
+          type: string    

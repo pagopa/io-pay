@@ -1,7 +1,7 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
 
 variables:
-  NODE_VERSION: '12.18.3'
+  NODE_VERSION: '12.19.1'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 parameters:
@@ -40,17 +40,17 @@ stages:
   # - is on branch master
   # - is a tag in the form v{version}-RELEASE
   - stage: Release
-    # condition:
-    #   and(
-    #     succeeded(),
-    #     or(
-    #       eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-    #       and(
-    #         startsWith(variables['Build.SourceBranch'], 'refs/tags'),
-    #         endsWith(variables['Build.SourceBranch'], '-RELEASE')
-    #       )
-    #     )
-    #   )
+    condition:
+      and(
+        succeeded(),
+        or(
+          eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+          and(
+            startsWith(variables['Build.SourceBranch'], 'refs/tags'),
+            endsWith(variables['Build.SourceBranch'], '-RELEASE')
+          )
+        )
+      )
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
@@ -76,6 +76,8 @@ stages:
   - stage: Prepare_artifact
     dependsOn:
       - Release
+    pool:
+      vmImage: 'ubuntu-latest'  
     jobs:
       - job: 'make_build'
         steps:

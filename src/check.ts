@@ -3,7 +3,8 @@ import { toError } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
-import { createClient, Client } from '../generated/definitions/pagopa/client';
+import * as PmClient from '../generated/definitions/pagopa/client';
+import * as IoPayPortalClient from '../generated/definitions/iopayportal/client';
 import { Wallet } from '../generated/definitions/pagopa/Wallet';
 import { modalWindows } from './js/modals';
 import idpayguard from './js/idpayguard';
@@ -21,14 +22,20 @@ import {
 import { mixpanel } from './__mocks__/mocks';
 import { getConfigOrThrow } from './utils/config';
 import { ErrorsType, errorHandler } from './js/errorhandler';
+import { getBrowserInfoTask } from './utils/checkHelper';
+
+const iopayportalClient: IoPayPortalClient.Client = IoPayPortalClient.createClient({
+  baseUrl: getConfigOrThrow().IO_PAY_FUNCTIONS_HOST,
+  fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+});
+
+const pmClient: PmClient.Client = PmClient.createClient({
+  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
+  fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+});
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-document.addEventListener('DOMContentLoaded', () => {
-  const pmClient: Client = createClient({
-    baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
-    fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
-  });
-
+document.addEventListener('DOMContentLoaded', async () => {
   // idpayguard
   idpayguard();
   // initHeader
@@ -45,11 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const wallet = JSON.parse(walletStored);
   const checkData = JSON.parse(checkDataStored);
   const userEmail = sessionStorage.getItem('useremail') || '';
-
-  const circuitCustomType = document.querySelector('.windowcont__recapcc__circuit--custom use');
-  const circuitCustomEl = document.querySelector('.windowcont__recapcc__circuit--custom');
-  const circuitDefaultEl = document.querySelector('.windowcont__recapcc__circuit');
-  const circuitCustomTypeHref = circuitCustomType?.getAttribute('href');
 
   const checkTotamount = document.getElementById('check__totamount');
   const checkTotamountButton = document.getElementById('check__totamount__button');
@@ -118,23 +120,28 @@ document.addEventListener('DOMContentLoaded', () => {
     async function (e) {
       e.preventDefault();
 
+      const browserInfo = (await getBrowserInfoTask(iopayportalClient).run()).getOrElse({
+        ip: '',
+        useragent: '',
+        accept: '',
+      });
+
       const threeDSData = {
-        browserJavaEnabled: navigator.javaEnabled(),
+        browserJavaEnabled: navigator.javaEnabled().toString(),
         browserLanguage: navigator.language,
-        browserColorDepth: screen.colorDepth,
-        browserScreenHeight: screen.height,
-        browserScreenWidth: screen.width,
-        browserTZ: new Date().getTimezoneOffset(),
-        // Required ??
-        // browserAcceptHeader:
-        //  'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        // browserIP: '0.0.0.0',
+        browserColorDepth: screen.colorDepth.toString(),
+        browserScreenHeight: screen.height.toString(),
+        browserScreenWidth: screen.width.toString(),
+        browserTZ: new Date().getTimezoneOffset().toString(),
+        browserAcceptHeader:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        browserIP: browserInfo.ip,
         browserUserAgent: navigator.userAgent,
-        acctId: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
+        acctID: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
           ?.toString()
           .trim()}`,
         deliveryEmailAddress: fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
-        workPhone: '3336666666',
+        mobilePhone: null,
       };
 
       mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
@@ -149,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: checkData.idPayment,
             payRequest: {
               data: {
+                tipo: 'web',
                 idWallet: wallet.idWallet,
                 cvv: fromNullable(sessionStorage.getItem('securityCode')).getOrElse(''),
                 threeDSData: JSON.stringify(threeDSData),

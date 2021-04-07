@@ -387,6 +387,8 @@ document.addEventListener('DOMContentLoaded', () => {
               },
             );
 
+            sessionStorage.setItem('securityCode', (creditcardformSecurecode as HTMLInputElement).value);
+
             WalletSession.decode(JSON.parse(walletResp)).map(wallet => {
               sessionStorage.setItem('wallet', JSON.stringify(wallet));
             });
