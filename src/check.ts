@@ -135,11 +135,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         browserAcceptHeader: browserInfo.accept,
         browserIP: browserInfo.ip,
         browserUserAgent: navigator.userAgent,
-        acctId: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
+        acctID: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
           ?.toString()
           .trim()}`,
         deliveryEmailAddress: fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
-        workPhone: '3336666666',
+        workPhone: null,
       };
 
       mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
