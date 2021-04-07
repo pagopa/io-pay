@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           ?.toString()
           .trim()}`,
         deliveryEmailAddress: fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
-        workPhone: null,
+        mobilePhone: null,
       };
 
       mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
@@ -154,6 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             id: checkData.idPayment,
             payRequest: {
               data: {
+                tipo: "web",
                 idWallet: wallet.idWallet,
                 cvv: fromNullable(sessionStorage.getItem('securityCode')).getOrElse(''),
                 threeDSData: JSON.stringify(threeDSData),
