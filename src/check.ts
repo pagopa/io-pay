@@ -132,7 +132,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         browserScreenHeight: screen.height.toString(),
         browserScreenWidth: screen.width.toString(),
         browserTZ: new Date().getTimezoneOffset().toString(),
-        browserAcceptHeader: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        browserAcceptHeader:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         browserIP: browserInfo.ip,
         browserUserAgent: navigator.userAgent,
         acctID: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
