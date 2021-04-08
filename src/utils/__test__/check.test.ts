@@ -74,13 +74,6 @@ describe('CheckHelper', () => {
     expect(getEMVCompliantColorDepth(-1)).toEqual(48);
   });
 
-  it('should return max colorDepth if it is outside the range of EMV Compliant Colors Depth', async () => {
-    expect(getEMVCompliantColorDepth(50)).toEqual(48);
-    expect(getEMVCompliantColorDepth(49)).toEqual(48);
-    expect(getEMVCompliantColorDepth(0)).toEqual(48);
-    expect(getEMVCompliantColorDepth(-1)).toEqual(48);
-  });
-
   it('should return the maximum valid colorDepth below the given colorDepth', async () => {
     expect(getEMVCompliantColorDepth(2)).toEqual(1);
     expect(getEMVCompliantColorDepth(5)).toEqual(4);
