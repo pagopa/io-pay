@@ -366,7 +366,12 @@ document.addEventListener('DOMContentLoaded', () => {
           }, // to be replaced with logic to handle failures
           myResExt => {
             const walletResp = myResExt.fold(
-              () => 'fakeCC',
+              () => {
+                errorHandler(ErrorsType.GENERIC_ERROR);
+                mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
+                });
+              },
               myRes => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_WALLET_SUCCESS.value, {

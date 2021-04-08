@@ -58,7 +58,7 @@ export async function actionsCheck() {
           },
           myResExt => {
             myResExt.fold(
-              () => undefined, // empty data ???
+              () => errorHandler(ErrorsType.GENERIC_ERROR), 
               response => {
                 const maybePayment = PaymentSession.decode(response.value?.data);
 
@@ -75,7 +75,7 @@ export async function actionsCheck() {
                     fromNullable(origin).getOrElse(response.value.data.urlRedirectEc),
                   );
                 } else {
-                  errorHandler(ErrorsType.GENERIC_ERROR);
+                  window.location.replace('ko.html');
                   mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
                     /* code: response.value,
