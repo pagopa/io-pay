@@ -17,3 +17,22 @@ export const getBrowserInfoTask = (iopayportalClient: Client): TaskEither<string
             : taskEither.of(responseType.value),
       ),
   );
+
+/**
+ * This function return a EMV compliant color depth
+ * or take the maximum valid colorDepth below the given colorDepth.
+ * @param colorDepth  (number)
+ * @returns EMV compliant colorDepth (number)
+ */
+export const getEMVCompliantColorDepth = (colorDepth: number): number => {
+  const validColorsDepths: readonly number[] = [1, 4, 8, 15, 16, 24, 32, 48];
+  const maxValidColorDepthsLength: number = 48;
+
+  const maybeValidColor = validColorsDepths.includes(colorDepth)
+    ? colorDepth
+    : validColorsDepths.find(
+        (validColorDepth, index) => validColorDepth < colorDepth && colorDepth < validColorsDepths[index + 1],
+      );
+
+  return maybeValidColor === undefined ? maxValidColorDepthsLength : maybeValidColor;
+};
