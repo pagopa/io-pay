@@ -22,7 +22,7 @@ import {
 import { mixpanel } from './__mocks__/mocks';
 import { getConfigOrThrow } from './utils/config';
 import { ErrorsType, errorHandler } from './js/errorhandler';
-import { getBrowserInfoTask } from './utils/checkHelper';
+import { getBrowserInfoTask, getEMVCompliantColorDepth } from './utils/checkHelper';
 
 const iopayportalClient: IoPayPortalClient.Client = IoPayPortalClient.createClient({
   baseUrl: getConfigOrThrow().IO_PAY_FUNCTIONS_HOST,
@@ -129,12 +129,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const threeDSData = {
         browserJavaEnabled: navigator.javaEnabled().toString(),
         browserLanguage: navigator.language,
-        browserColorDepth: '24',
+        browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
         browserScreenHeight: screen.height.toString(),
         browserScreenWidth: screen.width.toString(),
         browserTZ: new Date().getTimezoneOffset().toString(),
-        browserAcceptHeader:
-          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        browserAcceptHeader: browserInfo.accept,
         browserIP: browserInfo.ip,
         browserUserAgent: navigator.userAgent,
         acctID: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
