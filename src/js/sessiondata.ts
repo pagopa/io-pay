@@ -58,7 +58,7 @@ export async function actionsCheck() {
           },
           myResExt => {
             myResExt.fold(
-              () => errorHandler(ErrorsType.GENERIC_ERROR), 
+              () => errorHandler(ErrorsType.GENERIC_ERROR),
               response => {
                 const maybePayment = PaymentSession.decode(response.value?.data);
 
