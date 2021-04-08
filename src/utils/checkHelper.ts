@@ -25,7 +25,7 @@ export const getBrowserInfoTask = (iopayportalClient: Client): TaskEither<string
  * @returns EMV compliant colorDepth (number)
  */
 export const getEMVCompliantColorDepth = (colorDepth: number): number => {
-  const validColorsDepths: readonly number[] = [1, 4, 8, 15, 16, 24, 32, 48];
+  const validColorsDepths: Array<number> = [1, 4, 8, 15, 16, 24, 32, 48];
   const maxValidColorDepthsLength: number = 48;
 
   const maybeValidColor = validColorsDepths.includes(colorDepth)
