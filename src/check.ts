@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const threeDSData = {
         browserJavaEnabled: navigator.javaEnabled().toString(),
         browserLanguage: navigator.language,
-        browserColorDepth: screen.colorDepth.toString(),
+        browserColorDepth: '24',
         browserScreenHeight: screen.height.toString(),
         browserScreenWidth: screen.width.toString(),
         browserTZ: new Date().getTimezoneOffset().toString(),
