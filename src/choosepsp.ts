@@ -22,6 +22,7 @@ import {
   PAYMENT_UPD_WALLET_SUCCESS,
   PAYMENT_UPD_WALLET_SVR_ERR,
 } from './utils/mixpanelHelperInit';
+import { ErrorsType, errorHandler } from './js/errorhandler';
 
 const pmClient = createClient({
   baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
@@ -65,14 +66,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         idPayment,
       }),
     e => {
-      // TODO: #RENDERING_ERROR
+      errorHandler(ErrorsType.CONNECTION);
       mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value, e });
       return toError;
     },
   )
     .fold(
       r => {
-        // TODO: #RENDERING_ERROR
+        errorHandler(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value, r });
         return undefined;
       },
@@ -87,6 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               });
               return myRes?.value?.data?.pspList;
             } else {
+              errorHandler(ErrorsType.GENERIC_ERROR);
               mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
                 EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
                 code: PAYMENT_PSPLIST_RESP_ERR.value,
@@ -182,14 +184,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
           }),
         e => {
-          // TODO: #RENDERING_ERROR
+          errorHandler(ErrorsType.GENERIC_ERROR);
           mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value, e });
           return toError;
         },
       )
         .fold(
           r => {
-            // TODO: #RENDERING_ERROR
+            errorHandler(ErrorsType.GENERIC_ERROR);
             mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value, r });
           },
           myResExt =>

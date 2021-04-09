@@ -286,6 +286,9 @@ body {
   @include media-breakpoint-up(md) {
     padding-top: 5rem;
   }
+  body.error & {
+    display: none;
+  }
 }
 
 .windowcont {
@@ -908,6 +911,18 @@ body {
     font-size: 0.9rem;
     color: #5c6f82;
     line-height: 1.3;
+  }
+}
+
+// ERROR HANDLER
+.errorhandler {
+  padding: 100px 16px 0 16px;
+  display: none;
+  body.error & {
+    display: block;
+  }
+  &__wrapper {
+    margin: 2rem 0;
   }
 }
 
