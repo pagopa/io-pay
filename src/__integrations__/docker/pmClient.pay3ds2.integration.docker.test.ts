@@ -219,6 +219,7 @@ describe('Endpoint pay3ds2 of PM', () => {
     await tryCatch(
       () =>
         paymentManagerClientWithPolling.checkStatusUsingGET({
+          Bearer: `Bearer ${startSessionResponse?.sessionToken}`,
           id: fromNullable(payResponse?.token).getOrElse(''),
         }),
       () => undefined,
