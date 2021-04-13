@@ -4,6 +4,8 @@ import { fromLeft, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither
 import { Client } from '../../generated/definitions/pagopa/client';
 import { Transaction } from '../../generated/definitions/pagopa/Transaction';
 import { TransactionStatusResponse } from '../../generated/definitions/pagopa/TransactionStatusResponse';
+import { Xpay3DSResponse } from '../../generated/definitions/pagopa/Xpay3DSResponse';
+import { getUrlParameter } from '../js/urlUtilities';
 import { mixpanel } from '../__mocks__/mocks';
 import {
   TRANSACTION_POLLING_M_CHECK_INIT,
@@ -16,8 +18,83 @@ import {
   TRANSACTION_RESUME3DS2_SVR_ERR,
   TRANSACTION_RESUME3DS2_RESP_ERR,
   TRANSACTION_RESUME3DS2_SUCCESS,
+  TRANSACTION_RESUMEXPAY_INIT,
+  TRANSACTION_RESUMEXPAY_NET_ERR,
+  TRANSACTION_RESUMEXPAY_SVR_ERR,
+  TRANSACTION_RESUMEXPAY_SUCCESS,
+  TRANSACTION_RESUMEXPAY_RESP_ERR,
 } from './mixpanelHelperInit';
 import { UNKNOWN } from './TransactionStatesTypes';
+
+export const getXpay3DSResponseFromUrl = (): TaskEither<UNKNOWN, Xpay3DSResponse> =>
+  Xpay3DSResponse.decode({
+    esito: getUrlParameter('esito'),
+    idOperazione: getUrlParameter('idOperazione'),
+    timestamp: getUrlParameter('timeStamp'),
+    mac: getUrlParameter('mac'),
+    xpayNonce: getUrlParameter('xpayNonce'),
+    codice: getUrlParameter('codice'),
+    messaggio: getUrlParameter('messaggio'),
+    resumeType: getUrlParameter('resumeType'),
+  }).fold(
+    _ => fromLeft(UNKNOWN.value),
+    xpay3DSresponse => taskEither.of(xpay3DSresponse),
+  );
+
+export const resumeXpayTransactionTask = (
+  xpay3DSResponse: Xpay3DSResponse,
+  outcome: string,
+  sessionToken: string,
+  idTransaction: string,
+  paymentManagerClient: Client,
+): TaskEither<UNKNOWN, number> => {
+  mixpanel.track(TRANSACTION_RESUMEXPAY_INIT.value, {
+    EVENT_ID: TRANSACTION_RESUMEXPAY_INIT.value,
+    token: idTransaction,
+  });
+  return tryCatch(
+    () =>
+      paymentManagerClient.resumeUsingPOST({
+        Bearer: `Bearer ${sessionToken}`,
+        id: idTransaction,
+        resumeRequest: { data: { esito: outcome, xpay3DSResponse } },
+      }),
+    e => {
+      mixpanel.track(TRANSACTION_RESUMEXPAY_NET_ERR.value, {
+        EVENT_ID: TRANSACTION_RESUMEXPAY_NET_ERR.value,
+        e,
+      });
+      return toError;
+    },
+  ).foldTaskEither(
+    err => {
+      mixpanel.track(TRANSACTION_RESUMEXPAY_SVR_ERR.value, {
+        EVENT_ID: TRANSACTION_RESUMEXPAY_SVR_ERR.value,
+        err,
+      });
+      return fromLeft(UNKNOWN.value);
+    },
+    errorOrResponse =>
+      errorOrResponse.fold(
+        () => fromLeft(UNKNOWN.value),
+        responseType => {
+          if (responseType.status === 200) {
+            mixpanel.track(TRANSACTION_RESUMEXPAY_SUCCESS.value, {
+              EVENT_ID: TRANSACTION_RESUMEXPAY_SUCCESS.value,
+              token: idTransaction,
+            });
+          } else {
+            mixpanel.track(TRANSACTION_RESUMEXPAY_RESP_ERR.value, {
+              EVENT_ID: TRANSACTION_RESUMEXPAY_RESP_ERR.value,
+              code: -2,
+              message: 'ERR MSG',
+            });
+          }
+          return responseType.status !== 200 ? fromLeft(UNKNOWN.value) : taskEither.of(responseType.status);
+        },
+      ),
+  );
+};
 
 export const resumeTransactionTask = (
   methodCompleted: 'Y' | 'N' | undefined,
@@ -80,6 +157,7 @@ export const resumeTransactionTask = (
 
 export const checkStatusTask = (
   transactionId: string,
+  sessionToken: string,
   paymentManagerClient: Client,
 ): TaskEither<UNKNOWN, TransactionStatusResponse> => {
   mixpanel.track(TRANSACTION_POLLING_M_CHECK_INIT.value, {
@@ -89,6 +167,7 @@ export const checkStatusTask = (
   return tryCatch(
     () =>
       paymentManagerClient.checkStatusUsingGET({
+        Bearer: `Bearer ${sessionToken}`,
         id: transactionId,
       }),
     e => {

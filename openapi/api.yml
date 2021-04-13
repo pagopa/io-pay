@@ -546,6 +546,8 @@ paths:
           description: Generic Error
           schema:
             $ref: '#/definitions/ErrorResponse'
+      security:
+        - Bearer: []      
   '/transactions/{id}/actions/resume':
     post:
       tags:
@@ -2630,7 +2632,9 @@ definitions:
       threeDSMethodData:
         type: string
       params:
-        $ref: '#/definitions/TransactionStatusParams' 
+        $ref: '#/definitions/TransactionStatusParams'
+      xpayHtml:
+        type: string   
     title: TransactionStatus
   TransactionStatusParams:
     type: object
