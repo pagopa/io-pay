@@ -82,7 +82,7 @@ describe('IOPAY App for Xpay payments', () => {
     const creditCardPANFieldS = '#creditcardnumber';
     await page.waitForSelector(creditCardPANFieldS);
     await page.focus(creditCardPANFieldS);
-    await page.keyboard.type('4000000000000101');
+    await page.keyboard.type('4000000000000000');
 
     const creditCardExpDateFieldS = '#creditcardexpirationdate';
     await page.waitForSelector(creditCardExpDateFieldS);
@@ -153,7 +153,7 @@ describe('IOPAY App for Xpay payments', () => {
     const creditCardPANFieldS = '#creditcardnumber';
     await page.waitForSelector(creditCardPANFieldS);
     await page.focus(creditCardPANFieldS);
-    await page.keyboard.type('4000000000000101');
+    await page.keyboard.type('4000000000000000');
 
     const creditCardExpDateFieldS = '#creditcardexpirationdate';
     await page.waitForSelector(creditCardExpDateFieldS);
