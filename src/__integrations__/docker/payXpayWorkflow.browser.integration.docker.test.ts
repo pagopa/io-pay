@@ -2,10 +2,10 @@ import { Server } from 'http';
 import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator, HttpTerminator } from 'http-terminator';
 import express from 'express';
+import { fromNullable } from 'fp-ts/lib/Option';
 import { getIdPayment, setMethodChallengeSteps } from '../../utils/testUtils';
 import { TransactionStatusResponse } from '../../../generated/definitions/pagopa/TransactionStatusResponse';
 import { TX_ACCEPTED } from '../../utils/TransactionStatesTypes';
-import { fromNullable } from 'fp-ts/lib/Option';
 
 describe('IOPAY App for Xpay payments', () => {
   const SRV_PORT = process.env.IOPAY_DEV_SERVER_PORT ? parseInt(process.env.IOPAY_DEV_SERVER_PORT, 10) : 1234;
@@ -175,7 +175,7 @@ describe('IOPAY App for Xpay payments', () => {
     await page.click(submitWalletbuttonS);
     await page.waitForNavigation();
 
-    //set NEXI psp
+    // set NEXI psp
     await page.waitForSelector('.row > .windowcont > #checkout > .windowcont__paywith > .text-decoration-none');
     await page.click('.row > .windowcont > #checkout > .windowcont__paywith > .text-decoration-none');
 
