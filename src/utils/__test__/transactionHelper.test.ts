@@ -2,9 +2,10 @@ import * as myFake from 'faker/locale/it';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import nodeFetch from 'node-fetch';
 import { left, right } from 'fp-ts/lib/Either';
-import { checkStatusTask, resumeTransactionTask } from '../transactionHelper';
+import { checkStatusTask, resumeTransactionTask, resumeXpayTransactionTask } from '../transactionHelper';
 import { Client, createClient } from '../../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../fetch';
+import { EsitoEnum } from '../../../generated/definitions/pagopa/Xpay3DSResponse';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
 (global as any).fetch = nodeFetch;
@@ -93,7 +94,7 @@ describe('TransactionHelper', () => {
       ),
     );
 
-    const result = await checkStatusTask(idTransaction, pmClient).run();
+    const result = await checkStatusTask(idTransaction, sessionToken, pmClient).run();
 
     expect(pmClient.checkStatusUsingGET).toHaveBeenCalledTimes(1);
     expect(result.isRight()).toEqual(true);
@@ -103,7 +104,7 @@ describe('TransactionHelper', () => {
   it('should return -1 if checkStatusUsingGET fails', async () => {
     jest.spyOn(pmClient, 'checkStatusUsingGET').mockReturnValueOnce(Promise.resolve(left([])));
 
-    const result = await checkStatusTask(idTransaction, pmClient).run();
+    const result = await checkStatusTask(idTransaction, sessionToken, pmClient).run();
 
     expect(pmClient.checkStatusUsingGET).toHaveBeenCalledTimes(1);
     expect(result.isLeft()).toEqual(true);
@@ -120,9 +121,92 @@ describe('TransactionHelper', () => {
       ),
     );
 
-    const result = await checkStatusTask('invalidIdTransaction', pmClient).run();
+    const result = await checkStatusTask('invalidIdTransaction', sessionToken, pmClient).run();
 
     expect(pmClient.checkStatusUsingGET).toHaveBeenCalledTimes(1);
+    expect(result.isLeft()).toEqual(true);
+  });
+
+  it('should return 200 if resumeUsingPOST is successfull', async () => {
+    jest.spyOn(pmClient, 'resumeUsingPOST').mockReturnValueOnce(
+      Promise.resolve(
+        right({
+          headers: {},
+          status: 200,
+          value: undefined,
+        }),
+      ),
+    );
+
+    const result = await resumeXpayTransactionTask(
+      {
+        esito: EsitoEnum.OK,
+        idOperazione: 'idOperazione',
+        mac: 'mac',
+        resumeType: 'xpay',
+        timestamp: '2345234534',
+        xpayNonce: 'xpayNonce',
+      },
+      '',
+      sessionToken,
+      idTransaction,
+      pmClient,
+    ).run();
+
+    expect(pmClient.resumeUsingPOST).toHaveBeenCalledTimes(1);
+    expect(result.isRight()).toEqual(true);
+    expect(result.getOrElse(-1)).toEqual(200);
+  });
+
+  it('should return -1 if resumeUsingPOST fails', async () => {
+    jest.spyOn(pmClient, 'resumeUsingPOST').mockReturnValueOnce(Promise.resolve(left([])));
+
+    const result = await resumeXpayTransactionTask(
+      {
+        esito: EsitoEnum.OK,
+        idOperazione: 'idOperazione',
+        mac: 'mac',
+        resumeType: 'xpay',
+        timestamp: '2345234534',
+        xpayNonce: 'xpayNonce',
+      },
+      '',
+      sessionToken,
+      idTransaction,
+      pmClient,
+    ).run();
+
+    expect(pmClient.resumeUsingPOST).toHaveBeenCalledTimes(1);
+    expect(result.isLeft()).toEqual(true);
+  });
+
+  it('should return -1 if resumeUsingPOST respond with 401 due to invalid token', async () => {
+    jest.spyOn(pmClient, 'resumeUsingPOST').mockReturnValueOnce(
+      Promise.resolve(
+        right({
+          headers: {},
+          status: 401,
+          value: undefined,
+        }),
+      ),
+    );
+
+    const result = await resumeXpayTransactionTask(
+      {
+        esito: EsitoEnum.OK,
+        idOperazione: 'idOperazione',
+        mac: 'mac',
+        resumeType: 'xpay',
+        timestamp: '2345234534',
+        xpayNonce: 'xpayNonce',
+      },
+      '',
+      sessionToken,
+      idTransaction,
+      pmClient,
+    ).run();
+
+    expect(pmClient.resumeUsingPOST).toHaveBeenCalledTimes(1);
     expect(result.isLeft()).toEqual(true);
   });
 });
