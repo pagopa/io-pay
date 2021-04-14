@@ -1,4 +1,3 @@
-import { debug } from 'console';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
 import nodeFetch from 'node-fetch';
