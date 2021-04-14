@@ -2,9 +2,9 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { toError } from 'fp-ts/lib/Either';
+import mixpanel from 'mixpanel-browser';
 import { createClient } from '../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../utils/fetch';
-import { mixpanel } from '../__mocks__/mocks';
 import {
   PAYMENT_CHECK_INIT,
   PAYMENT_CHECK_NET_ERR,

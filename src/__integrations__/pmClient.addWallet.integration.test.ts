@@ -1,4 +1,3 @@
-// import { debug } from 'console';
 import { Server } from 'http';
 
 import nodeFetch from 'node-fetch';

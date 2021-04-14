@@ -3,6 +3,7 @@ import { toError } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
+import mixpanel from 'mixpanel-browser';
 import * as PmClient from '../generated/definitions/pagopa/client';
 import * as IoPayPortalClient from '../generated/definitions/iopayportal/client';
 import { Wallet } from '../generated/definitions/pagopa/Wallet';
@@ -19,7 +20,7 @@ import {
   PAYMENT_PAY3DS2_SUCCESS,
   PAYMENT_PAY3DS2_SVR_ERR,
 } from './utils/mixpanelHelperInit';
-import { mixpanel } from './__mocks__/mocks';
+
 import { getConfigOrThrow } from './utils/config';
 import { ErrorsType, errorHandler } from './js/errorhandler';
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from './utils/checkHelper';

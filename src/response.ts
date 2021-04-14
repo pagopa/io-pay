@@ -3,6 +3,7 @@ import { DeferredPromise } from 'italia-ts-commons/lib/promises';
 import { fromNullable, none } from 'fp-ts/lib/Option';
 import { toError } from 'fp-ts/lib/Either';
 import { fromPredicate } from 'fp-ts/lib/TaskEither';
+import mixpanel from 'mixpanel-browser';
 import { Client, createClient } from '../generated/definitions/pagopa/client';
 import { TransactionStatusResponse } from '../generated/definitions/pagopa/TransactionStatusResponse';
 import { TransactionStatus } from '../generated/definitions/pagopa/TransactionStatus';
@@ -28,7 +29,7 @@ import {
   THREEDS_CHECK_XPAY_RESP_ERR,
   THREEDS_CHECK_XPAY_RESP_SUCCESS,
 } from './utils/mixpanelHelperInit';
-import { mixpanel } from './__mocks__/mocks';
+
 import { GENERIC_STATUS, TX_ACCEPTED } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
 

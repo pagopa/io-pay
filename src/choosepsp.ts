@@ -2,6 +2,7 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { toError } from 'fp-ts/lib/Either';
 import { fromNullable } from 'fp-ts/lib/Option';
+import mixpanel from 'mixpanel-browser';
 import { createClient } from '../generated/definitions/pagopa/client';
 import { retryingFetch } from './utils/fetch';
 import idpayguard from './js/idpayguard';
@@ -9,7 +10,7 @@ import { initHeader } from './js/header';
 import { modalWindows } from './js/modals';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
-import { mixpanel } from './__mocks__/mocks';
+
 import {
   PAYMENT_PSPLIST_INIT,
   PAYMENT_PSPLIST_NET_ERR,
