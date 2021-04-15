@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (pspbank && wallet) {
     // eslint-disable-next-line functional/immutable-data
     pspbank.setAttribute('src', wallet.psp.logoPSP);
+    pspbank.setAttribute('alt', wallet.psp.businessName);
   }
   if (pspcost && wallet) {
     // eslint-disable-next-line functional/immutable-data
@@ -110,9 +111,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (checkUserEmail && userEmail) {
     // eslint-disable-next-line functional/immutable-data
     checkUserEmail.innerText = userEmail;
-  }
-  if (pspchoose && wallet && wallet.pspEditable === false) {
-    pspchoose.classList.add('d-none');
   }
 
   checkoutForm?.addEventListener(

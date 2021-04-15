@@ -24,7 +24,7 @@ html(lang='it')
                                 .h3.ml-auto(id="check__totamount") 
                             .windowcont__paywith.d-flex.py-2.mt-2
                                 .font-weight-bold Paga con:
-                                a(href="choosepsp.pug").text-decoration-none.font-weight-bold.ml-auto Modifica
+                                a(href="inputcard.pug").text-decoration-none.font-weight-bold.ml-auto Modifica
                             .windowcont__recapcc.mt-2.mb-4
                                 .windowcont__recapcc__inner.p-4.rounded.shadow.d-flex.flex-column.justify-content-between
                                     .text-monospace(id="check__creditcardnumber") 
@@ -45,7 +45,7 @@ html(lang='it')
                                     use(href="/assets/icons/sprite.svg#it-info-circle")
                             .windowcont__bank.d-flex.py-2.mt-2.align-items-center
                                 div
-                                    img(src="https://via.placeholder.com/161x36?text=BANK" id="check__pspbank")
+                                    img(src="" id="check__pspbank" alt="")
                                 a.font-weight-bold.text-decoration-none.ml-auto(href="choosepsp.pug",id="check__pspchoose") Modifica
                             .windowcont__comm.d-flex.py-2.mt-2.border-bottom.border-bottom-gray
                                 div.text-muted Costo transazione
@@ -58,9 +58,6 @@ html(lang='it')
                                 div.text-muted Invio esito a
                                 div.ml-auto.d-flex.font-weight-bold
                                     span(id="check__useremail") 
-                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-checkemail", data-modal-buttons="close")
-                                        title= "Info PSP"
-                                        use(href="/assets/icons/sprite.svg#it-info-circle")
                             .windowcont__payattention.py-4.mt-2
                                 div.small.text-center
                                     span.font-weight-bold Attenzione:&nbsp;
@@ -84,4 +81,3 @@ html(lang='it')
             include includes/modal/checkcancel.pug
             include includes/modal/checkwhypsp.pug
             include includes/modal/checkpaypsp.pug
-            include includes/modal/checkemail.pug

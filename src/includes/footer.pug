@@ -18,11 +18,10 @@
             .paymentdash__sum.ml-auto(data-sessiondata="importo") 
         .paymentdash__desc Il sistema pagoPA aggiorna automaticamente l’importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarti così more o altri interessi.
 .loader.flex-column.justify-content-center.align-items-center
-    .spinner-grow.text-primary(role="status")
-        span.sr-only Loading...
-    svg.mt-4(width="56", height="36")
-        title Logo pagoPA
-        use(href="/assets/icons/app.svg#pagopa-logo")
+    .progress-spinner.progress-spinner-double.progress-spinner-active
+        .progress-spinner-inner
+        .progress-spinner-inner
+        .sr-only Caricamento...
 include modal/multiplepayment.pug
 include errorhandler.pug
 include noscript.pug
