@@ -3,7 +3,7 @@ import { DeferredPromise } from 'italia-ts-commons/lib/promises';
 import { fromNullable, none } from 'fp-ts/lib/Option';
 import { toError } from 'fp-ts/lib/Either';
 import { fromPredicate } from 'fp-ts/lib/TaskEither';
-import mixpanel from 'mixpanel-browser';
+
 import { Client, createClient } from '../generated/definitions/pagopa/client';
 import { TransactionStatusResponse } from '../generated/definitions/pagopa/TransactionStatusResponse';
 import { TransactionStatus } from '../generated/definitions/pagopa/TransactionStatus';
@@ -22,6 +22,7 @@ import {
 } from './utils/transactionHelper';
 import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
 import {
+  mixpanel,
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
   THREEDSMETHODURL_STEP1_RESP_ERR,
