@@ -158,23 +158,23 @@ export const THREEDS_CHECK_XPAY_RESP_SUCCESS = t.literal('THREEDS_CHECK_XPAY_RES
 export type THREEDS_CHECK_XPAY_RESP_SUCCESS = t.TypeOf<typeof THREEDS_CHECK_XPAY_RESP_SUCCESS>;
 
 // ini MIX TODO: enable on deploy
-if (process.env.IO_PAY_ENV === 'production') {
+if (process.env.IO_PAY_ENV === 'develop') {
+  // eslint-disable-next-line no-console
+  console.log(`Mixpanel events mock on console log. See IO_PAY_ENV=${process.env.IO_PAY_ENV}`);
+} else {
   init('c3db8f517102d7a7ebd670c9da3e05c4', {
     api_host: 'https://api-eu.mixpanel.com',
     cross_site_cookie: true,
   }); // secret
-} else {
-  // eslint-disable-next-line no-console
-  console.log(`Mixpanel events mock on console log. See IO_PAY_ENV=${process.env.IO_PAY_ENV}`);
 }
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (process.env.IO_PAY_ENV === 'production') {
-      track(event_name, properties);
-    } else {
+    if (process.env.IO_PAY_ENV === 'develop') {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
+    } else {
+      track(event_name, properties);
     }
   },
 };
