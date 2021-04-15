@@ -23,7 +23,7 @@
     "test:uat-prod-int": "jest -c jest.config.integration.uat-prod.js --detectOpenHandles",
     "test": "yarn test:unit && yarn test:integration && yarn test:uat-prod-int",
     "test:coverage": "yarn test:coverage-unit && yarn test:coverage-int",
-    "build": "parcel build src/index.ts src/*.pug",
+    "build": "parcel build src/*.pug --no-source-maps --public-url /",
     "build:test-cases": "parcel build src/__integrations__/testCases/* --out-dir distTest",
     "build:index": "parcel build src/index.ts ",
     "build:template": "parcel build src/*.pug",
