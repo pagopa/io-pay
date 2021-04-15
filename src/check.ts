@@ -3,7 +3,7 @@ import { toError } from 'fp-ts/lib/Either';
 import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
-import mixpanel from 'mixpanel-browser';
+
 import * as PmClient from '../generated/definitions/pagopa/client';
 import * as IoPayPortalClient from '../generated/definitions/iopayportal/client';
 import { Wallet } from '../generated/definitions/pagopa/Wallet';
@@ -14,6 +14,7 @@ import { setTranslateBtns } from './js/translateui';
 import { retryingFetch } from './utils/fetch';
 import { initDropdowns } from './js/dropdowns';
 import {
+  mixpanel,
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_NET_ERR,
   PAYMENT_PAY3DS2_RESP_ERR,
