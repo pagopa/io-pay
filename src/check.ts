@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (pspbank && wallet) {
     // eslint-disable-next-line functional/immutable-data
     pspbank.setAttribute('src', wallet.psp.logoPSP);
+    pspbank.setAttribute('alt', wallet.psp.businessName);
   }
   if (pspcost && wallet) {
     // eslint-disable-next-line functional/immutable-data
