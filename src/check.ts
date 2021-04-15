@@ -112,9 +112,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // eslint-disable-next-line functional/immutable-data
     checkUserEmail.innerText = userEmail;
   }
-  if (pspchoose && wallet && wallet.pspEditable === false) {
-    pspchoose.classList.add('d-none');
-  }
 
   checkoutForm?.addEventListener(
     'submit',
