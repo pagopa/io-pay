@@ -27,7 +27,8 @@ html(lang='it')
                                 a(href="inputcard.pug").text-decoration-none.font-weight-bold.ml-auto Modifica
                             .windowcont__recapcc.mt-2.mb-4
                                 .windowcont__recapcc__inner.p-4.rounded.shadow.d-flex.flex-column.justify-content-between
-                                    .text-monospace(id="check__creditcardnumber") 
+                                    .text-monospace(id="check__creditcardnumber", aria-hidden="true") 
+                                    .text-monospace.sr-only(id="check__creditcardnumber__sr") 
                                     .windowcont__recapcc__valid Valida fino al 
                                         span(id="check__creditcardexpirationdate") 
                                     .windowcont__recapcc__holder.d-flex.align-items-center
