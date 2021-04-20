@@ -20,7 +20,7 @@ yarn start
 
 then open browser [here](http://localhost:1234/index.html?p=12345)
 
-You should now see something like the following 👍
+You should now see something like the following👍
 
 ![](./doc/2020-11-20-18-45-33.png)
 
