@@ -238,6 +238,10 @@ body {
   width: 100vw;
   pointer-events: none;
 
+  .progress-spinner {
+    margin-top: -24px;
+  }
+
   body.loading & {
     display: flex;
   }
