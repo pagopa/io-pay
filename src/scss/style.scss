@@ -172,10 +172,6 @@ $text-color: #17324d;
     url('../../node_modules/bootstrap-italia/src/fonts/Titillium_Web/TitilliumWeb-Bold.ttf') format('ttf');
 }
 
-// OVERRIDES
-.btn-outline-primary {
-  box-shadow: inset 0 0 0 2px #0066cc;
-}
 .was-validated .form-control:invalid,
 .form-control.is-invalid {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23d9364f' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23d9364f' stroke='none'/%3e%3c/svg%3e");
