@@ -3,14 +3,8 @@ html(lang='it')
     - var languages = [{'label':'IT', 'full':'Italiano'},{'label':'EN', 'full':'English'}];
     - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'amex'}];
     head
-        title WISP Light
-        link(href="scss/style.scss",rel="stylesheet")
-        script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
-        script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
-        script(src="env-config.js")
+        include includes/head.pug
         script(src="check.ts")
-        meta(charset="utf-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
     body.page--check
         .main-wrapper.d-flex.flex-column
             // HEADER
