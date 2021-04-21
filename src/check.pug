@@ -46,7 +46,7 @@ html(lang='it')
                                 div.text-muted Costo transazione
                                 div.ml-auto.d-flex.font-weight-bold
                                     span(id="check__pspcost")
-                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-checkpaypsp", data-modal-buttons="close")
+                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-choosepspwhytransaction", data-modal-buttons="close")
                                         title= "Info PSP"
                                         use(href="/assets/icons/sprite.svg#it-info-circle")
                             .windowcont__sendto.d-flex.py-2.mt-2.border-bottom.border-bottom-gray
@@ -64,7 +64,7 @@ html(lang='it')
                                         button.btn.btn-primary.flex-grow-1(type="submit", data-lang="cta.continue") Paga 
                                             span.amount(id="check__totamount__button") &nbsp;
                                     .text-center
-                                        a.d-block.font-weight-bold.text-decoration-none.py-2(href="#",data-modal="#modal-checkwhypsp", data-modal-buttons="close") Perchè vedo&nbsp;
+                                        a.d-block.font-weight-bold.text-decoration-none.py-2(href="#",data-modal="#modal-checkwhypsp", data-modal-buttons="close") Perché vedo&nbsp;
                                             span(class="check__pspbankname") 
                                             span ?
                                         
@@ -75,4 +75,4 @@ html(lang='it')
             include includes/footer.pug                       
             include includes/modal/checkcancel.pug
             include includes/modal/checkwhypsp.pug
-            include includes/modal/checkpaypsp.pug
+            include includes/modal/choosepspwhytransaction.pug

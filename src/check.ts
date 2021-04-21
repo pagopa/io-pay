@@ -91,14 +91,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkCreditcardexpirationdate.innerText = `${wallet.creditCard.expireMonth}/${wallet?.creditCard.expireYear}`;
   }
   if (checkCreditcardnumber && wallet) {
-    const panDivided = wallet.creditCard.pan.match(/.{1,4}/g);
-    const panDotted = panDivided.join(' ').replaceAll('*', '&middot;');
+    const panOnlyNumbers = wallet.creditCard.pan.replaceAll('*', '');
+    const panDotted = `&middot;&middot;&middot;&middot;${panOnlyNumbers}`;
     // eslint-disable-next-line functional/immutable-data
     checkCreditcardnumber.innerHTML = panDotted;
   }
   if (checkCreditcardnumberScreenReader && wallet) {
     // eslint-disable-next-line functional/immutable-data
-    checkCreditcardnumberScreenReader.innerText = wallet.creditCard.pan;
+    checkCreditcardnumberScreenReader.innerText = wallet.creditCard.pan.replaceAll('*', '');
   }
   if (pspbank && wallet) {
     // eslint-disable-next-line functional/immutable-data
