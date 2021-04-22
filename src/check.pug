@@ -3,14 +3,8 @@ html(lang='it')
     - var languages = [{'label':'IT', 'full':'Italiano'},{'label':'EN', 'full':'English'}];
     - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'amex'}];
     head
-        title WISP Light
-        link(href="scss/style.scss",rel="stylesheet")
-        script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
-        script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
-        script(src="env-config.js")
+        include includes/head.pug
         script(src="check.ts")
-        meta(charset="utf-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
     body.page--check
         .main-wrapper.d-flex.flex-column
             // HEADER
@@ -27,7 +21,8 @@ html(lang='it')
                                 a(href="inputcard.pug").text-decoration-none.font-weight-bold.ml-auto Modifica
                             .windowcont__recapcc.mt-2.mb-4
                                 .windowcont__recapcc__inner.p-4.rounded.shadow.d-flex.flex-column.justify-content-between
-                                    .text-monospace(id="check__creditcardnumber") 
+                                    .text-monospace(id="check__creditcardnumber", aria-hidden="true") 
+                                    .text-monospace.sr-only(id="check__creditcardnumber__sr") 
                                     .windowcont__recapcc__valid Valida fino al 
                                         span(id="check__creditcardexpirationdate") 
                                     .windowcont__recapcc__holder.d-flex.align-items-center
@@ -51,7 +46,7 @@ html(lang='it')
                                 div.text-muted Costo transazione
                                 div.ml-auto.d-flex.font-weight-bold
                                     span(id="check__pspcost")
-                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-checkpaypsp", data-modal-buttons="close")
+                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-choosepspwhytransaction", data-modal-buttons="close")
                                         title= "Info PSP"
                                         use(href="/assets/icons/sprite.svg#it-info-circle")
                             .windowcont__sendto.d-flex.py-2.mt-2.border-bottom.border-bottom-gray
@@ -69,7 +64,7 @@ html(lang='it')
                                         button.btn.btn-primary.flex-grow-1(type="submit", data-lang="cta.continue") Paga 
                                             span.amount(id="check__totamount__button") &nbsp;
                                     .text-center
-                                        a.d-block.font-weight-bold.text-decoration-none.py-2(href="#",data-modal="#modal-checkwhypsp", data-modal-buttons="close") Perchè vedo&nbsp;
+                                        a.d-block.font-weight-bold.text-decoration-none.py-2(href="#",data-modal="#modal-checkwhypsp", data-modal-buttons="close") Perché vedo&nbsp;
                                             span(class="check__pspbankname") 
                                             span ?
                                         
@@ -80,4 +75,4 @@ html(lang='it')
             include includes/footer.pug                       
             include includes/modal/checkcancel.pug
             include includes/modal/checkwhypsp.pug
-            include includes/modal/checkpaypsp.pug
+            include includes/modal/choosepspwhytransaction.pug

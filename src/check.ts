@@ -60,10 +60,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const checkCreditcardname = document.getElementById('check__creditcardname');
   const checkCreditcardexpirationdate = document.getElementById('check__creditcardexpirationdate');
   const checkCreditcardnumber = document.getElementById('check__creditcardnumber');
+  const checkCreditcardnumberScreenReader = document.getElementById('check__creditcardnumber__sr');
   const pspbank = document.getElementById('check__pspbank');
   const pspbankname = document.getElementsByClassName('check__pspbankname');
   const pspcost = document.getElementById('check__pspcost');
-  const pspchoose = document.getElementById('check__pspchoose');
   const checkUserEmail = document.getElementById('check__useremail');
 
   const checkoutForm = document.getElementById('checkout');
@@ -91,8 +91,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkCreditcardexpirationdate.innerText = `${wallet.creditCard.expireMonth}/${wallet?.creditCard.expireYear}`;
   }
   if (checkCreditcardnumber && wallet) {
+    const panOnlyNumbers = wallet.creditCard.pan.replaceAll('*', '');
+    const panDotted = `&middot;&middot;&middot;&middot;${panOnlyNumbers}`;
     // eslint-disable-next-line functional/immutable-data
-    checkCreditcardnumber.innerText = wallet.creditCard.pan;
+    checkCreditcardnumber.innerHTML = panDotted;
+  }
+  if (checkCreditcardnumberScreenReader && wallet) {
+    // eslint-disable-next-line functional/immutable-data
+    checkCreditcardnumberScreenReader.innerText = wallet.creditCard.pan.replaceAll('*', '');
   }
   if (pspbank && wallet) {
     // eslint-disable-next-line functional/immutable-data
