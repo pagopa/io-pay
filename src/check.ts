@@ -116,7 +116,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   if (pspcost && wallet) {
     // eslint-disable-next-line functional/immutable-data
-    pspcost.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(prettyfixedCost || '0'))}`;
+    pspcost.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(
+      +(prettyfixedCost || '0')
+    )}`;
   }
   if (pspbankname && wallet) {
     const bankArray = Array.from(pspbankname);
