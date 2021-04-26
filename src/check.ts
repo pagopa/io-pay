@@ -74,6 +74,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const prettyAmount: number = totAmount / 100;
   const prettyfixedCost: number = fixedCost / 100;
 
+  if (wallet.creditCard.brand) {
+    const brand = wallet.creditCard.brand.toLowerCase();
+    const cchandler = `use.ccicon--custom.${brand}`;
+    const cccircuitEl = document.querySelector(cchandler);
+    if (cccircuitEl) {
+      cccircuitEl.classList.remove('d-none');
+    }
+  }
+
   if (checkTotamount) {
     // eslint-disable-next-line functional/immutable-data
     checkTotamount.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(prettyAmount || '0'))}`;

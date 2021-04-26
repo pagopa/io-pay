@@ -27,12 +27,11 @@ html(lang='it')
                                         span(id="check__creditcardexpirationdate") 
                                     .windowcont__recapcc__holder.d-flex.align-items-center
                                         .text-uppercase(id="check__creditcardname") 
-                                        svg.windowcont__recapcc__circuit.card.ml-auto(height="30", width="43")
-                                            title= "Circuito"
-                                            use(href="/assets/icons/sprite.svg#it-card")
-                                        svg.windowcont__recapcc__circuit--custom.card.ml-auto.d-none(height="30", width="48")
-                                            title= "Circuito"
-                                            use(href="/assets/icons/app.svg#icons-visa")
+                                        svg.windowcont__recapcc__circuit.card.ml-auto(height="30", width="43", id="check__creditcardholdericon")
+                                            title= "Carta di credito"
+                                            use(href="/assets/icons/sprite.svg#it-card", class="ccicon--custom other")
+                                            each obj, index in cards
+                                                use.d-none(href="/assets/icons/app.svg#icons-" + obj.name +"-mini", class="ccicon--custom " + obj.name)
                             .windowcont__paymanage.d-flex.mt-2.border-top.border-top-gray.py-3
                                 .font-weight-bold Il pagamento sarà gestito da
                                 svg.icon.icon-sm.icon-primary.ml-auto.cursor-pointer(data-modal="#modal-checkwhypsp", data-modal-buttons="close")
