@@ -440,7 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleValid(inputel, true);
       if (creditCardValidation.card) {
         holder = creditCardValidation.card.type.toLowerCase() || '';
-        sessionStorage.setItem('creditcardcircuit', holder);
         creditcardformSecurecode.setAttribute('data-validator-size', creditCardValidation.card.code.size.toString());
         // modify placeholder value with cvv size
         creditcardformSecurecode.setAttribute(
