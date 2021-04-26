@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (pspcost && wallet) {
     // eslint-disable-next-line functional/immutable-data
     pspcost.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(
-      +(prettyfixedCost || '0')
+      +(prettyfixedCost || '0'),
     )}`;
   }
   if (pspbankname && wallet) {
