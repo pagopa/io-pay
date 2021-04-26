@@ -173,7 +173,6 @@ export const checkStatusTask = (
         id: transactionId,
       }),
     e => {
-      // TODO: #RENDERING_ERROR
       mixpanel.track(TRANSACTION_POLLING_M_CHECK_NET_ERR.value, {
         EVENT_ID: TRANSACTION_POLLING_M_CHECK_NET_ERR.value,
         e,
@@ -182,7 +181,6 @@ export const checkStatusTask = (
     },
   ).foldTaskEither(
     err => {
-      // TODO: #RENDERING_ERROR
       mixpanel.track(TRANSACTION_POLLING_M_CHECK_SVR_ERR.value, {
         EVENT_ID: TRANSACTION_POLLING_M_CHECK_SVR_ERR.value,
         err,
