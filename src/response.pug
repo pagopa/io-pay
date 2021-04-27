@@ -4,6 +4,7 @@ html(lang='it')
     - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'amex'}];
     head
         include includes/head.pug
+        meta(name="robots", content="noindex")
         script(src="response.ts")
     body.page--response
         .main-wrapper.d-flex.flex-column
@@ -13,7 +14,11 @@ html(lang='it')
                 .row.justify-content-md-center
                     .windowcont.px-4.px-md-0
                         .windowcont__load
-                            .windowcont__load__inner
+                            .windowcont__load__inner.text-center
+                                .progress-spinner.progress-spinner-double.progress-spinner-active.my-3
+                                    .progress-spinner-inner
+                                    .progress-spinner-inner
+                                    .sr-only Caricamento...
                                 h3.text-center Operazione in corso
                                 .text-muted.text-center.my-4 Ti preghiamo di attendere, senza chiudere la pagina.
                         .windowcont__response

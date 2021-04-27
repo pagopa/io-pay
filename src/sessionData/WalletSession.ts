@@ -10,6 +10,8 @@ const CreditCard = t.exact(
     holder: t.string,
 
     pan: t.string,
+
+    brand: t.string,
   }),
 );
 
