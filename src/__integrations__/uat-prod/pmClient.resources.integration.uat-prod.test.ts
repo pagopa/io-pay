@@ -81,19 +81,4 @@ describe('Endpoint resources test suite for UAT/PROD PM', () => {
       ),
     ).not.toContain('AgID');
   });
-
-  it('should return 3DS2 configuration set to FALSE', async () => {
-    expect(
-      (await pmClientUAT.getResourcesUsingGET({ language: 'it' })).fold(
-        err => (err.pop()?.value as Response)?.status,
-        myRes => myRes.value?.data?.is3ds2,
-      ),
-    ).toEqual('true');
-    expect(
-      (await pmClientPROD.getResourcesUsingGET({ language: 'it' })).fold(
-        err => (err.pop()?.value as Response)?.status,
-        myRes => myRes.value?.data?.is3ds2,
-      ),
-    ).toEqual('true');
-  });
 });

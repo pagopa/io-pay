@@ -58,6 +58,7 @@ export const resumeXpayTransactionTask = (
         Bearer: `Bearer ${sessionToken}`,
         id: idTransaction,
         resumeRequest: { data: { esito: outcome, xpay3DSResponse } },
+        language: 'it', // TODO it-it is not valid!
       }),
     e => {
       mixpanel.track(TRANSACTION_RESUMEXPAY_NET_ERR.value, {
@@ -113,6 +114,7 @@ export const resumeTransactionTask = (
         Bearer: `Bearer ${sessionToken}`,
         id: idTransaction,
         resumeRequest: { data: { methodCompleted } },
+        language: 'it', // TODO it-it is not valid!
       }),
     e => {
       // TODO: #RENDERING_ERROR
