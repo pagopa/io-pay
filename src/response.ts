@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener(
     'message',
     async function (e) {
-      await fromPredicate<Error, MessageEvent<any>>(
+      fromPredicate<Error, MessageEvent<any>>(
         // Addresses must be static
         e1 => e1.origin === config.IO_PAY_FUNCTIONS_HOST && e1.data === '3DS.Notification.Received',
         toError,
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             )(transactionStatus.data).fold(
               _ =>
                 // 1.0 final status
-                () => showFinalStatusResult(transactionStatus.data.idStatus),
+                showFinalStatusResult(transactionStatus.data.idStatus),
               _ =>
                 transactionStatus.data.methodUrl !== '' &&
                 (transactionStatus.data.xpayHtml === '' || transactionStatus.data.xpayHtml === undefined)
