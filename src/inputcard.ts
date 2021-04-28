@@ -397,8 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
             WalletSession.decode(JSON.parse(walletResp)).map(wallet => {
               sessionStorage.setItem('wallet', JSON.stringify(wallet));
             });
-
-            window.location.replace('check.html');
+            // eslint-disable-next-line functional/immutable-data
+            window.location.href = 'check.html';
           },
         )
         .run();
