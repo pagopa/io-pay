@@ -44,6 +44,7 @@ const showFinalStatusResult = (idStatus: GENERIC_STATUS) => {
     'href',
     fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
   );
+  sessionStorage.clear();
 };
 
 /**
