@@ -141,7 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
   async function setTermOfService() {
     mixpanel.track(PAYMENT_RESOURCES_INIT.value, { EVENT_ID: PAYMENT_RESOURCES_INIT.value });
     await TE.tryCatch(
-      () => pmClient.getResourcesUsingGET({ language: 'it' }),
+      () =>
+        fetch(`privacypolicy/index.html`, {
+          method: 'GET',
+        }),
       e => {
         errorHandler(ErrorsType.CONNECTION);
         mixpanel.track(PAYMENT_RESOURCES_NET_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_NET_ERR.value, e });
@@ -153,25 +156,20 @@ document.addEventListener('DOMContentLoaded', () => {
           errorHandler(ErrorsType.SERVER);
           mixpanel.track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value, r });
         },
-        myResExt => {
-          const termini = myResExt.fold(
-            () => 'notFound :(', // empty data ???
-            myRes => {
-              mixpanel.track(
-                myRes.status === 200 ? PAYMENT_RESOURCES_SUCCESS.value : PAYMENT_RESOURCES_RESP_ERR.value,
-                {
-                  EVENT_ID: myRes.status === 200 ? PAYMENT_RESOURCES_SUCCESS.value : PAYMENT_RESOURCES_RESP_ERR.value,
-                },
-              );
-              return myRes.status === 200 ? myRes.value?.data?.termsAndConditions : 'notFound :(';
-            },
-          );
-          const termsAndService = modalAndTerm?.querySelector('.modalwindow__content');
-          if (termsAndService) {
-            // eslint-disable-next-line functional/immutable-data
-            termsAndService.innerHTML = termini;
-          }
-        },
+        myResExt =>
+          myResExt
+            .text()
+            .then(text => {
+              mixpanel.track(PAYMENT_RESOURCES_SUCCESS.value, { EVENT_ID: PAYMENT_RESOURCES_SUCCESS.value });
+              const termsAndService = modalAndTerm?.querySelector('.modalwindow__content');
+              if (termsAndService) {
+                // eslint-disable-next-line functional/immutable-data
+                termsAndService.innerHTML = text;
+              }
+            })
+            .catch(() => {
+              mixpanel.track(PAYMENT_RESOURCES_RESP_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_RESP_ERR.value });
+            }),
       )
       .run();
   }
