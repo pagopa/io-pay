@@ -30,43 +30,19 @@ import {
   THREEDS_CHECK_XPAY_RESP_SUCCESS,
 } from './utils/mixpanelHelperInit';
 
-import {
-  GENERIC_STATUS,
-  TX_ACCEPTED,
-  TX_ACCEPTED_MOD1,
-  TX_ACCEPTED_MOD2,
-  TX_REFUSED,
-  UNKNOWN,
-} from './utils/TransactionStatesTypes';
+import { GENERIC_STATUS, UNKNOWN } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
-import { errorHandler, ErrorsType } from './js/errorhandler';
 
 const config = getConfigOrThrow();
 
 const showFinalStatusResult = (idStatus: GENERIC_STATUS) => {
   document.body.classList.remove('loadingOperations');
-
-  fromPredicate<Error, GENERIC_STATUS>(
-    status =>
-      TX_ACCEPTED.decode(status).isRight() ||
-      TX_ACCEPTED_MOD1.decode(status).isRight() ||
-      TX_ACCEPTED_MOD2.decode(status).isRight(),
-    toError,
-  )(idStatus).fold(
-    () =>
-      TX_REFUSED.decode(idStatus).fold(
-        () => errorHandler(ErrorsType.GENERIC_ERROR),
-        () => errorHandler(ErrorsType.AUTH_ERROR),
-      ),
-    () => {
-      document
-        .querySelectorAll('[data-response]')
-        .forEach(i => (i.getAttribute('data-response') === '1' ? null : i.remove()));
-      (document.getElementById('response__continue') as HTMLElement).setAttribute(
-        'href',
-        fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
-      );
-    },
+  document
+    .querySelectorAll('[data-response]')
+    .forEach(i => (i.getAttribute('data-response') === idStatus.toString() ? null : i.remove()));
+  (document.getElementById('response__continue') as HTMLElement).setAttribute(
+    'href',
+    fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
   );
 };
 
@@ -75,7 +51,7 @@ const showFinalStatusResult = (idStatus: GENERIC_STATUS) => {
  */
 const retries: number = 10;
 const delay: number = 3000;
-const timeout: Millisecond = 20000 as Millisecond;
+const timeout: Millisecond = 2000 as Millisecond;
 
 /**
  * Payment Manager Client with polling until the transaction has the methodUrl or xpayHtml
