@@ -22,30 +22,36 @@ html(lang='it')
                                 h3.text-center Operazione in corso
                                 .text-muted.text-center.my-4 Ti preghiamo di attendere, senza chiudere la pagina.
                         .windowcont__response
-                            .windowcont__response__detail(data-response="1")
+                            .windowcont__response__detail(data-response="3") <!-- TX_ACCEPTED -->
                                 img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
                                 .h3.text-center Grazie, l'operazione è stata eseguita con successo!
                                 .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
                                     span &nbsp;
-                                    span(class="windowcont__response__useremail")
-                            .windowcont__response__detail(data-response="2")
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
-                                .h3.text-center Grazie, l'operazione è stata presa in carico!
-                                .text-muted.text-center.my-4 Una volta completata, riceverai l'esito all'indirizzo
-                                    span &nbsp;
-                                    span(class="windowcont__response__useremail")
-                            .windowcont__response__detail(data-response="3")
+                                    span(class="windowcont__response__useremail")      
+                            .windowcont__response__detail(data-response="4") <!-- TX_REFUSED -->
                                 img.mx-auto.d-block.my-4(src="/assets/icons/response-ko.svg")
                                 .h3.text-center Autorizzazione negata. Rivolgiti alla tua banca per avere informazioni
                                 .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
                                     span &nbsp;
                                     span(class="windowcont__response__useremail")
-                            .windowcont__response__detail(data-response="4")
+                            .windowcont__response__detail(data-response="6") <!-- TX_ERROR -->
                                 img.mx-auto.d-block.my-4(src="/assets/icons/response-timeout.svg")
                                 .h3.text-center Autorizzazione negata. Rivolgiti alla tua banca per avere informazioni
                                 .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
                                     span &nbsp;
                                     span(class="windowcont__response__useremail")
+                            .windowcont__response__detail(data-response="8") <!-- TX_ACCEPTED_MOD1 -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
+                                .h3.text-center Grazie, l'operazione è stata presa in carico!
+                                .text-muted.text-center.my-4 Una volta completata, riceverai l'esito all'indirizzo
+                                    span &nbsp;
+                                    span(class="windowcont__response__useremail")
+                            .windowcont__response__detail(data-response="9") <!-- TX_ACCEPTED_MOD2 -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
+                                .h3.text-center Grazie, l'operazione è stata presa in carico!
+                                .text-muted.text-center.my-4 Una volta completata, riceverai l'esito all'indirizzo
+                                    span &nbsp;
+                                    span(class="windowcont__response__useremail")          
                             a(href="#", id="response__continue").btn.btn-outline-primary.d-block Continua
 
             // FOOTER
