@@ -397,8 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
             WalletSession.decode(JSON.parse(walletResp)).map(wallet => {
               sessionStorage.setItem('wallet', JSON.stringify(wallet));
             });
-
-            window.location.replace('check.html');
+            // eslint-disable-next-line functional/immutable-data
+            window.location.href = 'check.html';
           },
         )
         .run();
@@ -422,6 +422,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Creditcard specific
+  creditcardformNumber?.addEventListener('focus', evt => {
+    const el = evt.target;
+    (el as HTMLInputElement).removeAttribute('readonly');
+  });
   creditcardformNumber?.addEventListener('keyup', evt => {
     const inputel = (evt.target as HTMLInputElement) || null;
     // eslint-disable-next-line functional/no-let
@@ -466,6 +470,10 @@ document.addEventListener('DOMContentLoaded', () => {
     fieldsCheck();
   });
 
+  creditcardformExpiration?.addEventListener('focus', evt => {
+    const el = evt.target;
+    (el as HTMLInputElement).removeAttribute('readonly');
+  });
   creditcardformExpiration?.addEventListener('keyup', evt => {
     const inputel = evt?.target as HTMLInputElement;
     if (inputel.value.length > 2 && inputel.value.indexOf('/') !== 2) {
@@ -483,7 +491,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fieldsCheck();
   });
-
+  creditcardformSecurecode?.addEventListener('focus', evt => {
+    const el = evt.target;
+    (el as HTMLInputElement).removeAttribute('readonly');
+  });
   creditcardformSecurecode?.addEventListener('keyup', () => {
     checkCvvSize();
     fieldsCheck();

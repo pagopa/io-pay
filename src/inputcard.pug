@@ -19,7 +19,7 @@ html(lang='it')
                             // CARDS' LIST
                         include includes/cards.pug
                         .creditform
-                            form.my-5(id="creditcardform")
+                            form.my-5(id="creditcardform", autocomplete="off")
                                 .form-group.mb-2.mb-md-4
                                     .input-group.mt-2.mt-md-4
                                         .input-group-prepend
@@ -27,7 +27,7 @@ html(lang='it')
                                                 svg.icon.icon-sm
                                                     use(href="/assets/icons/sprite.svg#it-user")
                                         label.sr-only(for="creditcardname", data-lang="textField.name.label") titolare carta
-                                        input.form-control(type="text", placeholder="Mario Rossi", name="creditcardname",  id="creditcardname", maxlength="42", required)
+                                        input.form-control(type="text", placeholder="Mario Rossi", name="creditcardname",  id="creditcardname", maxlength="42", required, autocomplete="cc-name")
                                         .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.name.label") titolare carta
                                         .reset-flex-flow.text-muted.mt-1.custom-label--error Inserisci come riportato sulla carta
                                     .input-group.mt-2.mt-md-4
@@ -40,7 +40,7 @@ html(lang='it')
                                                         use(href="/assets/icons/app.svg#icons-" + obj.name +"-mini", class="ccicon--custom " + obj.name)
 
                                         label.sr-only(for="numerocarta", data-lang="textField.pan.label") numero carta
-                                        input.form-control(type="text", placeholder="0000 0000 0000 0000", maxlength="20", name="creditcardnumber", id="creditcardnumber", required)
+                                        input.form-control(type="text", placeholder="0000 0000 0000 0000", maxlength="20", name="creditcardnumber", id="creditcardnumber", required, autocomplete="cc-number")
                                         .input-group-append
                                             .input-group-text
                                                 svg.icon.icon-primary.icon-sm(class="obscureToggler",data-obscuretarget="creditcardnumber")
@@ -57,7 +57,7 @@ html(lang='it')
                                                         svg.icon.icon-sm
                                                             use(href="/assets/icons/sprite.svg#it-calendar")
                                                 label.sr-only(for="creditcardexpirationdate", data-lang="textField.expireDate.label") scadenza
-                                                input.form-control(type="text", placeholder="mm/aa", maxlength="5", name="creditcardexpirationdate", id="creditcardexpirationdate" required)
+                                                input.form-control(type="text", placeholder="mm/aa", maxlength="5", name="creditcardexpirationdate", id="creditcardexpirationdate", required, autocomplete="cc-exp")
                                                 .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.expireDate.label") scadenza
                                                 .reset-flex-flow.text-muted.mt-1.custom-label--error Inserisci mm/aa
                                         .col-6
@@ -67,7 +67,7 @@ html(lang='it')
                                                         svg.icon.icon-sm
                                                             use(href="/assets/icons/sprite.svg#it-locked")
                                                 label.sr-only(for="creditcardsecurcode", data-lang="textField.cvc.label") codice di sicurezza
-                                                input.form-control(type="password", placeholder="123", maxlength="4", name="securcode", id="creditcardsecurcode", autocomplete="off", data-validator-size="3", required)
+                                                input.form-control(type="password", placeholder="123", maxlength="4", name="securcode", id="creditcardsecurcode", autocomplete="cc-csc", data-validator-size="3", required)
                                                 .input-group-append
                                                     .input-group-text
                                                         svg.icon.icon-primary.icon-sm(class="obscureToggler",data-obscuretarget="creditcardsecurcode", data-obscured)

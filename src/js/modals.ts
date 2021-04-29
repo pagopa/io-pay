@@ -36,8 +36,8 @@ const modalWindows = () => {
       const buttonsArray = buttons.split(',');
 
       if (buttonsArray.indexOf('cancel') >= 0) {
-        modals[modalName].addFooterBtn('Annulla', 'btn btn-primary w-100 mb-2', function () {
-          alert('Annulla sessione');
+        modals[modalName].addFooterBtn('Annulla il pagamento', 'btn btn-primary w-100 mb-2', function () {
+          location.replace('cancelled.html');
         });
       }
       if (buttonsArray.indexOf('close') >= 0) {
