@@ -71,7 +71,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // let's renew validation to avoid hacks
     if (emailValidation(useremail?.value)) {
       sessionStorage.setItem('useremail', useremail?.value);
-      window.location.replace('inputcard.html');
+      // eslint-disable-next-line functional/immutable-data
+      window.location.href = 'inputcard.html';
     } else {
       emailformSubmit?.setAttribute('disabled', 'disabled');
     }
