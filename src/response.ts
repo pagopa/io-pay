@@ -57,9 +57,9 @@ const timeout: Millisecond = 2000 as Millisecond;
 
 /**
  * Payment Manager Client with polling until the transaction has the methodUrl or xpayHtml
- * and it is in a non final state.
+ * or acsUrl and it is in a non final state.
  */
-const paymentManagerClientWithPollingOnMethodOrXpay: Client = createClient({
+const paymentManagerClientWithPolling: Client = createClient({
   baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
@@ -71,26 +71,9 @@ const paymentManagerClientWithPollingOnMethodOrXpay: Client = createClient({
       return (
         myJson.data.finalStatus === false &&
         fromNullable(myJson.data.methodUrl).isNone() &&
-        fromNullable(myJson.data.xpayHtml).isNone()
+        fromNullable(myJson.data.xpayHtml).isNone() &&
+        fromNullable(myJson.data.acsUrl).isNone()
       );
-    },
-  ),
-});
-
-/**
- * Payment Manager Client with polling until the transaction has the acsUrl
- * and it is in a non final state
- */
-const paymentManagerClientWithPollingOnPreAcs: Client = createClient({
-  baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
-  fetchApi: constantPollingWithPromisePredicateFetch(
-    DeferredPromise<boolean>().e1,
-    retries,
-    delay,
-    timeout,
-    async (r: Response): Promise<boolean> => {
-      const myJson = (await r.clone().json()) as TransactionStatusResponse;
-      return myJson.data.finalStatus === false && fromNullable(myJson.data.acsUrl).isNone();
     },
   ),
 });
@@ -171,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             .chain(idTransaction =>
               getStringFromSessionStorageTask('sessionToken').chain(sessionToken =>
                 resumeTransactionTask('Y', sessionToken, idTransaction, pmClient).chain(_ =>
-                  checkStatusTask(idTransaction, sessionToken, paymentManagerClientWithPollingOnPreAcs),
+                  checkStatusTask(idTransaction, sessionToken, paymentManagerClientWithPolling),
                 ),
               ),
             )
@@ -214,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       await getStringFromSessionStorageTask('sessionToken')
         .chain(sessionToken =>
           getStringFromSessionStorageTask('idTransaction').chain(idTransaction =>
-            checkStatusTask(idTransaction, sessionToken, paymentManagerClientWithPollingOnMethodOrXpay),
+            checkStatusTask(idTransaction, sessionToken, paymentManagerClientWithPolling),
           ),
         )
         .fold(
