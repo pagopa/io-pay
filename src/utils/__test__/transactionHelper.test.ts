@@ -2,7 +2,12 @@ import * as myFake from 'faker/locale/it';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import nodeFetch from 'node-fetch';
 import { left, right } from 'fp-ts/lib/Either';
-import { checkStatusTask, resumeTransactionTask, resumeXpayTransactionTask } from '../transactionHelper';
+import {
+  checkStatusTask,
+  nextTransactionStep,
+  resumeTransactionTask,
+  resumeXpayTransactionTask,
+} from '../transactionHelper';
 import { Client, createClient } from '../../../generated/definitions/pagopa/client';
 import { retryingFetch } from '../fetch';
 import { EsitoEnum } from '../../../generated/definitions/pagopa/Xpay3DSResponse';
@@ -208,5 +213,67 @@ describe('TransactionHelper', () => {
 
     expect(pmClient.resumeUsingPOST).toHaveBeenCalledTimes(1);
     expect(result.isLeft()).toEqual(true);
+  });
+
+  it('should return challenge if acsUrl is in transactionStatusResponse', () => {
+    const transactionStatusResponse = {
+      data: {
+        idTransaction: 6,
+        idStatus: 2,
+        statusMessage: 'Confermato',
+        finalStatus: false,
+        expired: false,
+        authorizationCode: '00',
+        paymentOrigin: 'WALLET_APP',
+        idPayment: '7652e590-324d-421a-8fa6-e0d8d0633906',
+        result: 'OK',
+        acsUrl: 'https://acsurl.com',
+      },
+    };
+
+    const step = nextTransactionStep(transactionStatusResponse);
+
+    expect(step).toEqual('challenge');
+  });
+
+  it('should return method if methodUrl is in transactionStatusResponse', () => {
+    const transactionStatusResponse = {
+      data: {
+        idTransaction: 6,
+        idStatus: 2,
+        statusMessage: 'Confermato',
+        finalStatus: false,
+        expired: false,
+        authorizationCode: '00',
+        paymentOrigin: 'WALLET_APP',
+        idPayment: '7652e590-324d-421a-8fa6-e0d8d0633906',
+        result: 'OK',
+        methodUrl: 'https://methodurl.com',
+      },
+    };
+
+    const step = nextTransactionStep(transactionStatusResponse);
+
+    expect(step).toEqual('method');
+  });
+  it('should return xpay if methodUrl is in transactionStatusResponse', () => {
+    const transactionStatusResponse = {
+      data: {
+        idTransaction: 6,
+        idStatus: 2,
+        statusMessage: 'Confermato',
+        finalStatus: false,
+        expired: false,
+        authorizationCode: '00',
+        paymentOrigin: 'WALLET_APP',
+        idPayment: '7652e590-324d-421a-8fa6-e0d8d0633906',
+        result: 'OK',
+        xpayHtml: '<a>redirect</a>',
+      },
+    };
+
+    const step = nextTransactionStep(transactionStatusResponse);
+
+    expect(step).toEqual('xpay');
   });
 });
