@@ -18,8 +18,9 @@ import {
   checkStatusTask,
   getXpay3DSResponseFromUrl,
   resumeXpayTransactionTask,
+  nextTransactionStep,
 } from './utils/transactionHelper';
-import { start3DS2MethodStep, createIFrame, start3DS2AcsChallengeStep } from './utils/iframe';
+import { createIFrame, start3DS2AcsChallengeStep, start3DS2MethodStep } from './utils/iframe';
 import {
   mixpanel,
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
@@ -209,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     toError,
   )(getUrlParameter('id')).fold(
     async _ => {
-      // 1. METHOD or XPAY step on 3ds2 or final status
+      // 1. Challenge or METHOD or XPAY step on 3ds2 or final status
       await getStringFromSessionStorageTask('sessionToken')
         .chain(sessionToken =>
           getStringFromSessionStorageTask('idTransaction').chain(idTransaction =>
@@ -232,10 +233,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               _ =>
                 // 1.0 final status
                 showFinalStatusResult(transactionStatus.data.idStatus),
-              _ =>
-                transactionStatus.data.methodUrl !== '' &&
-                (transactionStatus.data.xpayHtml === '' || transactionStatus.data.xpayHtml === undefined)
-                  ? // 1.2 METHOD step 3ds2
+              _ => {
+                switch (nextTransactionStep(transactionStatus)) {
+                  // 1.1 METHOD step 3ds2
+                  case 'method': {
                     fromNullable(transactionStatus.data.threeDSMethodData).fold(none, threeDSMethodData => {
                       sessionStorage.setItem('threeDSMethodData', threeDSMethodData);
                       return start3DS2MethodStep(
@@ -243,11 +244,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                         transactionStatus.data.threeDSMethodData,
                         createIFrame(document.body, 'myIdFrame', 'myFrameName'),
                       );
-                    })
-                  : // 1.1 XPAY step 3ds2
+                    });
+                    break;
+                  }
+                  // 1.2 Challenge step 3ds2
+                  case 'challenge': {
+                    start3DS2AcsChallengeStep(
+                      transactionStatus.data.acsUrl,
+                      transactionStatus.data.params,
+                      document.body,
+                    );
+                    break;
+                  }
+                  // 1.3 Xpay step 3ds2
+                  case 'xpay': {
                     fromNullable(transactionStatus.data.xpayHtml).map(xpayHtml => {
                       document.write(xpayHtml);
-                    }),
+                    });
+                    break;
+                  }
+                  default: {
+                    showFinalStatusResult(UNKNOWN.value);
+                    break;
+                  }
+                }
+              },
             ),
         )
         .run();

@@ -1,6 +1,7 @@
 import { toError } from 'fp-ts/lib/Either';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { fromLeft, taskEither, TaskEither, tryCatch } from 'fp-ts/lib/TaskEither';
+import { NonEmptyString } from 'italia-ts-commons/lib/strings';
 import { Client } from '../../generated/definitions/pagopa/client';
 import { Transaction } from '../../generated/definitions/pagopa/Transaction';
 import { TransactionStatusResponse } from '../../generated/definitions/pagopa/TransactionStatusResponse';
@@ -222,3 +223,14 @@ export const getTransactionFromSessionStorageTask = (key: string): TaskEither<UN
 
 export const getStringFromSessionStorageTask = (key: string): TaskEither<UNKNOWN, string> =>
   fromNullable(sessionStorage.getItem(key)).fold(fromLeft(UNKNOWN.value), data => taskEither.of(data));
+
+export const nextTransactionStep = (
+  transactionStatusResponse: TransactionStatusResponse,
+): 'challenge' | 'xpay' | 'method' | 'error' =>
+  NonEmptyString.decode(transactionStatusResponse.data.methodUrl).isRight()
+    ? 'method'
+    : NonEmptyString.decode(transactionStatusResponse.data.xpayHtml).isRight()
+    ? 'xpay'
+    : NonEmptyString.decode(transactionStatusResponse.data.acsUrl).isRight()
+    ? 'challenge'
+    : 'error';
