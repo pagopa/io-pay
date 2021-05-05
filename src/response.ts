@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                     break;
                   }
-                  // 1.2 Challenge step 3ds2
+                  // 1.2 Challenge step 3ds2 (without a previous method 3ds2 step)
                   case 'challenge': {
                     start3DS2AcsChallengeStep(
                       transactionStatus.data.acsUrl,
