@@ -1,3 +1,6 @@
+import { enumType } from 'italia-ts-commons/lib/types';
+import * as t from 'io-ts';
+
 export enum ErrorsType {
   CONNECTION = 'CONNECTION',
   SERVER = 'SERVER',
@@ -10,6 +13,8 @@ export enum ErrorsType {
   EXCESSIVE_AMOUNT = 'EXCESSIVE_AMOUNT',
 }
 
+export type ErrorsEnumType = t.TypeOf<typeof ErrorsEnumType>;
+export const ErrorsEnumType = enumType<ErrorsType>(ErrorsType, 'ErrorsEnumType');
 interface Error {
   img: string;
   title: string;
