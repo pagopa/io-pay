@@ -31,7 +31,7 @@ export function initHeader() {
     for (const el of Array.from(importo)) {
       // eslint-disable-next-line functional/immutable-data
       (el as HTMLElement).innerText = prettifiedAmount
-        ? `€ ${Intl.NumberFormat('it-IT').format(prettifiedAmount)}`
+        ? `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(prettifiedAmount)}`
         : '';
     }
   }
