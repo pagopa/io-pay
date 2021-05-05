@@ -1,5 +1,5 @@
 import * as t from 'io-ts';
-import { ErrorsEnumType } from '../js/errorhandler';
+import { ErrorsEnumType } from '../../js/errorhandler';
 
 const ErrorTaskR = t.interface({
   type: ErrorsEnumType,

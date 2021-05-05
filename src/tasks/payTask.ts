@@ -9,7 +9,7 @@ import { BrowserInfoResponse } from '../../generated/definitions/iopayportal/Bro
 import { TransactionResponse } from '../../generated/definitions/pagopa/TransactionResponse';
 import { ErrorsType } from '../js/errorhandler';
 import { PAYMENT_PAY3DS2_RESP_ERR, PAYMENT_PAY3DS2_SVR_ERR } from '../utils/mixpanelHelperInit';
-import { ErrorTask } from './ErrorTask';
+import { ErrorTask } from './types/ErrorTask';
 
 /**
  * This function define a task that:
