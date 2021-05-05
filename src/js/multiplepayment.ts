@@ -38,7 +38,7 @@ export function initMultiplePayment(data) {
       }
       if (payment.importo && itemAmount) {
         // eslint-disable-next-line functional/immutable-data
-        itemAmount.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(amount || '0'))}`;
+        itemAmount.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(+(amount || '0'))}`;
       }
       if (payment.nomePagatore && itemName) {
         // eslint-disable-next-line functional/immutable-data
@@ -50,7 +50,7 @@ export function initMultiplePayment(data) {
       }
       if (payment.importo && itemTot) {
         // eslint-disable-next-line functional/immutable-data
-        itemTot.innerText = `€ ${Intl.NumberFormat('it-IT').format(+(amount || '0'))}`;
+        itemTot.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(+(amount || '0'))}`;
       }
       if (payment.IUV && itemIuv) {
         // eslint-disable-next-line functional/immutable-data
