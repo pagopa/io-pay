@@ -10,7 +10,7 @@ import { mixpanel, PAYMENT_PAY3DS2_INIT, PAYMENT_PAY3DS2_SUCCESS } from './utils
 
 import { errorHandler } from './js/errorhandler';
 import { getEMVCompliantColorDepth } from './utils/checkHelper';
-import { payTask } from './workflows/payTask';
+import { payWorkflow } from './workflows/payWorkflow';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         idPayment: checkData.idPayment,
       });
 
-      await payTask(
+      await payWorkflow(
         checkData.idPayment,
         wallet.idWallet,
         fromNullable(sessionStorage.getItem('sessionToken')).getOrElse(''),

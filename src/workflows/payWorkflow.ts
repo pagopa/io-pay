@@ -20,7 +20,7 @@ import { ErrorTask } from './types/ErrorTask';
  *
  * The result is a TaskEither<ErrorTask, TransactionResponse>;
  */
-export const payTask = (
+export const payWorkflow = (
   idPayment: string,
   idWallet: number,
   sessionToken: string,
