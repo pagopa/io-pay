@@ -4,6 +4,8 @@ import * as TE from 'fp-ts/lib/TaskEither';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
 
+import { NonEmptyString } from 'italia-ts-commons/lib/strings';
+import { response } from 'express';
 import * as PmClient from '../generated/definitions/pagopa/client';
 import * as IoPayPortalClient from '../generated/definitions/iopayportal/client';
 import { Wallet } from '../generated/definitions/pagopa/Wallet';
@@ -25,6 +27,7 @@ import {
 import { getConfigOrThrow } from './utils/config';
 import { ErrorsType, errorHandler } from './js/errorhandler';
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from './utils/checkHelper';
+import { payTask } from './tasks/payTask';
 
 const iopayportalClient: IoPayPortalClient.Client = IoPayPortalClient.createClient({
   baseUrl: getConfigOrThrow().IO_PAY_FUNCTIONS_HOST,
@@ -137,85 +140,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function (e) {
       e.preventDefault();
 
-      const browserInfo = (await getBrowserInfoTask(iopayportalClient).run()).getOrElse({
-        ip: '',
-        useragent: '',
-        accept: '',
-      });
-
-      const threeDSData = {
-        browserJavaEnabled: navigator.javaEnabled().toString(),
-        browserLanguage: navigator.language,
-        browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
-        browserScreenHeight: screen.height.toString(),
-        browserScreenWidth: screen.width.toString(),
-        browserTZ: new Date().getTimezoneOffset().toString(),
-        browserAcceptHeader: browserInfo.accept,
-        browserIP: browserInfo.ip,
-        browserUserAgent: navigator.userAgent,
-        acctID: `ACCT_${(JSON.parse(fromNullable(sessionStorage.getItem('wallet')).getOrElse('')) as Wallet).idWallet
-          ?.toString()
-          .trim()}`,
-        deliveryEmailAddress: fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
-        mobilePhone: null,
-      };
-
       mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
         EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
         idPayment: checkData.idPayment,
       });
-      // Pay
-      await TE.tryCatch(
-        () =>
-          pmClient.pay3ds2UsingPOST({
-            Bearer: `Bearer ${sessionStorage.getItem('sessionToken')}`,
-            id: checkData.idPayment,
-            payRequest: {
-              data: {
-                tipo: 'web',
-                idWallet: wallet.idWallet,
-                cvv: fromNullable(sessionStorage.getItem('securityCode')).getOrElse(''),
-                threeDSData: JSON.stringify(threeDSData),
-              },
-            },
-            language: 'it',
-          }),
-        e => {
-          errorHandler(ErrorsType.CONNECTION);
-          mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value, e });
-          return toError;
-        },
+
+      await payTask(
+        checkData.idPayment,
+        wallet.idWallet,
+        fromNullable(sessionStorage.getItem('sessionToken')).getOrElse(''),
+        navigator.javaEnabled().toString(),
+        navigator.language,
+        getEMVCompliantColorDepth(screen.colorDepth).toString(),
+        screen.height.toString(),
+        screen.width.toString(),
+        new Date().getTimezoneOffset().toString(),
+        navigator.userAgent,
+        fromNullable(sessionStorage.getItem('useremail')).getOrElse(''),
+        '',
+        'web',
+        fromNullable(sessionStorage.getItem('securityCode')).getOrElse(''),
+        'it',
       )
         .fold(
-          r => {
-            errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value, r });
-          }, // to be replaced with logic to handle failures
-          myResExt => {
-            const paymentResp = myResExt.fold(
-              () => 'fakePayment',
-              myRes => {
-                if (myRes.status === 200) {
-                  mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
-                    EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
-                    token: myRes?.value?.data?.token,
-                    idStatus: myRes?.value?.data?.idStatus,
-                    statusMessage: myRes?.value?.data?.statusMessage,
-                    idPayment: myRes?.value?.data?.nodoIdPayment,
-                  });
-                  return JSON.stringify(myRes.value.data);
-                } else {
-                  errorHandler(ErrorsType.GENERIC_ERROR);
-                  mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
-                    EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
-                    code: PAYMENT_PAY3DS2_RESP_ERR.value,
-                    message: PAYMENT_PAY3DS2_RESP_ERR.value,
-                  });
-                  return 'fakePayment';
-                }
-              },
-            );
-            sessionStorage.setItem('idTransaction', JSON.parse(paymentResp).token);
+          error => {
+            errorHandler(error.type);
+            mixpanel.track(error.event, { EVENT_ID: error.event, detail: error.detail });
+          },
+          response => {
+            mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
+              EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
+              token: response.data.token,
+              idStatus: response.data.idStatus,
+              statusMessage: response.data.statusMessage,
+              idPayment: response.data.nodoIdPayment,
+            });
+            sessionStorage.setItem('idTransaction', response.data.token);
             window.location.replace('response.html');
           },
         )
