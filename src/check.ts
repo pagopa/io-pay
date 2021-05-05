@@ -1,43 +1,16 @@
 /* eslint-disable complexity */
-import { toError } from 'fp-ts/lib/Either';
-import * as TE from 'fp-ts/lib/TaskEither';
-import { Millisecond } from 'italia-ts-commons/lib/units';
 import { fromNullable } from 'fp-ts/lib/Option';
 
-import { NonEmptyString } from 'italia-ts-commons/lib/strings';
-import { response } from 'express';
-import * as PmClient from '../generated/definitions/pagopa/client';
-import * as IoPayPortalClient from '../generated/definitions/iopayportal/client';
-import { Wallet } from '../generated/definitions/pagopa/Wallet';
 import { modalWindows } from './js/modals';
 import idpayguard from './js/idpayguard';
 import { initHeader } from './js/header';
 import { setTranslateBtns } from './js/translateui';
-import { retryingFetch } from './utils/fetch';
 import { initDropdowns } from './js/dropdowns';
-import {
-  mixpanel,
-  PAYMENT_PAY3DS2_INIT,
-  PAYMENT_PAY3DS2_NET_ERR,
-  PAYMENT_PAY3DS2_RESP_ERR,
-  PAYMENT_PAY3DS2_SUCCESS,
-  PAYMENT_PAY3DS2_SVR_ERR,
-} from './utils/mixpanelHelperInit';
+import { mixpanel, PAYMENT_PAY3DS2_INIT, PAYMENT_PAY3DS2_SUCCESS } from './utils/mixpanelHelperInit';
 
-import { getConfigOrThrow } from './utils/config';
-import { ErrorsType, errorHandler } from './js/errorhandler';
-import { getBrowserInfoTask, getEMVCompliantColorDepth } from './utils/checkHelper';
-import { payTask } from './tasks/payTask';
-
-const iopayportalClient: IoPayPortalClient.Client = IoPayPortalClient.createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_FUNCTIONS_HOST,
-  fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
-});
-
-const pmClient: PmClient.Client = PmClient.createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
-  fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
-});
+import { errorHandler } from './js/errorhandler';
+import { getEMVCompliantColorDepth } from './utils/checkHelper';
+import { payTask } from './workflows/payTask';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
