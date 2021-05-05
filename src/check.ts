@@ -85,11 +85,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (checkTotamount) {
     // eslint-disable-next-line functional/immutable-data
-    checkTotamount.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(+(prettyAmount || '0'))}`;
+    checkTotamount.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(
+      +(prettyAmount || '0'),
+    )}`;
   }
   if (checkTotamountButton) {
     // eslint-disable-next-line functional/immutable-data
-    checkTotamountButton.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(+(prettyAmount || '0'))}`;
+    checkTotamountButton.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(
+      +(prettyAmount || '0'),
+    )}`;
   }
   if (checkCreditcardname && wallet) {
     // eslint-disable-next-line functional/immutable-data

@@ -141,7 +141,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       if (commissionEl) {
         // eslint-disable-next-line functional/immutable-data
-        commissionEl.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(element.commission)}`;
+        commissionEl.innerText = `€ ${Intl.NumberFormat('it-IT', { minimumFractionDigits: 2 }).format(
+          element.commission,
+        )}`;
       }
       if (logoEl && element.image) {
         logoEl.setAttribute('src', element.image);
