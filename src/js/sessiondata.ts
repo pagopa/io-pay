@@ -71,9 +71,10 @@ export async function actionsCheck() {
                     idPayment: response?.value?.data?.idPayment,
                     amount: response?.value?.data?.amount,
                   });
+                  const originInput = fromNullable(origin).getOrElse(response.value.data.urlRedirectEc);
                   sessionStorage.setItem(
                     'originUrlRedirect',
-                    fromNullable(origin).getOrElse(response.value.data.urlRedirectEc),
+                    originInput === 'payportal' ? 'https://paga.io.italia.it' : originInput,
                   );
                 } else {
                   window.location.replace('ko.html');
