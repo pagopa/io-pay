@@ -19,6 +19,7 @@ import { getUrlParameter } from './urlUtilities';
 
 import { ErrorsType, errorHandler } from './errorhandler';
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function actionsCheck() {
   document.body.classList.add('loading');
 
@@ -27,7 +28,6 @@ export async function actionsCheck() {
     baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
     fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
   });
-  // const checkData = checkdata;
 
   const checkDataStored: string | null = sessionStorage.getItem('checkData') || null;
   const idPaymentStored: string | null = checkDataStored ? JSON.parse(checkDataStored).idPayment : null;
