@@ -3,16 +3,16 @@ html(lang='it')
     - var languages = [{'label':'IT', 'full':'Italiano'},{'label':'EN', 'full':'English'}];
     head
         include includes/head.pug
-        meta(name="robots", content="noindex")
+        meta(name="robots", content="noindex, nofollow")
         script(src="ko.ts")
     body.page--response
         .main-wrapper.d-flex.flex-column
             // HEADER
             include includes/header.pug
             .main.flex-fill.container
-                .row.justify-content-md-center.h-100
+                .row.justify-content-center.h-100
                     .windowcont.px-4.px-md-0
-                        .windowcont__ko.d-flex.py-5
+                        .windowcont__ko.d-flex.justify-content-center.py-5
                             .windowcont__ko__detail.mb-2(data-ko="1")
                                 img.mx-auto.d-block.my-4(src="/assets/icons/response-umbrella.svg")
                                 .h3.text-center Qualcosa è andato storto

@@ -4,7 +4,7 @@ html(lang='it')
     - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'american-express'}];
     head
         include includes/head.pug
-        meta(name="robots", content="noindex")
+        meta(name="robots", content="noindex, nofollow")
         script(src="inputcard.ts")
     body.page--inputcard
         .main-wrapper.d-flex.flex-column
