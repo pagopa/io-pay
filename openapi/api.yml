@@ -2596,6 +2596,8 @@ definitions:
     title: TransactionListRestApiResponse
   TransactionResponse:
     type: object
+    required:
+        - data
     properties:
       data:
         $ref: '#/definitions/Transaction'
