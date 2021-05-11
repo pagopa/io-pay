@@ -216,9 +216,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
-                    token: myRes?.value?.data?.token,
-                    idStatus: myRes?.value?.data?.idStatus,
-                    statusMessage: myRes?.value?.data?.statusMessage,
                     idPayment: myRes?.value?.data?.nodoIdPayment,
                   });
                   return JSON.stringify(myRes.value.data);
@@ -229,8 +226,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                   }
                   mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
-                    code: PAYMENT_PAY3DS2_RESP_ERR.value,
-                    message: PAYMENT_PAY3DS2_RESP_ERR.value,
                   });
                   return 'fakePayment';
                 }
