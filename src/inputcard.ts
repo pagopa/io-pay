@@ -261,9 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_START_SESSION_SUCCESS.value, {
                     EVENT_ID: PAYMENT_START_SESSION_SUCCESS.value,
-                    sessionToken: myRes.value.sessionToken,
                     idPayment: myRes.value.idPayment,
-                    email: myRes?.value?.user?.email,
                   });
                 } else {
                   errorHandler(ErrorsType.GENERIC_ERROR);
@@ -272,8 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   mixpanel.track(PAYMENT_START_SESSION_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_START_SESSION_RESP_ERR.value,
-                    code: myRes?.value.code,
-                    message: myRes?.value.message,
                   });
                 }
                 return myRes.status === 200
@@ -324,8 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_APPROVE_TERMS_SUCCESS.value, {
                     EVENT_ID: PAYMENT_APPROVE_TERMS_SUCCESS.value,
-                    acceptTerms: myRes?.value?.data?.acceptTerms,
-                    email: myRes?.value?.data?.email,
                     idPayment: fromNullable(checkData.idPayment).getOrElse(''),
                   });
                 } else {
@@ -335,8 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   mixpanel.track(PAYMENT_APPROVE_TERMS_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_APPROVE_TERMS_RESP_ERR.value,
-                    code: myRes?.value?.code,
-                    message: myRes?.value?.message,
                   });
                 }
                 return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'noApproval';
@@ -399,9 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_WALLET_SUCCESS.value, {
                     EVENT_ID: PAYMENT_WALLET_SUCCESS.value,
-                    idWallet: myRes.value.data.idWallet,
                     idPayment: fromNullable(checkData.idPayment).getOrElse(''),
-                    idPsp: myRes?.value?.data?.psp?.idPsp,
                   });
                 } else {
                   errorHandler(ErrorsType.INVALID_CARD);
@@ -410,8 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
                   }
                   mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
-                    code: myRes.value?.code,
-                    message: myRes.value?.message,
                   });
                 }
                 return myRes.status === 200 ? JSON.stringify(myRes.value.data) : 'fakeWallet';
