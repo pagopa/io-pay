@@ -41,6 +41,8 @@ const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: s
   const eventResult: string = getResultEventByAuthorizationCode(authorizationCode || '');
   mixpanel.track(eventResult, {
     EVENT_ID: eventResult,
+    idStatus,
+    authorizationCode,
   });
   showFinalStatusResult(idStatus);
 };
@@ -164,6 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               ),
             )
             .fold(
+              // eslint-disable-next-line sonarjs/no-identical-functions
               () => {
                 mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
                   EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
@@ -206,6 +209,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           ),
         )
         .fold(
+          // eslint-disable-next-line sonarjs/no-identical-functions
           () => {
             mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
               EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
