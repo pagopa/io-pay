@@ -86,15 +86,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (myRes?.status === 200) {
               mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
                 EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
-                pspListNum: myRes?.value?.data?.pspList?.length,
               });
               return myRes?.value?.data?.pspList;
             } else {
               errorHandler(ErrorsType.GENERIC_ERROR);
               mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
                 EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
-                code: PAYMENT_PSPLIST_RESP_ERR.value,
-                message: `getpsps returned ${myRes.status}`,
               });
               return [];
             }
@@ -200,10 +197,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           },
           myResExt =>
             myResExt.fold(
-              e =>
+              () =>
                 mixpanel.track(PAYMENT_UPD_WALLET_RESP_ERR.value, {
                   EVENT_ID: PAYMENT_UPD_WALLET_RESP_ERR.value,
-                  e,
                 }),
               res => {
                 WalletSession.decode(res.value?.data).fold(
@@ -211,9 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   wallet => {
                     mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
                       EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
-                      idWallet: wallet.idWallet,
                       idPayment: fromNullable(checkData.idPayment).getOrElse(''),
-                      psp: wallet.psp,
                     });
                     sessionStorage.setItem('wallet', JSON.stringify(wallet));
                     window.location.replace('check.html');
