@@ -22,6 +22,7 @@ import {
 } from './utils/transactionHelper';
 import { createIFrame, start3DS2AcsChallengeStep, start3DS2MethodStep } from './utils/iframe';
 import {
+  getResultEventByAuthorizationCode,
   mixpanel,
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
@@ -35,6 +36,14 @@ import { GENERIC_STATUS, UNKNOWN } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
 
 const config = getConfigOrThrow();
+
+const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: string) => {
+  const eventResult: string = getResultEventByAuthorizationCode(authorizationCode || '');
+  mixpanel.track(eventResult, {
+    EVENT_ID: eventResult,
+  });
+  showFinalStatusResult(idStatus);
+};
 
 const showFinalStatusResult = (idStatus: GENERIC_STATUS) => {
   document.body.classList.remove('loadingOperations');
@@ -136,19 +145,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         e1 => e1.origin === config.IO_PAY_FUNCTIONS_HOST && e1.data === '3DS.Notification.Received',
         toError,
       )(e).fold(
-        _ => {
+        () => {
           mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
             EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
-            ORIGIN: e.origin,
-            RESPONSE: e.data,
-            token: '',
           });
-          showFinalStatusResult(UNKNOWN.value);
+          handleFinalStatusResult(UNKNOWN.value);
         },
         _ => {
           mixpanel.track(THREEDSMETHODURL_STEP1_SUCCESS.value, {
             EVENT_ID: THREEDSMETHODURL_STEP1_SUCCESS.value,
-            token: '',
           });
           void getStringFromSessionStorageTask('idTransaction')
             .chain(idTransaction =>
@@ -159,19 +164,19 @@ document.addEventListener('DOMContentLoaded', async () => {
               ),
             )
             .fold(
-              _ => {
+              () => {
                 mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
                   EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
-                  PHASE: 'resume_check',
                 });
-                showFinalStatusResult(UNKNOWN.value);
+                handleFinalStatusResult(UNKNOWN.value);
               },
               transactionStatus =>
                 fromPredicate<Error, TransactionStatus>(
                   data => data.finalStatus === false,
                   toError,
                 )(transactionStatus.data).fold(
-                  () => showFinalStatusResult(transactionStatus.data.idStatus),
+                  () =>
+                    handleFinalStatusResult(transactionStatus.data.idStatus, transactionStatus.data.authorizationCode),
                   () =>
                     start3DS2AcsChallengeStep(
                       transactionStatus.data.acsUrl,
@@ -201,12 +206,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           ),
         )
         .fold(
-          _ => {
+          () => {
             mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
               EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
-              PHASE: 'check',
             });
-            showFinalStatusResult(UNKNOWN.value);
+            handleFinalStatusResult(UNKNOWN.value);
           },
           transactionStatus =>
             fromPredicate<Error, TransactionStatus>(
@@ -215,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             )(transactionStatus.data).fold(
               _ =>
                 // 1.0 final status
-                showFinalStatusResult(transactionStatus.data.idStatus),
+                handleFinalStatusResult(transactionStatus.data.idStatus, transactionStatus.data.authorizationCode),
               _ => {
                 switch (nextTransactionStep(transactionStatus)) {
                   // 1.1 METHOD step 3ds2
@@ -247,7 +251,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     break;
                   }
                   default: {
-                    showFinalStatusResult(UNKNOWN.value);
+                    handleFinalStatusResult(UNKNOWN.value);
                     break;
                   }
                 }
@@ -269,18 +273,21 @@ document.addEventListener('DOMContentLoaded', async () => {
               )
               .fold(
                 _ => {
-                  mixpanel.track(THREEDS_CHECK_XPAY_RESP_ERR.value, {
-                    EVENT_ID: THREEDS_CHECK_XPAY_RESP_ERR.value,
+                  mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
+                    EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
                     token: idTransaction,
                   });
-                  showFinalStatusResult(UNKNOWN.value);
+                  handleFinalStatusResult(UNKNOWN.value);
                 },
                 transactionStatusResponse => {
-                  mixpanel.track(THREEDS_CHECK_XPAY_RESP_SUCCESS.value, {
-                    EVENT_ID: THREEDS_CHECK_XPAY_RESP_SUCCESS.value,
-                    token: idTransaction,
+                  mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
+                    EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
+                    idTransaction,
                   });
-                  showFinalStatusResult(transactionStatusResponse.data.idStatus);
+                  handleFinalStatusResult(
+                    transactionStatusResponse.data.idStatus,
+                    transactionStatusResponse.data.authorizationCode,
+                  );
                 },
               )
               .run();
@@ -301,18 +308,21 @@ document.addEventListener('DOMContentLoaded', async () => {
               )
               .fold(
                 _ => {
-                  mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
-                    EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
-                    token: idTransaction,
+                  mixpanel.track(THREEDS_CHECK_XPAY_RESP_ERR.value, {
+                    EVENT_ID: THREEDS_CHECK_XPAY_RESP_ERR.value,
+                    idTransaction,
                   });
-                  showFinalStatusResult(UNKNOWN.value);
+                  handleFinalStatusResult(UNKNOWN.value);
                 },
                 transactionStatusResponse => {
-                  mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
-                    EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-                    token: idTransaction,
+                  mixpanel.track(THREEDS_CHECK_XPAY_RESP_SUCCESS.value, {
+                    EVENT_ID: THREEDS_CHECK_XPAY_RESP_SUCCESS.value,
+                    idTransaction,
                   });
-                  showFinalStatusResult(transactionStatusResponse.data.idStatus);
+                  handleFinalStatusResult(
+                    transactionStatusResponse.data.idStatus,
+                    transactionStatusResponse.data.authorizationCode,
+                  );
                 },
               )
               .run();

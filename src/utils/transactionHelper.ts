@@ -9,11 +9,11 @@ import { Xpay3DSResponse } from '../../generated/definitions/pagopa/Xpay3DSRespo
 import { getUrlParameter } from '../js/urlUtilities';
 import { mixpanel } from '../__mocks__/mocks';
 import {
-  TRANSACTION_POLLING_M_CHECK_INIT,
-  TRANSACTION_POLLING_M_CHECK_NET_ERR,
-  TRANSACTION_POLLING_M_CHECK_SVR_ERR,
-  TRANSACTION_POLLING_M_CHECK_SUCCESS,
-  TRANSACTION_POLLING_M_CHECK_RESP_ERR,
+  TRANSACTION_POLLING_CHECK_INIT,
+  TRANSACTION_POLLING_CHECK_NET_ERR,
+  TRANSACTION_POLLING_CHECK_SVR_ERR,
+  TRANSACTION_POLLING_CHECK_SUCCESS,
+  TRANSACTION_POLLING_CHECK_RESP_ERR,
   TRANSACTION_RESUME3DS2_INIT,
   TRANSACTION_RESUME3DS2_NET_ERR,
   TRANSACTION_RESUME3DS2_SVR_ERR,
@@ -163,9 +163,9 @@ export const checkStatusTask = (
   sessionToken: string,
   paymentManagerClient: Client,
 ): TaskEither<UNKNOWN, TransactionStatusResponse> => {
-  mixpanel.track(TRANSACTION_POLLING_M_CHECK_INIT.value, {
-    EVENT_ID: TRANSACTION_POLLING_M_CHECK_INIT.value,
-    token: transactionId,
+  mixpanel.track(TRANSACTION_POLLING_CHECK_INIT.value, {
+    EVENT_ID: TRANSACTION_POLLING_CHECK_INIT.value,
+    idTransaction: transactionId,
   });
   return tryCatch(
     () =>
@@ -173,43 +173,41 @@ export const checkStatusTask = (
         Bearer: `Bearer ${sessionToken}`,
         id: transactionId,
       }),
-    e => {
-      mixpanel.track(TRANSACTION_POLLING_M_CHECK_NET_ERR.value, {
-        EVENT_ID: TRANSACTION_POLLING_M_CHECK_NET_ERR.value,
-        e,
+    () => {
+      mixpanel.track(TRANSACTION_POLLING_CHECK_NET_ERR.value, {
+        EVENT_ID: TRANSACTION_POLLING_CHECK_NET_ERR.value,
       });
       return toError;
     },
   ).foldTaskEither(
-    err => {
-      mixpanel.track(TRANSACTION_POLLING_M_CHECK_SVR_ERR.value, {
-        EVENT_ID: TRANSACTION_POLLING_M_CHECK_SVR_ERR.value,
-        err,
+    () => {
+      mixpanel.track(TRANSACTION_POLLING_CHECK_SVR_ERR.value, {
+        EVENT_ID: TRANSACTION_POLLING_CHECK_SVR_ERR.value,
       });
       return fromLeft(UNKNOWN.value);
-    }, // to be replaced with logic to handle failures
+    },
     errorOrResponse =>
       errorOrResponse.fold(
-        () => fromLeft(UNKNOWN.value),
+        () => {
+          mixpanel.track(TRANSACTION_POLLING_CHECK_RESP_ERR.value, {
+            EVENT_ID: TRANSACTION_POLLING_CHECK_RESP_ERR.value,
+          });
+          return fromLeft(UNKNOWN.value);
+        },
         responseType => {
           if (responseType.status === 200) {
-            mixpanel.track(TRANSACTION_POLLING_M_CHECK_SUCCESS.value, {
-              EVENT_ID: TRANSACTION_POLLING_M_CHECK_SUCCESS.value,
-              token: transactionId,
-              idStatus: responseType?.value?.data?.idStatus,
-              statusMessage: responseType?.value?.data?.statusMessage,
-              finalStatus: responseType?.value?.data?.finalStatus,
-              acsUrl: responseType?.value?.data?.acsUrl,
-              methodUrl: responseType?.value?.data?.methodUrl,
+            mixpanel.track(TRANSACTION_POLLING_CHECK_SUCCESS.value, {
+              EVENT_ID: TRANSACTION_POLLING_CHECK_SUCCESS.value,
+              idTransaction: transactionId,
             });
+            return taskEither.of(responseType.value);
           } else {
-            mixpanel.track(TRANSACTION_POLLING_M_CHECK_RESP_ERR.value, {
-              EVENT_ID: TRANSACTION_POLLING_M_CHECK_RESP_ERR.value,
-              code: responseType?.value.code,
-              message: responseType?.value.message,
+            mixpanel.track(TRANSACTION_POLLING_CHECK_RESP_ERR.value, {
+              EVENT_ID: TRANSACTION_POLLING_CHECK_RESP_ERR.value,
+              idTransaction: transactionId,
             });
+            return fromLeft(UNKNOWN.value);
           }
-          return responseType.status !== 200 ? fromLeft(UNKNOWN.value) : taskEither.of(responseType.value);
         },
       ),
   );
