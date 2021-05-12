@@ -163,6 +163,21 @@ export type TRANSACTION_RESULT_UNKNOWN = t.TypeOf<typeof TRANSACTION_RESULT_UNKN
 export const TRANSACTION_RESULT_00 = t.literal('TRANSACTION_RESULT_00');
 export type TRANSACTION_RESULT_00 = t.TypeOf<typeof TRANSACTION_RESULT_00>;
 
+export const PAYMENT_DELETE_INIT = t.literal('PAYMENT_DELETE_INIT');
+export type PAYMENT_DELETE_INIT = t.TypeOf<typeof PAYMENT_DELETE_INIT>;
+
+export const PAYMENT_DELETE_NET_ERR = t.literal('PAYMENT_DELETE_NET_ERR');
+export type PAYMENT_DELETE_NET_ERR = t.TypeOf<typeof PAYMENT_DELETE_NET_ERR>;
+
+export const PAYMENT_DELETE_SVR_ERR = t.literal('PAYMENT_DELETE_SVR_ERR');
+export type PAYMENT_DELETE_SVR_ERR = t.TypeOf<typeof PAYMENT_DELETE_SVR_ERR>;
+
+export const PAYMENT_DELETE_RESP_ERR = t.literal('PAYMENT_DELETE_RESP_ERR');
+export type PAYMENT_DELETE_RESP_ERR = t.TypeOf<typeof PAYMENT_DELETE_RESP_ERR>;
+
+export const PAYMENT_DELETE_SUCCESS = t.literal('PAYMENT_DELETE_SUCCESS');
+export type PAYMENT_DELETE_SUCCESS = t.TypeOf<typeof PAYMENT_DELETE_SUCCESS>;
+
 // ini MIX TODO: enable on deploy
 if (process.env.IO_PAY_ENV === 'develop') {
   // eslint-disable-next-line no-console
