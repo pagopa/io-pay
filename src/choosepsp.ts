@@ -10,6 +10,7 @@ import { initHeader } from './js/header';
 import { modalWindows } from './js/modals';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
+import { buttonDisabler, buttonEnabler } from './js/buttonutils';
 
 import {
   mixpanel,
@@ -167,6 +168,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     async (e: Event) => {
       e.preventDefault();
       const idPsp = document.querySelector('.windowcont__psp__list .active') as HTMLElement;
+      buttonDisabler(documentSubmit as HTMLButtonElement);
+
       // update Wallet
       mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
         EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
@@ -186,6 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           }),
         e => {
           errorHandler(ErrorsType.GENERIC_ERROR);
+          buttonEnabler(documentSubmit as HTMLButtonElement);
           mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value, e });
           return toError;
         },
@@ -193,6 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         .fold(
           r => {
             errorHandler(ErrorsType.GENERIC_ERROR);
+            buttonEnabler(documentSubmit as HTMLButtonElement);
             mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value, r });
           },
           myResExt =>
