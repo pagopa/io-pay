@@ -21,7 +21,6 @@ import {
 export const cancelPaymentTask = (
   pmClient: PmClient.Client,
   idPayment: string,
-  sessionToken: string,
   koReason: string,
   showWallet: boolean,
 ): TaskEither<ErrorsEnumType, string> => {
@@ -29,7 +28,6 @@ export const cancelPaymentTask = (
   return tryCatch(
     () =>
       pmClient.deleteBySessionCookieExpiredUsingDELETE({
-        Bearer: `Bearer ${sessionToken}`,
         id: idPayment,
         koReason,
         showWallet,

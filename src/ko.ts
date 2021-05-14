@@ -10,13 +10,12 @@ const pmClient: PmClient.Client = PmClient.createClient({
 });
 const checkDataStored = sessionStorage.getItem('checkData') || '';
 const checkData = JSON.parse(checkDataStored);
-const sessionToken = sessionStorage.getItem('sessionToken') || '';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
   window.sessionStorage.clear();
 
-  await cancelPaymentTask(pmClient, checkData.idPayment, sessionToken, 'ANNUTE', false).run();
+  await cancelPaymentTask(pmClient, checkData.idPayment, 'ANNUTE', false).run();
 
   const cancelButton = document.getElementById('cancel');
   cancelButton?.addEventListener('click', (e: Event) => {
