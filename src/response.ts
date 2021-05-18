@@ -35,24 +35,26 @@ import {
 import { GENERIC_STATUS, UNKNOWN } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
-import { getOutcomeFromAuthcodeAndIsDirectAcquirer } from './utils/TransactionResultEnum';
+import { getOutcomeFromAuthcodeAndIsDirectAcquirer, OutcomeEnum, OutcomeEnumType } from './utils/TransactionResultUtil';
+import { errorHandler } from './js/errorhandler';
 
 const config = getConfigOrThrow();
 
 const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: string, isDirectAcquirer?: boolean) => {
+  const outcome: OutcomeEnumType = getOutcomeFromAuthcodeAndIsDirectAcquirer(authorizationCode, isDirectAcquirer);
   mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
     EVENT_ID: PAYMENT_OUTCOME_CODE.value,
     idStatus,
-    outcome: getOutcomeFromAuthcodeAndIsDirectAcquirer(authorizationCode, isDirectAcquirer),
+    outcome,
   });
-  showFinalStatusResult(idStatus);
+  showFinalResult(outcome);
 };
 
-const showFinalStatusResult = (idStatus: GENERIC_STATUS) => {
+const showFinalResult = (outcome: OutcomeEnumType) => {
   document.body.classList.remove('loadingOperations');
   document
     .querySelectorAll('[data-response]')
-    .forEach(i => (i.getAttribute('data-response') === idStatus.toString() ? null : i.remove()));
+    .forEach(i => (i.getAttribute('data-response') === outcome.toString() ? null : i.remove()));
   (document.getElementById('response__continue') as HTMLElement).setAttribute(
     'href',
     fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
@@ -234,6 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             )(transactionStatus.data).fold(
               _ =>
                 // 1.0 final status
+                // eslint-disable-next-line sonarjs/no-identical-functions
                 handleFinalStatusResult(
                   transactionStatus.data.idStatus,
                   transactionStatus.data.authorizationCode,
