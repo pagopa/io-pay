@@ -35,8 +35,7 @@ import {
 import { GENERIC_STATUS, UNKNOWN } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
-import { getOutcomeFromAuthcodeAndIsDirectAcquirer, OutcomeEnum, OutcomeEnumType } from './utils/TransactionResultUtil';
-import { errorHandler } from './js/errorhandler';
+import { getOutcomeFromAuthcodeAndIsDirectAcquirer, OutcomeEnumType } from './utils/TransactionResultUtil';
 
 const config = getConfigOrThrow();
 
@@ -234,9 +233,9 @@ document.addEventListener('DOMContentLoaded', async () => {
               data => data.finalStatus === false,
               toError,
             )(transactionStatus.data).fold(
+              // eslint-disable-next-line sonarjs/no-identical-functions
               _ =>
                 // 1.0 final status
-                // eslint-disable-next-line sonarjs/no-identical-functions
                 handleFinalStatusResult(
                   transactionStatus.data.idStatus,
                   transactionStatus.data.authorizationCode,
