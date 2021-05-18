@@ -139,29 +139,8 @@ export type THREEDS_CHECK_XPAY_RESP_ERR = t.TypeOf<typeof THREEDS_CHECK_XPAY_RES
 export const THREEDS_CHECK_XPAY_RESP_SUCCESS = t.literal('THREEDS_CHECK_XPAY_RESP_SUCCESS');
 export type THREEDS_CHECK_XPAY_RESP_SUCCESS = t.TypeOf<typeof THREEDS_CHECK_XPAY_RESP_SUCCESS>;
 
-export const TRANSACTION_RESULT_03 = t.literal('TRANSACTION_RESULT_03');
-export type TRANSACTION_RESULT_03 = t.TypeOf<typeof TRANSACTION_RESULT_03>;
-
-export const TRANSACTION_RESULT_04 = t.literal('TRANSACTION_RESULT_04');
-export type TRANSACTION_RESULT_04 = t.TypeOf<typeof TRANSACTION_RESULT_04>;
-
-export const TRANSACTION_RESULT_06 = t.literal('TRANSACTION_RESULT_06');
-export type TRANSACTION_RESULT_06 = t.TypeOf<typeof TRANSACTION_RESULT_06>;
-
-export const TRANSACTION_RESULT_37 = t.literal('TRANSACTION_RESULT_37');
-export type TRANSACTION_RESULT_37 = t.TypeOf<typeof TRANSACTION_RESULT_37>;
-
-export const TRANSACTION_RESULT_98 = t.literal('TRANSACTION_RESULT_98');
-export type TRANSACTION_RESULT_98 = t.TypeOf<typeof TRANSACTION_RESULT_98>;
-
-export const TRANSACTION_RESULT_99 = t.literal('TRANSACTION_RESULT_99');
-export type TRANSACTION_RESULT_99 = t.TypeOf<typeof TRANSACTION_RESULT_99>;
-
-export const TRANSACTION_RESULT_UNKNOWN = t.literal('TRANSACTION_RESULT_UNKNOWN');
-export type TRANSACTION_RESULT_UNKNOWN = t.TypeOf<typeof TRANSACTION_RESULT_UNKNOWN>;
-
-export const TRANSACTION_RESULT_00 = t.literal('TRANSACTION_RESULT_00');
-export type TRANSACTION_RESULT_00 = t.TypeOf<typeof TRANSACTION_RESULT_00>;
+export const PAYMENT_OUTCOME_CODE = t.literal('PAYMENT_OUTCOME_CODE');
+export type PAYMENT_OUTCOME_CODE = t.TypeOf<typeof PAYMENT_OUTCOME_CODE>;
 
 // ini MIX TODO: enable on deploy
 if (process.env.IO_PAY_ENV === 'develop') {
@@ -184,33 +163,4 @@ export const mixpanel = {
       track(event_name, properties);
     }
   },
-};
-
-export const getResultEventByAuthorizationCode = (authorizationCode: string): string => {
-  switch (authorizationCode) {
-    case '03': {
-      return TRANSACTION_RESULT_03.value;
-    }
-    case '04': {
-      return TRANSACTION_RESULT_04.value;
-    }
-    case '06': {
-      return TRANSACTION_RESULT_06.value;
-    }
-    case '37': {
-      return TRANSACTION_RESULT_37.value;
-    }
-    case '98': {
-      return TRANSACTION_RESULT_98.value;
-    }
-    case '99': {
-      return TRANSACTION_RESULT_99.value;
-    }
-    case '00': {
-      return TRANSACTION_RESULT_00.value;
-    }
-    default: {
-      return TRANSACTION_RESULT_UNKNOWN.value;
-    }
-  }
 };
