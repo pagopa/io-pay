@@ -35,16 +35,15 @@ import {
 import { GENERIC_STATUS, UNKNOWN } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
-import { getOutcomeFromAuthcodeAndIsDirectAcquirer, OutcomeEnumType } from './utils/TransactionResultEnum';
+import { getOutcomeFromAuthcodeAndIsDirectAcquirer } from './utils/TransactionResultEnum';
 
 const config = getConfigOrThrow();
 
 const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: string, isDirectAcquirer?: boolean) => {
-  const outcome: OutcomeEnumType = getOutcomeFromAuthcodeAndIsDirectAcquirer(authorizationCode, isDirectAcquirer);
   mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
     EVENT_ID: PAYMENT_OUTCOME_CODE.value,
     idStatus,
-    outcome,
+    outcome: getOutcomeFromAuthcodeAndIsDirectAcquirer(authorizationCode, isDirectAcquirer),
   });
   showFinalStatusResult(idStatus);
 };
