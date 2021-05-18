@@ -183,8 +183,8 @@ export const getOutcomeFromVposStatus = (vposResultCode: VposResultCodeEnumType)
 };
 
 export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
-  authCode: VposResultCodeEnumType | NexiResultCodeEnumType,
-  isDirectAcquirer: boolean,
+  authCode?: string,
+  isDirectAcquirer?: boolean,
 ): OutcomeEnumType =>
   fromPredicate(
     directAcquirer => directAcquirer === true,

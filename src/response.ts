@@ -22,8 +22,8 @@ import {
 } from './utils/transactionHelper';
 import { createIFrame, start3DS2AcsChallengeStep, start3DS2MethodStep } from './utils/iframe';
 import {
-  getResultEventByAuthorizationCode,
   mixpanel,
+  PAYMENT_OUTCOME_CODE,
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
   THREEDSMETHODURL_STEP1_RESP_ERR,
@@ -35,15 +35,16 @@ import {
 import { GENERIC_STATUS, UNKNOWN } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
+import { getOutcomeFromAuthcodeAndIsDirectAcquirer, OutcomeEnumType } from './utils/TransactionResultEnum';
 
 const config = getConfigOrThrow();
 
 const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: string, isDirectAcquirer?: boolean) => {
-  const eventResult: string = getResultEventByAuthorizationCode(authorizationCode || '');
-  mixpanel.track(eventResult, {
-    EVENT_ID: eventResult,
+  const outcome: OutcomeEnumType = getOutcomeFromAuthcodeAndIsDirectAcquirer(authorizationCode, isDirectAcquirer);
+  mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
+    EVENT_ID: PAYMENT_OUTCOME_CODE.value,
     idStatus,
-    authorizationCode,
+    outcome,
   });
   showFinalStatusResult(idStatus);
 };
