@@ -33,6 +33,8 @@ const Psp = t.exact(
   t.interface({
     businessName: t.string,
 
+    directAcquirer: t.boolean,
+    
     fixedCost: Amount,
 
     logoPSP: t.string,

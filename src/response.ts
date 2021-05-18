@@ -34,10 +34,11 @@ import {
 
 import { GENERIC_STATUS, UNKNOWN } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
+import { WalletSession } from './sessionData/WalletSession';
 
 const config = getConfigOrThrow();
 
-const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: string) => {
+const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: string, isDirectAcquirer?: boolean) => {
   const eventResult: string = getResultEventByAuthorizationCode(authorizationCode || '');
   mixpanel.track(eventResult, {
     EVENT_ID: eventResult,
@@ -138,6 +139,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     (el as HTMLElement).innerText = useremail;
   }
 
+  // set isDirectAcquirer to decide the final outcome
+  const isDirectAcquirer: boolean | undefined = WalletSession.decode(sessionStorage.getItem('wallet')).fold(
+    _ => undefined,
+    wallet => wallet.psp.directAcquirer,
+  );
+
   // 2. METHOD RESUME and ACS CHALLENGE step on 3ds2
   window.addEventListener(
     'message',
@@ -179,7 +186,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                   toError,
                 )(transactionStatus.data).fold(
                   () =>
-                    handleFinalStatusResult(transactionStatus.data.idStatus, transactionStatus.data.authorizationCode),
+                    handleFinalStatusResult(
+                      transactionStatus.data.idStatus,
+                      transactionStatus.data.authorizationCode,
+                      isDirectAcquirer,
+                    ),
                   () =>
                     start3DS2AcsChallengeStep(
                       transactionStatus.data.acsUrl,
@@ -223,7 +234,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             )(transactionStatus.data).fold(
               _ =>
                 // 1.0 final status
-                handleFinalStatusResult(transactionStatus.data.idStatus, transactionStatus.data.authorizationCode),
+                handleFinalStatusResult(
+                  transactionStatus.data.idStatus,
+                  transactionStatus.data.authorizationCode,
+                  isDirectAcquirer,
+                ),
               _ => {
                 switch (nextTransactionStep(transactionStatus)) {
                   // 1.1 METHOD step 3ds2
@@ -291,6 +306,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   handleFinalStatusResult(
                     transactionStatusResponse.data.idStatus,
                     transactionStatusResponse.data.authorizationCode,
+                    isDirectAcquirer,
                   );
                 },
               )
@@ -326,6 +342,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   handleFinalStatusResult(
                     transactionStatusResponse.data.idStatus,
                     transactionStatusResponse.data.authorizationCode,
+                    isDirectAcquirer,
                   );
                 },
               )
