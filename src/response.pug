@@ -22,34 +22,39 @@ html(lang='it')
                                 h3.text-center Operazione in corso
                                 .text-muted.text-center.my-4 Ti preghiamo di attendere, senza chiudere la pagina.
                         .windowcont__response
-                            .windowcont__response__detail(data-response="3") <!-- TX_ACCEPTED -->
+                            .windowcont__response__detail(data-response="0") <!-- SUCCESS -->
                                 img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
                                 .h3.text-center Grazie, l'operazione è stata eseguita con successo!
                                 .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
                                     span &nbsp;
-                                    span(class="windowcont__response__useremail")      
-                            .windowcont__response__detail(data-response="4") <!-- TX_REFUSED -->
+                                    span(class="windowcont__response__useremail")
+                            .windowcont__response__detail(data-response="1") <!-- GENERIC_ERROR -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-umbrella.svg")
+                                .h3.text-center Spiacenti, si è verificato un errore imprevisto
+                                .text-muted.text-center.my-4 Non è stato addebitato alcun importo.              
+                            .windowcont__response__detail(data-response="2") <!-- AUTH_ERROR -->
                                 img.mx-auto.d-block.my-4(src="/assets/icons/response-ko.svg")
                                 .h3.text-center Autorizzazione negata
-                                .text-muted.text-center.my-4 La tua banca non ha autorizzato l'operazione. Controlla di aver inserito correttamente i vari codici richiesti dalla tua banca
-                            .windowcont__response__detail(data-response="6") <!-- TX_ERROR -->
+                                .text-muted.text-center.my-4 La tua banca non ha autorizzato l'operazione. Controlla di aver inserito correttamente i vari codici richiesti dalla tua banca.
+                            .windowcont__response__detail(data-response="3") <!-- INVALID_DATA -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-question.svg")
+                                .h3.text-center I dati della carta non risultano corretti
+                                .text-muted.text-center.my-4 Controlla di aver inserito correttamente i dati della tua carta. L'intestatario deve coincidere esattamente con quanto riportato sulla carta.
+                            .windowcont__response__detail(data-response="4") <!-- TIMEOUT -->
                                 img.mx-auto.d-block.my-4(src="/assets/icons/response-timeout.svg")
-                                .h3.text-center Autorizzazione negata. Rivolgiti alla tua banca per avere informazioni
-                                .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
-                                    span &nbsp;
-                                    span(class="windowcont__response__useremail")
-                            .windowcont__response__detail(data-response="8") <!-- TX_ACCEPTED_MOD1 -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
-                                .h3.text-center Grazie, l'operazione è stata presa in carico!
-                                .text-muted.text-center.my-4 Una volta completata, riceverai l'esito all'indirizzo
-                                    span &nbsp;
-                                    span(class="windowcont__response__useremail")
-                            .windowcont__response__detail(data-response="9") <!-- TX_ACCEPTED_MOD2 -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
-                                .h3.text-center Grazie, l'operazione è stata presa in carico!
-                                .text-muted.text-center.my-4 Una volta completata, riceverai l'esito all'indirizzo
-                                    span &nbsp;
-                                    span(class="windowcont__response__useremail")          
+                                .h3.text-center Spiacenti, la sessione è scaduta
+                                .text-muted.text-center.my-4 Non è stato addebitato alcun importo. Per la tua sicurezza, hai a disposizione 5 minuti per completare l'operazione.
+                            .windowcont__response__detail(data-response="7") <!-- INVALID_CARD -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-unrecognized.svg")
+                                .h3.text-center C’è un problema con la tua carta
+                                .text-muted.text-center.my-4 Non è stato addebitato alcun importo. Per maggiori informazioni, contatta la tua banca.
+                            .windowcont__response__detail(data-response="8") <!-- CANCELED_BY_USER -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-unrecognized.svg")
+                                .h3.text-center L’operazione è stata annullata
+                            .windowcont__response__detail(data-response="10") <!-- EXCESSIVE_AMOUNT -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ko.svg")
+                                .h3.text-center Autorizzazione negata
+                                .text-muted.text-center.my-4 Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.    
                             a(href="#", id="response__continue").btn.btn-outline-primary.d-block Continua
 
             // FOOTER

@@ -90,6 +90,7 @@ export const NexiResultCodeEnumType = enumType<NexiResultCodeEnum>(NexiResultCod
 export type VposResultCodeEnumType = t.TypeOf<typeof VposResultCodeEnumType>;
 export const VposResultCodeEnumType = enumType<VposResultCodeEnum>(VposResultCodeEnum, 'VposResultCodeEnumType');
 
+// eslint-disable-next-line complexity
 export const getOutcomeFromNexiResultCode = (nexiResultCode: NexiResultCodeEnumType): OutcomeEnumType => {
   switch (nexiResultCode) {
     case NexiResultCodeEnum.SUCCESS:
@@ -136,6 +137,7 @@ export const getOutcomeFromNexiResultCode = (nexiResultCode: NexiResultCodeEnumT
   }
 };
 
+// eslint-disable-next-line complexity
 export const getOutcomeFromVposStatus = (vposResultCode: VposResultCodeEnumType): OutcomeEnumType => {
   switch (vposResultCode) {
     case VposResultCodeEnum.SUCCESS:
