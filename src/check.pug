@@ -1,7 +1,7 @@
 doctype html
 html(lang='it')
     - var languages = [{'label':'IT', 'full':'Italiano'},{'label':'EN', 'full':'English'}];
-    - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'amex'}];
+    - var cards = [{'title':'Mastercard','name':'mastercard'},{'title':'Maestro','name':'maestro'},{'title':'Visa','name':'visa'},{'title':'Visa Electron','name':'visaelectron'},{'title':'AmericanExpress','name':'amex'},{'title':'Diners','name':'diners'}];
     head
         include includes/head.pug
         meta(name="robots", content="noindex, nofollow")
@@ -60,8 +60,8 @@ html(lang='it')
                             .windowcont__bottom
                                 .container
                                     .windowcont__bottom__wrap.d-flex
-                                        a.btn.btn-outline-primary.mr-2(data-modal="#modal-checkcancel", data-modal-buttons="cancel,close", href="#", data-lang="cta.cancel") Annulla
-                                        button.btn.btn-primary.flex-grow-1(type="submit", data-lang="cta.continue") Paga 
+                                        a.btn.btn-outline-primary.btn-sm.mr-2(data-modal="#modal-checkcancel", data-modal-buttons="cancel,close", href="#", data-lang="cta.cancel") Annulla
+                                        button.btn.btn-primary.btn-sm.flex-grow-1(type="submit", data-lang="cta.continue") Paga 
                                             span.amount(id="check__totamount__button") &nbsp;
                                     .text-center
                                         a.d-block.font-weight-bold.text-decoration-none.py-2(href="#",data-modal="#modal-checkwhypsp", data-modal-buttons="close") Perché vedo&nbsp;
