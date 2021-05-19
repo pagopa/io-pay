@@ -1,5 +1,4 @@
-import { mixpanel } from '../__mocks__/mocks';
-import { THREEDSACSCHALLENGEURL_STEP2_REQ, THREEDSMETHODURL_STEP1_REQ } from './mixpanelHelperInit';
+import { mixpanel, THREEDSACSCHALLENGEURL_STEP2_REQ, THREEDSMETHODURL_STEP1_REQ } from './mixpanelHelperInit';
 
 function createForm(formName, formAction, formTarget, inputs) {
   const form: HTMLFormElement = Object.assign(document.createElement('form'), {
