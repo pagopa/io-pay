@@ -65,11 +65,9 @@ export async function actionsCheck() {
 
                 if (response.status === 200 && maybePayment.isRight()) {
                   sessionStorage.setItem('checkData', JSON.stringify(maybePayment.value));
-                  // TODO: #MIXEVENT PAYMENT_CHECK_SUCCESS
                   mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                     EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
-                    idPayment: response?.value?.data?.idPayment,
-                    amount: response?.value?.data?.amount,
+                    idPayment: response.value?.data.idPayment,
                   });
                   const originInput = fromNullable(origin).getOrElse(response.value.data.urlRedirectEc);
                   sessionStorage.setItem(
@@ -80,12 +78,6 @@ export async function actionsCheck() {
                   window.location.replace('ko.html');
                   mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
-                    /* code: response.value,
-                    message: response?.value.message, */
-                    // In the else branch the response is not an error, so it
-                    // doesn't have code and message properties
-                    code: PAYMENT_CHECK_SVR_ERR.value,
-                    message: `payment/check returned ${response.status}`,
                   });
                 }
               },
