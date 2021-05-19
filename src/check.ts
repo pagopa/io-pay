@@ -25,6 +25,7 @@ import {
 import { getConfigOrThrow } from './utils/config';
 import { ErrorsType, errorHandler } from './js/errorhandler';
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from './utils/checkHelper';
+import { buttonDisabler, buttonEnabler } from './js/buttonutils';
 
 const iopayportalClient: IoPayPortalClient.Client = IoPayPortalClient.createClient({
   baseUrl: getConfigOrThrow().IO_PAY_FUNCTIONS_HOST,
@@ -67,6 +68,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const checkUserEmail = document.getElementById('check__useremail');
 
   const checkoutForm = document.getElementById('checkout');
+  const checkoutFormSubmit = checkoutForm?.querySelectorAll("button[type='submit']")
+    ? checkoutForm.querySelectorAll("button[type='submit']")[0]
+    : null;
 
   const fixedCost: number = wallet?.psp.fixedCost.amount || 0;
   const amount: number | null = checkData?.amount.amount;
@@ -141,6 +145,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function (e) {
       e.preventDefault();
 
+      if (checkoutFormSubmit) {
+        buttonDisabler(checkoutFormSubmit as HTMLButtonElement);
+      }
+
       const browserInfo = (await getBrowserInfoTask(iopayportalClient).run()).getOrElse({
         ip: '',
         useragent: '',
@@ -186,6 +194,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           }),
         e => {
           errorHandler(ErrorsType.CONNECTION);
+          if (checkoutFormSubmit) {
+            buttonEnabler(checkoutFormSubmit as HTMLButtonElement);
+          }
           mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value, e });
           return toError;
         },
@@ -193,6 +204,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
+            if (checkoutFormSubmit) {
+              buttonEnabler(checkoutFormSubmit as HTMLButtonElement);
+            }
             mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value, r });
           }, // to be replaced with logic to handle failures
           myResExt => {
@@ -202,18 +216,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
-                    token: myRes?.value?.data?.token,
-                    idStatus: myRes?.value?.data?.idStatus,
-                    statusMessage: myRes?.value?.data?.statusMessage,
                     idPayment: myRes?.value?.data?.nodoIdPayment,
                   });
                   return JSON.stringify(myRes.value.data);
                 } else {
                   errorHandler(ErrorsType.GENERIC_ERROR);
+                  if (checkoutFormSubmit) {
+                    buttonEnabler(checkoutFormSubmit as HTMLButtonElement);
+                  }
                   mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
-                    code: PAYMENT_PAY3DS2_RESP_ERR.value,
-                    message: PAYMENT_PAY3DS2_RESP_ERR.value,
                   });
                   return 'fakePayment';
                 }
