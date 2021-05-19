@@ -77,6 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
     4: 'CID (4 cifre)',
   };
 
+  // clean wallet data, if present
+  sessionStorage.removeItem('wallet');
+
   // check if all fields are OK
   function fieldsCheck() {
     const checkedFields = creditcardform?.querySelectorAll('input[data-checked]');
@@ -407,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             sessionStorage.setItem('securityCode', (creditcardformSecurecode as HTMLInputElement).value);
-
             WalletSession.decode(JSON.parse(walletResp)).map(wallet => {
               sessionStorage.setItem('wallet', JSON.stringify(wallet));
             });
@@ -452,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    if (creditCardValidation.isValid === true) {
+    if (creditCardValidation.isValid === true || creditCardValidation.isPotentiallyValid === true) {
       toggleValid(inputel, true);
       if (creditCardValidation.card) {
         holder = creditCardValidation.card.type.toLowerCase() || '';
