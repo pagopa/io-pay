@@ -215,5 +215,9 @@ describe('TransactionResultUtil', () => {
     expect(ViewOutcomeEnumType.decode(OutcomeEnum.DUPLICATE_ORDER).getOrElse(ViewOutcomeEnum.GENERIC_ERROR)).toEqual(
       ViewOutcomeEnum.GENERIC_ERROR,
     );
+    expect(ViewOutcomeEnumType.decode(OutcomeEnum.INVALID_SESSION).getOrElse(ViewOutcomeEnum.GENERIC_ERROR)).toEqual(
+      ViewOutcomeEnum.GENERIC_ERROR,
+    );
+    
   });
 });
