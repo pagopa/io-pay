@@ -35,7 +35,12 @@ import {
 import { GENERIC_STATUS, UNKNOWN } from './utils/TransactionStatesTypes';
 import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
-import { getOutcomeFromAuthcodeAndIsDirectAcquirer, OutcomeEnumType } from './utils/TransactionResultUtil';
+import {
+  getOutcomeFromAuthcodeAndIsDirectAcquirer,
+  OutcomeEnumType,
+  ViewOutcomeEnum,
+  ViewOutcomeEnumType,
+} from './utils/TransactionResultUtil';
 
 const config = getConfigOrThrow();
 
@@ -50,10 +55,11 @@ const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: s
 };
 
 const showFinalResult = (outcome: OutcomeEnumType) => {
+  const viewOutcome: string = ViewOutcomeEnumType.decode(outcome).getOrElse(ViewOutcomeEnum.GENERIC_ERROR).toString();
   document.body.classList.remove('loadingOperations');
   document
     .querySelectorAll('[data-response]')
-    .forEach(i => (i.getAttribute('data-response') === outcome.toString() ? null : i.remove()));
+    .forEach(i => (i.getAttribute('data-response') === viewOutcome ? null : i.remove()));
   (document.getElementById('response__continue') as HTMLElement).setAttribute(
     'href',
     fromNullable(sessionStorage.getItem('originUrlRedirect')).getOrElse('#'),
