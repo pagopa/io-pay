@@ -2,6 +2,8 @@ import {
   getOutcomeFromAuthcodeAndIsDirectAcquirer,
   NexiResultCodeEnum,
   OutcomeEnum,
+  ViewOutcomeEnum,
+  ViewOutcomeEnumType,
   VposResultCodeEnum,
 } from '../TransactionResultUtil';
 
@@ -194,6 +196,24 @@ describe('TransactionResultUtil', () => {
     );
     expect(getOutcomeFromAuthcodeAndIsDirectAcquirer(VposResultCodeEnum.INCORRECT_STATUS, false)).toEqual(
       OutcomeEnum.GENERIC_ERROR,
+    );
+  });
+
+  it('should return ViewOutcomeEnum given ViewOutcome', async () => {
+    expect(ViewOutcomeEnumType.decode(OutcomeEnum.AUTH_ERROR).getOrElse(ViewOutcomeEnum.GENERIC_ERROR)).toEqual(
+      ViewOutcomeEnum.AUTH_ERROR,
+    );
+    expect(ViewOutcomeEnumType.decode(OutcomeEnum.INVALID_CARD).getOrElse(ViewOutcomeEnum.GENERIC_ERROR)).toEqual(
+      ViewOutcomeEnum.INVALID_CARD,
+    );
+    expect(ViewOutcomeEnumType.decode(OutcomeEnum.EXCESSIVE_AMOUNT).getOrElse(ViewOutcomeEnum.GENERIC_ERROR)).toEqual(
+      ViewOutcomeEnum.EXCESSIVE_AMOUNT,
+    );
+    expect(ViewOutcomeEnumType.decode(OutcomeEnum.CIRCUIT_ERROR).getOrElse(ViewOutcomeEnum.GENERIC_ERROR)).toEqual(
+      ViewOutcomeEnum.GENERIC_ERROR,
+    );
+    expect(ViewOutcomeEnumType.decode(OutcomeEnum.DUPLICATE_ORDER).getOrElse(ViewOutcomeEnum.GENERIC_ERROR)).toEqual(
+      ViewOutcomeEnum.GENERIC_ERROR,
     );
   });
 });
