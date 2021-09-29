@@ -40,7 +40,6 @@ import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
 import { ErrorsType, errorHandler } from './js/errorhandler';
 import { buttonDisabler, buttonEnabler } from './js/buttonutils';
-import { CardNumberVerification } from 'card-validator/dist/card-number';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
