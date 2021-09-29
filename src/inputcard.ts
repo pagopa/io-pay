@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
       checkEl.removeAttribute('data-checked');
     }
   });
-  
+
   privacyToggler?.addEventListener('click', function () {
     if (privacyTogglerInput == null) {
       return;
