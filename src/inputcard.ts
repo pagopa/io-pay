@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const privacyToggler = document.getElementById('privacyToggler') || null;
-  const privacyTogglerInput = document.getElementById('privacyTogglerInput') || null;
+  const privacyTogglerInput = (document.getElementById('privacyTogglerInput') as HTMLInputElement) || null;
   const obscureToggler = document.querySelectorAll('.obscureToggler') || null;
   const creditcardform = document.getElementById('creditcardform') || null;
   const creditcardformName = document.getElementById('creditcardname') || null;
@@ -193,18 +193,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   void setTermOfService();
 
+  privacyTogglerInput?.addEventListener('change', async function (evt) {
+    const checkEl = evt.target as HTMLInputElement;
+    if (checkEl.checked) {
+      checkEl.setAttribute('data-checked', '1');
+    } else {
+      checkEl.removeAttribute('data-checked');
+    }
+  });
+  
   privacyToggler?.addEventListener('click', function () {
     if (privacyTogglerInput == null) {
       return;
     }
-
-    if (privacyTogglerInput.hasAttribute('checked') === true) {
-      privacyTogglerInput.removeAttribute('checked');
+    const privacyTogglerInputStatus = document.querySelector(privacyTogglerInput.id + ':checked') || undefined;
+    if (privacyTogglerInputStatus !== undefined) {
       privacyTogglerInput.removeAttribute('data-checked');
     } else {
-      privacyTogglerInput.setAttribute('checked', '1'); // TODO: should be bool
       privacyTogglerInput.setAttribute('data-checked', '1');
     }
+
     fieldsCheck();
   });
 
