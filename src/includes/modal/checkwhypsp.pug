@@ -1,10 +1,10 @@
 .modalwindow(id="modal-checkwhypsp")
-    .d-flex
+    .d-flex(tab-index="1")
         h4.modalwindow__title Perché vedo&nbsp;
             span(class="check__pspbankname")
             span ?
-        svg.icon.ml-auto.modalwindow__close.cursor-pointer
+        svg.icon.ml-auto.modalwindow__close.cursor-pointer(aria-hidden="true")
             use(href="/assets/icons/sprite.svg#it-close")
-    .modalwindow__content.mb-3 
+    .modalwindow__content.mb-3(tab-index="2") 
     p pagoPA ti mostra in automatico, quando possibile, il gestore che ha emesso la tua carta. In alternativa, verrà selezionato il gestore con il costo di transazione più basso. 
     p Consulta la lista dei gestori disponibili per modificare la scelta: sono tutti compatibili con la tua carta, anche se non sei loro cliente.

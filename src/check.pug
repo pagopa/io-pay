@@ -19,11 +19,11 @@ html(lang='it')
                                 .h3.ml-auto(id="check__totamount") 
                             .windowcont__paywith.d-flex.py-2.mt-2
                                 .font-weight-bold Paga con:
-                                a(href="inputcard.pug").text-decoration-none.font-weight-bold.ml-auto Modifica
+                                a(href="inputcard.pug", title="Torna alla schermata precedente").text-decoration-none.font-weight-bold.ml-auto Modifica
                             .windowcont__recapcc.mt-2.mb-4
                                 .windowcont__recapcc__inner.p-4.rounded.shadow.d-flex.flex-column.justify-content-between
                                     .text-monospace(id="check__creditcardnumber", aria-hidden="true") 
-                                    .text-monospace.sr-only(id="check__creditcardnumber__sr") 
+                                    .text-monospace.sr-only(id="check__creditcardnumber__sr", aria-label="Carta di credito che finisce per") 
                                     .windowcont__recapcc__valid Valida fino al 
                                         span(id="check__creditcardexpirationdate") 
                                     .windowcont__recapcc__holder.d-flex.align-items-center
@@ -35,18 +35,18 @@ html(lang='it')
                                                 use.d-none(href="/assets/icons/app.svg#icons-" + obj.name +"-mini", class="ccicon--custom " + obj.name)
                             .windowcont__paymanage.d-flex.mt-2.border-top.border-top-gray.py-3
                                 .font-weight-bold Il pagamento sarà gestito da
-                                svg.icon.icon-sm.icon-primary.ml-auto.cursor-pointer(data-modal="#modal-checkwhypsp", data-modal-buttons="close")
+                                svg.icon.icon-sm.icon-primary.ml-auto.cursor-pointer(data-modal="#modal-checkwhypsp", data-modal-buttons="close", role="button")
                                     title= "Info gestore"
                                     use(href="/assets/icons/sprite.svg#it-info-circle")
                             .windowcont__bank.d-flex.py-2.mt-2.align-items-center
                                 div
                                     img(src="" id="check__pspbank" alt="")
-                                a.font-weight-bold.text-decoration-none.ml-auto(href="choosepsp.pug",id="check__pspchoose") Modifica
+                                a.font-weight-bold.text-decoration-none.ml-auto(href="choosepsp.pug",id="check__pspchoose", title="Modifica PSP") Modifica
                             .windowcont__comm.d-flex.py-2.mt-2.border-bottom.border-bottom-gray
                                 div.text-muted Costo transazione
                                 div.ml-auto.d-flex.font-weight-bold
                                     span(id="check__pspcost")
-                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-choosepspwhytransaction", data-modal-buttons="close")
+                                    svg.icon.icon-sm.icon-primary.ml-1.cursor-pointer(data-modal="#modal-choosepspwhytransaction", data-modal-buttons="close", role="button")
                                         title= "Info PSP"
                                         use(href="/assets/icons/sprite.svg#it-info-circle")
                             .windowcont__sendto.d-flex.py-2.mt-2.border-bottom.border-bottom-gray

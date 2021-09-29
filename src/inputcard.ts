@@ -127,6 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // function to check errors when user leave input
+  function checkValidityWhenLeave(inputel: HTMLInputElement): void {
+    const inputElId = inputel.id;
+    if (inputel.classList.contains('is-invalid')) {
+      const descEl = document.getElementById(inputElId + 'Error');
+      inputel.setAttribute('aria-invalid', 'true');
+      descEl?.setAttribute('aria-hidden', 'false');
+      descEl?.focus();
+    } else {
+      inputel.setAttribute('aria-invalid', 'false');
+    }
+  }
+
   // idpayguard
   idpayguard();
 
@@ -436,6 +449,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fieldsCheck();
   });
+  creditcardformName?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 
   // Creditcard specific
   creditcardformNumber?.addEventListener('focus', evt => {
@@ -485,6 +504,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fieldsCheck();
   });
+  creditcardformNumber?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 
   creditcardformExpiration?.addEventListener('focus', evt => {
     const el = evt.target;
@@ -507,6 +532,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fieldsCheck();
   });
+  creditcardformExpiration?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
+
   creditcardformSecurecode?.addEventListener('focus', evt => {
     const el = evt.target;
     (el as HTMLInputElement).removeAttribute('readonly');
@@ -515,4 +547,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkCvvSize();
     fieldsCheck();
   });
+  creditcardformSecurecode?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 });
