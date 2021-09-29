@@ -1,18 +1,18 @@
 div(id="multiplePaymentWindow")
     .mpmodal.d-flex.flex-column
-        .d-flex.align-items-center.mb-2
+        .d-flex.align-items-center.mb-2(tab-index="1")
             .mpmodal__title Pagamento multiplo
-            svg.icon.ml-auto.mpmodal__close.cursor-pointer
+            svg.icon.ml-auto.mpmodal__close.cursor-pointer(aria-hidden="true")
                 use(href="/assets/icons/sprite.svg#it-close")
-        .mpmodal__list
+        .mpmodal__list(tab-index="2")
             .mpmodal__item(data-template="mpitem")
                 .mpmodal__row.d-flex.align-items-md-end.mpmodal__item__header
                     .mpmodal__item__title.text-truncate
                     .mpmodal__item__amount.ml-auto
-                    svg.mpmodal__item__expand(height="24", width="28")
+                    svg.mpmodal__item__expand(height="24", width="28", aria-hidden="true")
                         title= "Espandi"
                         use(href="/assets/icons/sprite.svg#it-expand")
-                    svg.mpmodal__item__collapse(height="24", width="28")
+                    svg.mpmodal__item__collapse(height="24", width="28", aria-hidden="true")
                         title= "Espandi"
                         use(href="/assets/icons/sprite.svg#it-collapse")
                 .mpmodal__item__detail
@@ -30,5 +30,5 @@ div(id="multiplePaymentWindow")
                     .mpmodal__row.d-flex.justify-content-between.align-items-baseline
                         .mpmodal__label Codice IUV
                         .mpmodal__item__iuv.mpmodal__value
-        .mpmodal__footer.d-none.d-md-block.mt-auto.pt-2
+        .mpmodal__footer.d-none.d-md-block.mt-auto.pt-2(tab-index="3")
             a.btn.btn-outline-primary.d-block.mpmodal__close(href="#", title="Chiudi") Chiudi

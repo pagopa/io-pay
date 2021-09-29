@@ -28,8 +28,8 @@ html(lang='it')
                                                     use(href="/assets/icons/sprite.svg#it-user")
                                         label.sr-only(for="creditcardname", data-lang="textField.name.label") titolare carta
                                         input.form-control(type="text", placeholder="Mario Rossi", name="creditcardname",  id="creditcardname", maxlength="42", required, autocomplete="cc-name")
-                                        .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.name.label") titolare carta
-                                        .reset-flex-flow.text-muted.mt-1.custom-label--error Inserisci come riportato sulla carta
+                                        .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.name.label", aria-hidden="true") titolare carta
+                                        .reset-flex-flow.text-muted.mt-1.custom-label--error(id="creditcardnameError", aria-hidden="true", tabindex="-1") Inserisci come riportato sulla carta
                                     .input-group.mt-2.mt-md-4
                                         .input-group-prepend
                                             .input-group-text
@@ -39,7 +39,7 @@ html(lang='it')
                                                     each obj, index in cards
                                                         use(href="/assets/icons/app.svg#icons-" + obj.name +"-mini", class="ccicon--custom " + obj.name)
 
-                                        label.sr-only(for="numerocarta", data-lang="textField.pan.label") numero carta
+                                        label.sr-only(for="creditcardnumber", data-lang="textField.pan.label") numero carta
                                         input.form-control(type="text", placeholder="0000 0000 0000 0000", maxlength="20", name="creditcardnumber", id="creditcardnumber", required, autocomplete="cc-number")
                                         .input-group-append
                                             .input-group-text
@@ -47,8 +47,8 @@ html(lang='it')
                                                     title Mostra / Nascondi
                                                     use(href="/assets/icons/sprite.svg#it-password-invisible", class="hidecontent")
                                                     use(href="/assets/icons/sprite.svg#it-password-visible", class="showcontent")
-                                        .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.pan.label") numero carta
-                                        .reset-flex-flow.text-muted.mt-1.custom-label--error Inserisci un numero valido
+                                        .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.pan.label", aria-hidden="true") numero carta
+                                        .reset-flex-flow.text-muted.mt-1.custom-label--error(id="creditcardnumberError", aria-hidden="true", tabindex="-1") Inserisci un numero valido
                                     .form-row.mt-2.mt-md-4
                                         .col-6
                                             .input-group
@@ -58,8 +58,8 @@ html(lang='it')
                                                             use(href="/assets/icons/sprite.svg#it-calendar")
                                                 label.sr-only(for="creditcardexpirationdate", data-lang="textField.expireDate.label") scadenza
                                                 input.form-control(type="text", placeholder="mm/aa", maxlength="5", name="creditcardexpirationdate", id="creditcardexpirationdate", required, autocomplete="cc-exp")
-                                                .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.expireDate.label") scadenza
-                                                .reset-flex-flow.text-muted.mt-1.custom-label--error Inserisci mm/aa
+                                                .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.expireDate.label", aria-hidden="true") scadenza
+                                                .reset-flex-flow.text-muted.mt-1.custom-label--error(id="creditcardexpirationdateError", aria-hidden="true", tabindex="-1") Inserisci mm/aa
                                         .col-6
                                             .input-group
                                                 .input-group-prepend
@@ -74,11 +74,11 @@ html(lang='it')
                                                             title Mostra / Nascondi
                                                             use(href="/assets/icons/sprite.svg#it-password-invisible", class="hidecontent")
                                                             use(href="/assets/icons/sprite.svg#it-password-visible", class="showcontent")
-                                                .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.cvc.label", id="creditcardsecurcodeLabel") codice di sicurezza
-                                                .reset-flex-flow.text-muted.mt-1.custom-label--error(id="creditcardsecurcodeError") Inserisci 3 cfre
+                                                .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.cvc.label", id="creditcardsecurcodeLabel", aria-hidden="true") codice di sicurezza
+                                                .reset-flex-flow.text-muted.mt-1.custom-label--error(id="creditcardsecurcodeError", aria-hidden="true", tabindex="-1") Inserisci 3 cfre
                                 .mt-4.pt-4.border-top.border-top-gray
                                     .toggles.reset-font-size
-                                        label.font-weight-normal(for="privacypol")
+                                        label.font-weight-normal(for="privacyTogglerInput")
                                             input(name="privacypol", type="checkbox", id="privacyTogglerInput", required)
                                             span.lever.float-left.ml-0(id="privacyToggler")
                                             span(data-lang="text.label.accept", class="mr-2") Accetto la

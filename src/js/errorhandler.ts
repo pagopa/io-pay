@@ -93,7 +93,9 @@ export function errorHandler(type: ErrorsType): void {
       // eslint-disable-next-line functional/immutable-data
       errorhandlerDesc.innerText = errorData.desc;
     }
-
+    errorhandlerEl.setAttribute('tab-index', '-1');
+    errorhandlerEl.setAttribute('aria-live', 'polite');
+    errorhandlerEl.focus();
     errorhandlerEl.classList.add('d-block');
     document.body.classList.add('error');
   }

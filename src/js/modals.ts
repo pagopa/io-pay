@@ -16,10 +16,15 @@ const modalWindows = () => {
     // eslint-disable-next-line functional/immutable-data
     modals[modalName] = new Tingle.modal({
       footer: true,
+      closeLabel: 'Chiudi',
       cssClass: modalCss.split(' '),
       closeMethods: ['button'],
       onOpen: () => {
-        const customClose = modals[modalName].modalBox.querySelector('.modalwindow__close');
+        const modalContent = modals[modalName].modalBox;
+        modalContent.setAttribute('tab-index', '-1');
+        modalContent.setAttribute('aria-live', 'polite');
+        modalContent.focus();
+        const customClose = modalContent.querySelector('.modalwindow__close');
         if (customClose !== null) {
           customClose.addEventListener('click', () => {
             modals[modalName].close();
