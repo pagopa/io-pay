@@ -79,8 +79,8 @@ html(lang='it')
                                 .mt-4.pt-4.border-top.border-top-gray
                                     .toggles.reset-font-size
                                         label.font-weight-normal(for="privacyTogglerInput")
-                                            input(name="privacypol", type="checkbox", id="privacyTogglerInput", required)
-                                            span.lever.float-left.ml-0(id="privacyToggler")
+                                            input(name="privacypol", type="checkbox", id="privacyTogglerInput", required, aria-hidden="false", aria-label="Accetto la privacy policy")
+                                            span.lever.float-left.ml-0(id="privacyToggler", aria-hidden="false")
                                             span(data-lang="text.label.accept", class="mr-2") Accetto la
                                             a(href="#", data-modal="#modal-inputcardterms", data-modal-buttons="close", data-modal-css="xl", data-lang="text.label.privacyPolicy") privacy policy
                                 .mt-4.reset-font-size
