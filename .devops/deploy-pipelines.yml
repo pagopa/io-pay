@@ -74,8 +74,8 @@ stages:
 
   # Prepare Artifact with application bundle
   - stage: Prepare_artifact
-    dependsOn:
-      - Release
+    # dependsOn:
+    #   - Release
     pool:
       vmImage: 'ubuntu-latest'  
     jobs:
