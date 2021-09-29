@@ -40,7 +40,7 @@ html(lang='it')
                                                         use(href="/assets/icons/app.svg#icons-" + obj.name +"-mini", class="ccicon--custom " + obj.name)
 
                                         label.sr-only(for="numerocarta", data-lang="textField.pan.label") numero carta
-                                        input.form-control(type="text", placeholder="0000 0000 0000 0000", maxlength="20", name="creditcardnumber", id="creditcardnumber", required, autocomplete="cc-number")
+                                        input.form-control(type="text", inputmode="numeric", placeholder="0000 0000 0000 0000", maxlength="20", name="creditcardnumber", id="creditcardnumber", required, autocomplete="cc-number")
                                         .input-group-append
                                             .input-group-text
                                                 svg.icon.icon-primary.icon-sm(class="obscureToggler",data-obscuretarget="creditcardnumber")
@@ -67,7 +67,7 @@ html(lang='it')
                                                         svg.icon.icon-sm
                                                             use(href="/assets/icons/sprite.svg#it-locked")
                                                 label.sr-only(for="creditcardsecurcode", data-lang="textField.cvc.label") codice di sicurezza
-                                                input.form-control(type="password", placeholder="123", maxlength="4", name="securcode", id="creditcardsecurcode", autocomplete="cc-csc", data-validator-size="3", required)
+                                                input.form-control(type="password", placeholder="123", maxlength="4", inputmode="numeric", name="securcode", id="creditcardsecurcode", autocomplete="cc-csc", data-validator-size="3", required)
                                                 .input-group-append
                                                     .input-group-text
                                                         svg.icon.icon-primary.icon-sm(class="obscureToggler",data-obscuretarget="creditcardsecurcode", data-obscured)

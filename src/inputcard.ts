@@ -40,6 +40,7 @@ import { getConfigOrThrow } from './utils/config';
 import { WalletSession } from './sessionData/WalletSession';
 import { ErrorsType, errorHandler } from './js/errorhandler';
 import { buttonDisabler, buttonEnabler } from './js/buttonutils';
+import { CardNumberVerification } from 'card-validator/dist/card-number';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
@@ -453,8 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (element as HTMLElement).classList.remove('d-block');
       });
     }
-
-    if (creditCardValidation.isValid === true || creditCardValidation.isPotentiallyValid === true) {
+    if (creditCardValidation.isPotentiallyValid === true && inputel.value.replace(/\s/g, '').length > 12) {
       toggleValid(inputel, true);
       if (creditCardValidation.card) {
         holder = creditCardValidation.card.type.toLowerCase() || '';
