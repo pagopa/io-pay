@@ -57,6 +57,7 @@ const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: s
 const showFinalResult = (outcome: OutcomeEnumType) => {
   const viewOutcome: string = ViewOutcomeEnumType.decode(outcome).getOrElse(ViewOutcomeEnum.GENERIC_ERROR).toString();
   document.body.classList.remove('loadingOperations');
+  document.querySelector('.windowcont__response')?.setAttribute('tabindex', '1');
   document
     .querySelectorAll('[data-response]')
     .forEach(i => (i.getAttribute('data-response') === viewOutcome ? null : i.remove()));

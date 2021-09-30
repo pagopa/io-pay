@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const privacyToggler = document.getElementById('privacyToggler') || null;
-  const privacyTogglerInput = document.getElementById('privacyTogglerInput') || null;
+  const privacyTogglerInput = (document.getElementById('privacyTogglerInput') as HTMLInputElement) || null;
   const obscureToggler = document.querySelectorAll('.obscureToggler') || null;
   const creditcardform = document.getElementById('creditcardform') || null;
   const creditcardformName = document.getElementById('creditcardname') || null;
@@ -127,6 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // function to check errors when user leave input
+  function checkValidityWhenLeave(inputel: HTMLInputElement): void {
+    const inputElId = inputel.id;
+    if (inputel.classList.contains('is-invalid')) {
+      const descEl = document.getElementById(inputElId + 'Error');
+      inputel.setAttribute('aria-invalid', 'true');
+      descEl?.setAttribute('aria-hidden', 'false');
+      descEl?.focus();
+    } else {
+      inputel.setAttribute('aria-invalid', 'false');
+    }
+  }
+
   // idpayguard
   idpayguard();
 
@@ -180,18 +193,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   void setTermOfService();
 
+  privacyTogglerInput?.addEventListener('change', async function (evt) {
+    const checkEl = evt.target as HTMLInputElement;
+    if (checkEl.checked) {
+      checkEl.setAttribute('data-checked', '1');
+    } else {
+      checkEl.removeAttribute('data-checked');
+    }
+  });
+
   privacyToggler?.addEventListener('click', function () {
     if (privacyTogglerInput == null) {
       return;
     }
-
-    if (privacyTogglerInput.hasAttribute('checked') === true) {
-      privacyTogglerInput.removeAttribute('checked');
+    const privacyTogglerInputStatus = document.querySelector(privacyTogglerInput.id + ':checked') || undefined;
+    if (privacyTogglerInputStatus !== undefined) {
       privacyTogglerInput.removeAttribute('data-checked');
     } else {
-      privacyTogglerInput.setAttribute('checked', '1'); // TODO: should be bool
       privacyTogglerInput.setAttribute('data-checked', '1');
     }
+
     fieldsCheck();
   });
 
@@ -436,6 +457,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fieldsCheck();
   });
+  creditcardformName?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 
   // Creditcard specific
   creditcardformNumber?.addEventListener('focus', evt => {
@@ -484,6 +511,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fieldsCheck();
   });
+  creditcardformNumber?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 
   creditcardformExpiration?.addEventListener('focus', evt => {
     const el = evt.target;
@@ -506,6 +539,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fieldsCheck();
   });
+  creditcardformExpiration?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
+
   creditcardformSecurecode?.addEventListener('focus', evt => {
     const el = evt.target;
     (el as HTMLInputElement).removeAttribute('readonly');
@@ -514,4 +554,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkCvvSize();
     fieldsCheck();
   });
+  creditcardformSecurecode?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 });

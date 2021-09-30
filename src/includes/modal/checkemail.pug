@@ -1,6 +1,6 @@
 .modalwindow(id="modal-checkemail")
-    .d-flex
+    .d-flex(tab-index="1")
         h4.modalwindow__title Conoscete il mio indirizzo e-mail?
-        svg.icon.ml-auto.modalwindow__close.cursor-pointer
+        svg.icon.ml-auto.modalwindow__close.cursor-pointer(aria-hidden="true")
             use(href="/assets/icons/sprite.svg#it-close")
-    .modalwindow__content.mb-3 Stiamo usando la stessa e-mail che hai inserito per accedere al sito dell’ente. Consulta l'informativa privacy per maggiori informazioni.
+    .modalwindow__content.mb-3(tab-index="2") Stiamo usando la stessa e-mail che hai inserito per accedere al sito dell’ente. Consulta l'informativa privacy per maggiori informazioni.

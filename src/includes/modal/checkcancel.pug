@@ -1,6 +1,6 @@
 .modalwindow(id="modal-checkcancel")
-    .d-flex
+    .d-flex(tab-index="1")
         h4.modalwindow__title Uscire dal pagamento in corso?
-        svg.icon.ml-auto.modalwindow__close.cursor-pointer
+        svg.icon.ml-auto.modalwindow__close.cursor-pointer(aria-hidden="true")
             use(href="/assets/icons/sprite.svg#it-close")
-    .modalwindow__content.mb-3 Tutti i dati inseriti andranno persi.
+    .modalwindow__content.mb-3(tab-index="2") Tutti i dati inseriti andranno persi.

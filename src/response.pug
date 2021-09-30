@@ -21,41 +21,41 @@ html(lang='it')
                                     .sr-only Caricamento...
                                 h3.text-center Operazione in corso
                                 .text-muted.text-center.my-4 Ti preghiamo di attendere, senza chiudere la pagina.
-                        .windowcont__response
-                            .windowcont__response__detail(data-response="0") <!-- SUCCESS -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg")
+                        .windowcont__response(tabindex="-1", aria-live="polite")
+                            .windowcont__response__detail(data-response="0", tabindex="2") <!-- SUCCESS -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ok.svg", alt="Icona OK", aria-hidden="true")
                                 .h3.text-center Grazie, l'operazione è stata eseguita con successo!
                                 .text-muted.text-center.my-4 Riceverai l'esito all'indirizzo
                                     span &nbsp;
                                     span(class="windowcont__response__useremail")
-                            .windowcont__response__detail(data-response="1") <!-- GENERIC_ERROR -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-umbrella.svg")
+                            .windowcont__response__detail(data-response="1", tabindex="2") <!-- GENERIC_ERROR -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-umbrella.svg", alt="Icona Errore generico", aria-hidden="true")
                                 .h3.text-center Spiacenti, si è verificato un errore imprevisto
                                 .text-muted.text-center.my-4 Non è stato addebitato alcun importo.              
-                            .windowcont__response__detail(data-response="2") <!-- AUTH_ERROR -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ko.svg")
+                            .windowcont__response__detail(data-response="2", tabindex="2") <!-- AUTH_ERROR -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ko.svg", alt="Icona Errore Autorizzazione", aria-hidden="true")
                                 .h3.text-center Autorizzazione negata
                                 .text-muted.text-center.my-4 La tua banca non ha autorizzato l'operazione. Controlla di aver inserito correttamente i vari codici richiesti dalla tua banca.
-                            .windowcont__response__detail(data-response="3") <!-- INVALID_DATA -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-question.svg")
+                            .windowcont__response__detail(data-response="3", tabindex="2") <!-- INVALID_DATA -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-question.svg", alt="Icona Dati non corretti", aria-hidden="true")
                                 .h3.text-center I dati della carta non risultano corretti
                                 .text-muted.text-center.my-4 Controlla di aver inserito correttamente i dati della tua carta. L'intestatario deve coincidere esattamente con quanto riportato sulla carta.
-                            .windowcont__response__detail(data-response="4") <!-- TIMEOUT -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-timeout.svg")
+                            .windowcont__response__detail(data-response="4", tabindex="2") <!-- TIMEOUT -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-timeout.svg", alt="Icona Sessione scaduta", aria-hidden="true")
                                 .h3.text-center Spiacenti, la sessione è scaduta
                                 .text-muted.text-center.my-4 Non è stato addebitato alcun importo. Per la tua sicurezza, hai a disposizione 5 minuti per completare l'operazione.
-                            .windowcont__response__detail(data-response="7") <!-- INVALID_CARD -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-unrecognized.svg")
+                            .windowcont__response__detail(data-response="7", tabindex="2") <!-- INVALID_CARD -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-unrecognized.svg", alt="Icona Problema con la carta", aria-hidden="true")
                                 .h3.text-center C’è un problema con la tua carta
                                 .text-muted.text-center.my-4 Non è stato addebitato alcun importo. Per maggiori informazioni, contatta la tua banca.
-                            .windowcont__response__detail(data-response="8") <!-- CANCELED_BY_USER -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-unrecognized.svg")
+                            .windowcont__response__detail(data-response="8", tabindex="2") <!-- CANCELED_BY_USER -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-unrecognized.svg", alt="Icona Operazione annullata", aria-hidden="true")
                                 .h3.text-center L’operazione è stata annullata
-                            .windowcont__response__detail(data-response="10") <!-- EXCESSIVE_AMOUNT -->
-                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ko.svg")
+                            .windowcont__response__detail(data-response="10", tabindex="2") <!-- EXCESSIVE_AMOUNT -->
+                                img.mx-auto.d-block.my-4(src="/assets/icons/response-ko.svg", alt="Icona KO", aria-hidden="true")
                                 .h3.text-center Autorizzazione negata
                                 .text-muted.text-center.my-4 Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.    
-                            a(href="#", id="response__continue").btn.btn-outline-primary.d-block Continua
+                            a(href="#", id="response__continue", role="button").btn.btn-outline-primary.d-block Continua
 
             // FOOTER
             include includes/footer.pug                       
