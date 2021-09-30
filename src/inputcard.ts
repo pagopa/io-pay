@@ -480,8 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (element as HTMLElement).classList.remove('d-block');
       });
     }
-
-    if (creditCardValidation.isValid === true || creditCardValidation.isPotentiallyValid === true) {
+    if (creditCardValidation.isPotentiallyValid === true && inputel.value.replace(/\s/g, '').length > 12) {
       toggleValid(inputel, true);
       if (creditCardValidation.card) {
         holder = creditCardValidation.card.type.toLowerCase() || '';
