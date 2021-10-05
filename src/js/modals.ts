@@ -61,50 +61,7 @@ const modalWindows = () => {
 
       if (buttonsArray.indexOf('cancel') >= 0) {
         modals[modalName].addFooterBtn('Annulla il pagamento', 'btn btn-primary w-100 mb-2', async function () {
-          const checkData = JSON.parse(sessionStorage.getItem('checkData') || '');
-
-          // Payment action DELETE
-          mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
-            EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
-            idPayment: checkData.idPayment,
-          });
-
-          const eventResult:
-            | PAYMENT_ACTION_DELETE_NET_ERR
-            | PAYMENT_ACTION_DELETE_SVR_ERR
-            | PAYMENT_ACTION_DELETE_RESP_ERR
-            | PAYMENT_ACTION_DELETE_SUCCESS = await TE.tryCatch(
-            () =>
-              pmClient.deleteBySessionCookieExpiredUsingDELETE({
-                Bearer: `Bearer ${sessionStorage.getItem('sessionToken')}`,
-                id: checkData.idPayment,
-                koReason: 'ANNUTE',
-                showWallet: false,
-              }),
-            () => PAYMENT_ACTION_DELETE_NET_ERR.value,
-          )
-            .fold(
-              () => PAYMENT_ACTION_DELETE_SVR_ERR.value,
-              myResExt =>
-                myResExt.fold(
-                  () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
-                  myRes =>
-                    myRes.status === 200 ? PAYMENT_ACTION_DELETE_SUCCESS.value : PAYMENT_ACTION_DELETE_RESP_ERR.value,
-                ),
-            )
-            .run();
-
-          mixpanel.track(eventResult, { EVENT_ID: eventResult, idPayment: checkData.idPayment });
-
-          if (PAYMENT_ACTION_DELETE_SUCCESS.decode(eventResult).isRight()) {
-            location.replace('cancelled.html');
-          } else if (PAYMENT_ACTION_DELETE_NET_ERR.decode(eventResult).isRight()) {
-            errorHandler(ErrorsType.CONNECTION);
-          } else if (PAYMENT_ACTION_DELETE_SVR_ERR.decode(eventResult).isRight()) {
-            errorHandler(ErrorsType.SERVER);
-          } else {
-            errorHandler(ErrorsType.GENERIC_ERROR);
-          }
+          await paymentCancelHandler();
         });
       }
       if (buttonsArray.indexOf('close') >= 0) {
@@ -124,6 +81,52 @@ const modalWindows = () => {
       modals[modalWindow].open();
     });
   });
+};
+
+const paymentCancelHandler = async () => {
+  const checkData = JSON.parse(sessionStorage.getItem('checkData') || '');
+
+  // Payment action DELETE
+  mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
+    EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
+    idPayment: checkData.idPayment,
+  });
+
+  const eventResult:
+    | PAYMENT_ACTION_DELETE_NET_ERR
+    | PAYMENT_ACTION_DELETE_SVR_ERR
+    | PAYMENT_ACTION_DELETE_RESP_ERR
+    | PAYMENT_ACTION_DELETE_SUCCESS = await TE.tryCatch(
+    () =>
+      pmClient.deleteBySessionCookieExpiredUsingDELETE({
+        Bearer: `Bearer ${sessionStorage.getItem('sessionToken')}`,
+        id: checkData.idPayment,
+        koReason: 'ANNUTE',
+        showWallet: false,
+      }),
+    () => PAYMENT_ACTION_DELETE_NET_ERR.value,
+  )
+    .fold(
+      () => PAYMENT_ACTION_DELETE_SVR_ERR.value,
+      myResExt =>
+        myResExt.fold(
+          () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
+          myRes => (myRes.status === 200 ? PAYMENT_ACTION_DELETE_SUCCESS.value : PAYMENT_ACTION_DELETE_RESP_ERR.value),
+        ),
+    )
+    .run();
+
+  mixpanel.track(eventResult, { EVENT_ID: eventResult, idPayment: checkData.idPayment });
+
+  if (PAYMENT_ACTION_DELETE_SUCCESS.decode(eventResult).isRight()) {
+    location.replace('cancelled.html');
+  } else if (PAYMENT_ACTION_DELETE_NET_ERR.decode(eventResult).isRight()) {
+    errorHandler(ErrorsType.CONNECTION);
+  } else if (PAYMENT_ACTION_DELETE_SVR_ERR.decode(eventResult).isRight()) {
+    errorHandler(ErrorsType.SERVER);
+  } else {
+    errorHandler(ErrorsType.GENERIC_ERROR);
+  }
 };
 
 export { modalWindows };
