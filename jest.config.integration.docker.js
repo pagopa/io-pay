@@ -7,4 +7,5 @@ module.exports = {
   testRegex: '__integrations__/docker/.*integration.docker.test.*',
   testPathIgnorePatterns: ['dist', '/node_modules'],
   setupFiles: ['dotenv/config'],
+  coverageReporters: ["cobertura"]
 };
