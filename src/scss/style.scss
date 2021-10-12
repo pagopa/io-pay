@@ -294,10 +294,43 @@ body {
     display: none;
   }
 }
-
+.main-footer {
+  margin-top: 6rem;
+  font-size: 0.875rem;
+  @include media-breakpoint-up(md) {
+    margin-top: 0;
+    background-color: #f5f6f7;
+  }
+  &__list {
+    margin: 0;
+    .list-inline-item {
+      margin-right: 0;
+    }
+    a {
+      color: #475a6d;
+      padding: 1rem 0.5rem;
+      display: block;
+      text-decoration: none;
+      &:hover {
+        color: #475a6d;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+.main-footer-trick {
+  width: 100%;
+  height: 3rem;
+  padding: 3.6rem 0;
+  .footer--slim & {
+    padding: 2.4rem 0;
+  }
+  .footer--bottom & {
+    display: none;
+  }
+}
 .windowcont {
   margin-top: 3rem;
-  margin-bottom: 18vh;
 
   body.page--inputcard,
   body.page--index & {
