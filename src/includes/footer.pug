@@ -1,3 +1,18 @@
+footer.main-footer.container-fluid.px-3
+    .row.main-footer__inner 
+        .col-9 
+            ul.main-footer__list.list-inline(role="list")
+                li.list-inline-item(role="listitem") 
+                    a(href="#", title="Accessibilità", target="_blank") Accessibilità 
+                li.list-inline-item(role="listitem", aria-hidden="true") &middot;
+                li.list-inline-item(role="listitem")
+                    a(href="https://www.pagopa.gov.it/it/helpdesk/", title="Aiuto", target="_blank") Aiuto 
+        .col-3.d-flex.align-items-center
+            a.ml-auto(href="https://www.pagopa.it", title="PagoPA S.p.A.", target="_blank")
+                svg(width="60", height="17")
+                    title PagoPA S.p.A.
+                    use(href="/assets/icons/app.svg#pagopa-spa-logo")
+div.main-footer-trick(aria-hidden="true") &nbsp;
 .paymentdash(id="paymentdash")
     .paymentdash__mask &nbsp;
     .paymentdash__content
