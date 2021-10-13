@@ -88,6 +88,12 @@ stages:
             yarn test:coverage
           displayName: 'Unit tests exec'
 
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/io-pay-ui-TEST.xml' 
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+
         - task: PublishCodeCoverageResults@1
           inputs:
             codeCoverageTool: 'Cobertura'
