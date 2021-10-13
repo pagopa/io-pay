@@ -10,3 +10,4 @@ generated/
 definitions/
 distTest
 env-config.js
+test_reports/io-pay-ui-TEST.xml
