@@ -157,7 +157,7 @@ stages:
           - task: AzureCLI@1
             displayName: 'Purge CDN'
             inputs:
-              azureSubscription: '$(PRODUCTION_AZURE_SUBSCRIPTION)'
+              azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-e --profile-name pagopa-u-checkout-cdn-p --content-paths "/*"
