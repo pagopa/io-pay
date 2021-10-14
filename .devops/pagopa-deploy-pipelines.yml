@@ -26,6 +26,14 @@ pr: none
 pool:
   vmImage: 'windows-2019'
 
+resources:
+  repositories:
+    - repository: pagopaCommons
+      type: github
+      name: pagopa/azure-pipeline-templates
+      ref: refs/tags/v4
+      endpoint: 'io-azure-devops-github-ro'
+
 stages:
 
   # Create a relase
