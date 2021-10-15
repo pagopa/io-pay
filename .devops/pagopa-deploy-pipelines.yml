@@ -77,6 +77,8 @@ stages:
   - stage: Prepare_artifact
     dependsOn:
       - Release
+    pool:
+      vmImage: 'ubuntu-latest'    
     jobs:
       - job: 'make_build'
         steps:
