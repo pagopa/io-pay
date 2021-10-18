@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   creditcardformExpiration?.addEventListener('keyup', evt => {
     const inputel = evt?.target as HTMLInputElement;
-    if (inputel.value.length > 2 && inputel.value.indexOf('/') !== 2) {
+    if (inputel.value.length > 2 && inputel.value.indexOf('/') === -1) {
       // eslint-disable-next-line functional/immutable-data
       inputel.value = inputel.value.slice(0, 2) + '/' + inputel.value.slice(2);
     }

@@ -58,7 +58,7 @@ html(lang='it')
                                                         svg.icon.icon-sm
                                                             use(href="/assets/icons/sprite.svg#it-calendar")
                                                 label.sr-only(for="creditcardexpirationdate", data-lang="textField.expireDate.label") scadenza
-                                                input.form-control(type="text", placeholder="mm/aa", maxlength="5", name="creditcardexpirationdate", id="creditcardexpirationdate", required, autocomplete="cc-exp")
+                                                input.form-control(type="text", placeholder="mm/aa", maxlength="5", name="creditcardexpirationdate", id="creditcardexpirationdate", required, autocomplete="cc-exp", inputmode="numeric")
                                                 .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.expireDate.label", aria-hidden="true") scadenza
                                                 .reset-flex-flow.text-muted.mt-1.custom-label--error(id="creditcardexpirationdateError", aria-hidden="true", tabindex="-1") Inserisci mm/aa
                                         .col-6
