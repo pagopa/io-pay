@@ -70,10 +70,7 @@ export async function actionsCheck() {
                     idPayment: response.value?.data.idPayment,
                   });
                   const originInput = fromNullable(origin).getOrElse(response.value.data.urlRedirectEc);
-                  sessionStorage.setItem(
-                    'originUrlRedirect',
-                    originInput === 'payportal' ? 'https://paga.io.italia.it' : originInput,
-                  );
+                  sessionStorage.setItem('originUrlRedirect', originInput === 'payportal' ? '/' : originInput);
                 } else {
                   window.location.replace('ko.html');
                   mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
