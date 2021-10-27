@@ -37,7 +37,7 @@ export async function actionsCheck() {
 
   // Trying to avoid a new call to endpoint if we've data stored
   if (idPaymentStored === null) {
-    mixpanel.track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value, idPayment });
+    mixpanel.track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value });
     fromNullable(idPayment).fold(
       // If undefined
       await tryCatch(
@@ -67,7 +67,6 @@ export async function actionsCheck() {
                   sessionStorage.setItem('checkData', JSON.stringify(maybePayment.value));
                   mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                     EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
-                    idPayment: response.value?.data.idPayment,
                   });
                   const originInput = fromNullable(origin).getOrElse(response.value.data.urlRedirectEc);
                   sessionStorage.setItem('originUrlRedirect', originInput === 'payportal' ? '/' : originInput);

@@ -173,7 +173,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       // update Wallet
       mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
         EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
-        idPayment: checkData.idPayment,
       });
       await TE.tryCatch(
         () =>
@@ -212,7 +211,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                   wallet => {
                     mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
                       EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
-                      idPayment: fromNullable(checkData.idPayment).getOrElse(''),
                     });
                     sessionStorage.setItem('wallet', JSON.stringify(wallet));
                     window.location.replace('check.html');

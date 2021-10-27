@@ -174,7 +174,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
         EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
-        idPayment: checkData.idPayment,
       });
       // Pay
       await TE.tryCatch(
@@ -216,7 +215,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
-                    idPayment: myRes?.value?.data?.nodoIdPayment,
                   });
                   return JSON.stringify(myRes.value.data);
                 } else {
