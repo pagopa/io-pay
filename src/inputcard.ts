@@ -250,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mixpanel.track(PAYMENT_START_SESSION_INIT.value, {
         EVENT_ID: PAYMENT_START_SESSION_INIT.value,
-        idPayment: checkData.idPayment,
       });
       // 1. Start Session to Fetch session token
       const mySessionToken = await TE.tryCatch(
@@ -285,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_START_SESSION_SUCCESS.value, {
                     EVENT_ID: PAYMENT_START_SESSION_SUCCESS.value,
-                    idPayment: myRes.value.idPayment,
                   });
                 } else {
                   errorHandler(ErrorsType.GENERIC_ERROR);
@@ -309,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mixpanel.track(PAYMENT_APPROVE_TERMS_INIT.value, {
         EVENT_ID: PAYMENT_APPROVE_TERMS_INIT.value,
-        idPayment: checkData.idPayment,
       });
       // 2. Approve Terms
       await TE.tryCatch(
@@ -344,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_APPROVE_TERMS_SUCCESS.value, {
                     EVENT_ID: PAYMENT_APPROVE_TERMS_SUCCESS.value,
-                    idPayment: fromNullable(checkData.idPayment).getOrElse(''),
                   });
                 } else {
                   errorHandler(ErrorsType.GENERIC_ERROR);
@@ -364,7 +360,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mixpanel.track(PAYMENT_WALLET_INIT.value, {
         EVENT_ID: PAYMENT_WALLET_INIT.value,
-        idPayment: checkData.idPayment,
       });
       // 3. Wallet
       await TE.tryCatch(
@@ -415,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_WALLET_SUCCESS.value, {
                     EVENT_ID: PAYMENT_WALLET_SUCCESS.value,
-                    idPayment: fromNullable(checkData.idPayment).getOrElse(''),
                   });
                 } else {
                   errorHandler(ErrorsType.INVALID_CARD);

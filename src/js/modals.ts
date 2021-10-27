@@ -89,7 +89,6 @@ const paymentCancelHandler = async () => {
   // Payment action DELETE
   mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
     EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
-    idPayment: checkData.idPayment,
   });
 
   const eventResult:
@@ -116,7 +115,7 @@ const paymentCancelHandler = async () => {
     )
     .run();
 
-  mixpanel.track(eventResult, { EVENT_ID: eventResult, idPayment: checkData.idPayment });
+  mixpanel.track(eventResult, { EVENT_ID: eventResult });
 
   if (PAYMENT_ACTION_DELETE_SUCCESS.decode(eventResult).isRight()) {
     location.replace('cancelled.html');
