@@ -33,6 +33,11 @@ resources:
       name: pagopa/azure-pipeline-templates
       ref: refs/tags/v4
       endpoint: 'io-azure-devops-github-ro'
+    - repository: e2e_test
+      type: github
+      name: pagopa/pagopa-checkout-tests
+      ref: main
+      endpoint: 'io-azure-devops-github-rw'
 
 stages:
 
@@ -125,6 +130,33 @@ stages:
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
 
+  - stage: E2E_Tests
+    dependsOn:
+      - Deploy_UAT
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: e2e_tests
+        steps:
+          - checkout: e2e_test
+            displayName: 'Checkout tests'
+          - script: |
+             docker build -t e2e_test e2e-tests
+            displayName: 'Build test image'
+          - script: |
+              docker run --name=e2e_test e2e_test
+            displayName: 'Run e2e test container'
+            continueOnError: true 
+          - script: |
+              docker cp e2e_test:/puppeteer/test_reports  test_reports
+            displayName: 'Copy test result'
+            continueOnError: true 
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/*-TEST.xml' 
+              searchFolder: '$(System.DefaultWorkingDirectory)'
+              
   # PROD promotion
   - stage: UAT_TO_PROD_PROMOTION
     dependsOn:
