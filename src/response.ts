@@ -48,7 +48,7 @@ const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: s
   const outcome: OutcomeEnumType = getOutcomeFromAuthcodeAndIsDirectAcquirer(authorizationCode, isDirectAcquirer);
   mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
     EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-    idStatus, //TODO To be removed for privacy?
+    idStatus,
     outcome,
   });
   showFinalResult(outcome);

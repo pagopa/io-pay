@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .fold(
         r => {
           errorHandler(ErrorsType.SERVER);
-          mixpanel.track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value  });
+          mixpanel.track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value });
         },
         myResExt =>
           myResExt
