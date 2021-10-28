@@ -59,7 +59,7 @@ export function start3DS2MethodStep(threeDSMethodUrl, threeDSMethodData, myIFram
 export function start3DS2AcsChallengeStep(acsUrl, params, container) {
   mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_REQ.value, {
     EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_REQ.value,
-    acsUrl, 
+    acsUrl,
   });
   const form = createForm('acsChallengeForm', acsUrl, '_self', params);
   container.appendChild(form);
