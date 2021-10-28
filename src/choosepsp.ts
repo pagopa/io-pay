@@ -70,14 +70,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       }),
     e => {
       errorHandler(ErrorsType.CONNECTION);
-      mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value, e });
+      mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value });
       return toError;
     },
   )
     .fold(
       r => {
         errorHandler(ErrorsType.SERVER);
-        mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value, r });
+        mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value });
         return undefined;
       },
       myResExt =>
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         e => {
           errorHandler(ErrorsType.GENERIC_ERROR);
           buttonEnabler(documentSubmit as HTMLButtonElement);
-          mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value });
           return toError;
         },
       )
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           r => {
             errorHandler(ErrorsType.GENERIC_ERROR);
             buttonEnabler(documentSubmit as HTMLButtonElement);
-            mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value });
           },
           myResExt =>
             myResExt.fold(

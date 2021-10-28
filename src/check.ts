@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (checkoutFormSubmit) {
             buttonEnabler(checkoutFormSubmit as HTMLButtonElement);
           }
-          mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value });
           return toError;
         },
       )
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (checkoutFormSubmit) {
               buttonEnabler(checkoutFormSubmit as HTMLButtonElement);
             }
-            mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value });
           }, // to be replaced with logic to handle failures
           myResExt => {
             const paymentResp = myResExt.fold(

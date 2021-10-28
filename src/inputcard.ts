@@ -164,14 +164,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }),
       e => {
         errorHandler(ErrorsType.CONNECTION);
-        mixpanel.track(PAYMENT_RESOURCES_NET_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_NET_ERR.value, e });
+        mixpanel.track(PAYMENT_RESOURCES_NET_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_NET_ERR.value });
         return toError;
       },
     )
       .fold(
         r => {
           errorHandler(ErrorsType.SERVER);
-          mixpanel.track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value, r });
+          mixpanel.track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value  });
         },
         myResExt =>
           myResExt
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }),
         e => {
           errorHandler(ErrorsType.CONNECTION);
-          mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value });
           if (creditcardformSubmit) {
             buttonEnabler(creditcardformSubmit as HTMLButtonElement);
           }
@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_START_SESSION_SVR_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_START_SESSION_SVR_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value });
           }, // to be replaced with logic to handle failures
           myResExt => {
             const sessionToken = myResExt.fold(
@@ -325,14 +325,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (creditcardformSubmit) {
             buttonEnabler(creditcardformSubmit as HTMLButtonElement);
           }
-          mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value });
           return toError;
         },
       )
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value });
           }, // to be replaced with logic to handle failures
           myResExt => {
             myResExt.fold(
@@ -386,14 +386,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (creditcardformSubmit) {
             buttonEnabler(creditcardformSubmit as HTMLButtonElement);
           }
-          mixpanel.track(PAYMENT_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_WALLET_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_WALLET_NET_ERR.value });
           return toError;
         },
       )
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_WALLET_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_WALLET_SVR_ERR.value });
           }, // to be replaced with logic to handle failures
           myResExt => {
             const walletResp = myResExt.fold(
