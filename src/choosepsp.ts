@@ -70,14 +70,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       }),
     e => {
       errorHandler(ErrorsType.CONNECTION);
-      mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value, e });
+      mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value });
       return toError;
     },
   )
     .fold(
       r => {
         errorHandler(ErrorsType.SERVER);
-        mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value, r });
+        mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, { EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value });
         return undefined;
       },
       myResExt =>
@@ -173,7 +173,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       // update Wallet
       mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
         EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
-        idPayment: checkData.idPayment,
       });
       await TE.tryCatch(
         () =>
@@ -190,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         e => {
           errorHandler(ErrorsType.GENERIC_ERROR);
           buttonEnabler(documentSubmit as HTMLButtonElement);
-          mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value });
           return toError;
         },
       )
@@ -198,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           r => {
             errorHandler(ErrorsType.GENERIC_ERROR);
             buttonEnabler(documentSubmit as HTMLButtonElement);
-            mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value });
           },
           myResExt =>
             myResExt.fold(
@@ -212,7 +211,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                   wallet => {
                     mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
                       EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
-                      idPayment: fromNullable(checkData.idPayment).getOrElse(''),
                     });
                     sessionStorage.setItem('wallet', JSON.stringify(wallet));
                     window.location.replace('check.html');

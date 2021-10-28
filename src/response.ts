@@ -303,14 +303,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 _ => {
                   mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
                     EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
-                    token: idTransaction,
                   });
                   handleFinalStatusResult(UNKNOWN.value);
                 },
                 transactionStatusResponse => {
                   mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                     EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-                    idTransaction,
                   });
                   handleFinalStatusResult(
                     transactionStatusResponse.data.idStatus,
@@ -339,14 +337,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 _ => {
                   mixpanel.track(THREEDS_CHECK_XPAY_RESP_ERR.value, {
                     EVENT_ID: THREEDS_CHECK_XPAY_RESP_ERR.value,
-                    idTransaction,
                   });
                   handleFinalStatusResult(UNKNOWN.value);
                 },
                 transactionStatusResponse => {
                   mixpanel.track(THREEDS_CHECK_XPAY_RESP_SUCCESS.value, {
                     EVENT_ID: THREEDS_CHECK_XPAY_RESP_SUCCESS.value,
-                    idTransaction,
                   });
                   handleFinalStatusResult(
                     transactionStatusResponse.data.idStatus,

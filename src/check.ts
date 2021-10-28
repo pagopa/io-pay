@@ -174,7 +174,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
         EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
-        idPayment: checkData.idPayment,
       });
       // Pay
       await TE.tryCatch(
@@ -197,7 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (checkoutFormSubmit) {
             buttonEnabler(checkoutFormSubmit as HTMLButtonElement);
           }
-          mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value });
           return toError;
         },
       )
@@ -207,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (checkoutFormSubmit) {
               buttonEnabler(checkoutFormSubmit as HTMLButtonElement);
             }
-            mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, { EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value });
           }, // to be replaced with logic to handle failures
           myResExt => {
             const paymentResp = myResExt.fold(
@@ -216,7 +215,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
                     EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
-                    idPayment: myRes?.value?.data?.nodoIdPayment,
                   });
                   return JSON.stringify(myRes.value.data);
                 } else {
