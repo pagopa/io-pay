@@ -115,7 +115,7 @@ stages:
           - checkout: none
 
           - download: current
-            artifact: Bundle
+            artifact: BundleUAT
 
           - task: AzureCLI@1
             displayName: 'Sync checkout storage'
@@ -210,7 +210,7 @@ stages:
           - checkout: none
 
           - download: current
-            artifact: Bundle
+            artifact: BundlePROD
 
           - task: AzureCLI@1
             displayName: 'Sync checkout storage'
@@ -218,7 +218,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" -d p
+                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\BundlePROD" -d p
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint'
