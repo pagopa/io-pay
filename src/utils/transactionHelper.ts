@@ -100,7 +100,7 @@ export const resumeTransactionTask = (
 ): TaskEither<UNKNOWN, number> => {
   mixpanel.track(TRANSACTION_RESUME3DS2_INIT.value, {
     EVENT_ID: TRANSACTION_RESUME3DS2_INIT.value,
-    methodCompleted, //TODO: To be removed for privacy?
+    methodCompleted,
   });
   return tryCatch(
     () =>

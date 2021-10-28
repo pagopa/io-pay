@@ -48,14 +48,14 @@ export async function actionsCheck() {
         // Error on call
         e => {
           errorHandler(ErrorsType.CONNECTION);
-          mixpanel.track(PAYMENT_CHECK_NET_ERR.value, { EVENT_ID: PAYMENT_CHECK_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_CHECK_NET_ERR.value, { EVENT_ID: PAYMENT_CHECK_NET_ERR.value });
           return toError;
         },
       )
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, { EVENT_ID: PAYMENT_CHECK_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, { EVENT_ID: PAYMENT_CHECK_SVR_ERR.value });
           },
           myResExt => {
             myResExt.fold(
