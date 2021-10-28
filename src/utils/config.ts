@@ -13,6 +13,7 @@ export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.interface({
   IO_PAY_PAYMENT_MANAGER_HOST: NonEmptyString,
   IO_PAY_FUNCTIONS_HOST: NonEmptyString,
+  IO_PAY_ENV: NonEmptyString,
 });
 
 // No need to re-evaluate this object for each call

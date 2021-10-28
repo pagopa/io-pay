@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import { init, track } from 'mixpanel-browser';
+import { getConfigOrThrow } from './config';
 export const PAYMENT_CHECK_INIT = t.literal('PAYMENT_CHECK_INIT');
 export type PAYMENT_CHECK_INIT = t.TypeOf<typeof PAYMENT_CHECK_INIT>;
 export const PAYMENT_CHECK_NET_ERR = t.literal('PAYMENT_CHECK_NET_ERR');
@@ -153,8 +154,10 @@ export type PAYMENT_ACTION_DELETE_RESP_ERR = t.TypeOf<typeof PAYMENT_ACTION_DELE
 export const PAYMENT_ACTION_DELETE_SUCCESS = t.literal('PAYMENT_ACTION_DELETE_SUCCESS');
 export type PAYMENT_ACTION_DELETE_SUCCESS = t.TypeOf<typeof PAYMENT_ACTION_DELETE_SUCCESS>;
 
+const ENV = getConfigOrThrow().IO_PAY_ENV;
+
 // ini MIX TODO: enable on deploy
-if (process.env.IO_PAY_ENV === 'develop') {
+if (ENV === 'develop') {
   // eslint-disable-next-line no-console
   console.log(`Mixpanel events mock on console log. See IO_PAY_ENV=${process.env.IO_PAY_ENV}`);
 } else {
@@ -167,7 +170,7 @@ if (process.env.IO_PAY_ENV === 'develop') {
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (process.env.IO_PAY_ENV === 'develop') {
+    if (ENV === 'develop') {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {
