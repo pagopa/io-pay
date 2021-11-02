@@ -451,12 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fieldsCheck();
   });
-  creditcardformName?.addEventListener(
-    'focusout',
-    async (evt): Promise<void> => {
-      checkValidityWhenLeave(evt?.target as HTMLInputElement);
-    },
-  );
+  creditcardformName?.addEventListener('focusout', async (evt): Promise<void> => {
+    checkValidityWhenLeave(evt?.target as HTMLInputElement);
+  });
 
   // Creditcard specific
   creditcardformNumber?.addEventListener('focus', evt => {
@@ -505,12 +502,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fieldsCheck();
   });
-  creditcardformNumber?.addEventListener(
-    'focusout',
-    async (evt): Promise<void> => {
-      checkValidityWhenLeave(evt?.target as HTMLInputElement);
-    },
-  );
+  creditcardformNumber?.addEventListener('focusout', async (evt): Promise<void> => {
+    checkValidityWhenLeave(evt?.target as HTMLInputElement);
+  });
 
   creditcardformExpiration?.addEventListener('focus', evt => {
     const el = evt.target;
@@ -533,12 +527,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fieldsCheck();
   });
-  creditcardformExpiration?.addEventListener(
-    'focusout',
-    async (evt): Promise<void> => {
-      checkValidityWhenLeave(evt?.target as HTMLInputElement);
-    },
-  );
+  creditcardformExpiration?.addEventListener('focusout', async (evt): Promise<void> => {
+    checkValidityWhenLeave(evt?.target as HTMLInputElement);
+  });
 
   creditcardformSecurecode?.addEventListener('focus', evt => {
     const el = evt.target;
@@ -548,10 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkCvvSize();
     fieldsCheck();
   });
-  creditcardformSecurecode?.addEventListener(
-    'focusout',
-    async (evt): Promise<void> => {
-      checkValidityWhenLeave(evt?.target as HTMLInputElement);
-    },
-  );
+  creditcardformSecurecode?.addEventListener('focusout', async (evt): Promise<void> => {
+    checkValidityWhenLeave(evt?.target as HTMLInputElement);
+  });
 });

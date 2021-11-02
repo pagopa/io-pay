@@ -39,20 +39,17 @@ const errors: ErrorType = {
   [ErrorsType.AUTH_ERROR]: {
     img: require('/assets/icons/response-ko.svg'),
     title: 'Autorizzazione negata',
-    desc:
-      "La tua banca non ha autorizzato l'operazione. Controlla di aver inserito correttamente i vari codici richiesti dalla tua banca",
+    desc: "La tua banca non ha autorizzato l'operazione. Controlla di aver inserito correttamente i vari codici richiesti dalla tua banca",
   },
   [ErrorsType.INVALID_DATA]: {
     img: require('/assets/icons/response-question.svg'),
     title: 'I dati della carta non risultano corretti',
-    desc:
-      "Controlla di aver inserito correttamente i dati della tua carta. L'intestatario deve coincidere esattamente con quanto riportato sulla carta.",
+    desc: "Controlla di aver inserito correttamente i dati della tua carta. L'intestatario deve coincidere esattamente con quanto riportato sulla carta.",
   },
   [ErrorsType.TIMEOUT]: {
     img: require('/assets/icons/response-timeout.svg'),
     title: 'Spiacenti, la sessione è scaduta',
-    desc:
-      "Non è stato addebitato alcun importo. Per la tua sicurezza, hai a disposizione 5 minuti per completare l'operazione.",
+    desc: "Non è stato addebitato alcun importo. Per la tua sicurezza, hai a disposizione 5 minuti per completare l'operazione.",
   },
   [ErrorsType.INVALID_CARD]: {
     img: require('/assets/icons/response-unrecognized.svg'),
