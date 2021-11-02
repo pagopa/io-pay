@@ -2,6 +2,14 @@ import * as myFake from 'faker/locale/it';
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import nodeFetch from 'node-fetch';
 import { left, right } from 'fp-ts/lib/Either';
+
+// eslint-disable-next-line functional/immutable-data, no-underscore-dangle
+(global as any).window._env_ = {
+  IO_PAY_PAYMENT_MANAGER_HOST: 'http://localhost:8080',
+  IO_PAY_FUNCTIONS_HOST: 'http://localhost:7071',
+  IO_PAY_ENV: 'develop',
+} as any;
+
 import {
   checkStatusTask,
   nextTransactionStep,
