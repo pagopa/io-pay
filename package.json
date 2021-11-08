@@ -97,7 +97,10 @@
     "mixpanel-browser": "^2.41.0"
   },
   "resolutions": {
-    "fp-ts": "1.17.4"
+    "fp-ts": "1.17.4",
+    "set-value": "^4.0.1",
+    "underscore": "^1.12.1",
+    "glob-parent": "^5.1.2"
   },
   "browserslist": [
     "> 1%"

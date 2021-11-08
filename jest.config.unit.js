@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   testRegex: '__test__.*test.*',
   testPathIgnorePatterns: ['dist', '/node_modules'],
   setupFiles: ['dotenv/config'],
