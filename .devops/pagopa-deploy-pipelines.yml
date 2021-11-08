@@ -1,7 +1,7 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
 
 variables:
-  NODE_VERSION: '12.19.1'
+  NODE_VERSION: '14.17.5'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 parameters:
@@ -99,6 +99,7 @@ stages:
 
           - template: azure-templates/make-build.yml
             parameters:
+              functions_host: 'https://api.uat.platform.pagopa.it'
               api_host: 'https://acardste.vaservices.eu'
               env: 'UAT'
 
@@ -194,6 +195,7 @@ stages:
 
           - template: azure-templates/make-build.yml
             parameters:
+              functions_host: 'https://api.platform.pagopa.it'
               api_host: 'https://checkout.pagopa.it'
               env: 'PROD'
 
