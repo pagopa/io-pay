@@ -8,7 +8,7 @@ info:
   description: >
     Documentation of the IO Pay Portal Function API here.
 host: localhost
-basePath: "/api/payportal/v1"
+basePath: "/api/checkout/payments/v1"
 schemes:
   - https
 paths:
