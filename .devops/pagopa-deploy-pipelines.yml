@@ -99,6 +99,7 @@ stages:
 
           - template: azure-templates/make-build.yml
             parameters:
+              functions_host: 'https://api.uat.platform.pagopa.it'
               api_host: 'https://acardste.vaservices.eu'
               env: 'UAT'
 
@@ -194,6 +195,7 @@ stages:
 
           - template: azure-templates/make-build.yml
             parameters:
+              functions_host: 'https://api.platform.pagopa.it'
               api_host: 'https://checkout.pagopa.it'
               env: 'PROD'
 

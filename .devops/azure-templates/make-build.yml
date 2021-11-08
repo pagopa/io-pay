@@ -4,6 +4,10 @@ parameters:
     type: string
     default: ''
 
+  - name: 'functions_host'
+    type: string
+    default: ''
+
   - name: 'env'
     type: string
     default: ''
@@ -20,6 +24,6 @@ steps:
       yarn build
     env:
       IO_PAY_PAYMENT_MANAGER_HOST: ${{ parameters.api_host }}
-      IO_PAY_FUNCTIONS_HOST: $(IO_PAY_FUNCTIONS_HOST)
+      IO_PAY_FUNCTIONS_HOST: ${{ parameters.functions_host }}
       IO_PAY_ENV: ${{ parameters.env }}
     displayName: 'Build files'
