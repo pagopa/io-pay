@@ -37,7 +37,7 @@ export async function actionsCheck() {
 
   // Trying to avoid a new call to endpoint if we've data stored
   if (idPaymentStored === null) {
-    mixpanel.track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value, idPayment });
+    mixpanel.track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value });
     fromNullable(idPayment).fold(
       // If undefined
       await tryCatch(
@@ -48,14 +48,14 @@ export async function actionsCheck() {
         // Error on call
         e => {
           errorHandler(ErrorsType.CONNECTION);
-          mixpanel.track(PAYMENT_CHECK_NET_ERR.value, { EVENT_ID: PAYMENT_CHECK_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_CHECK_NET_ERR.value, { EVENT_ID: PAYMENT_CHECK_NET_ERR.value });
           return toError;
         },
       )
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, { EVENT_ID: PAYMENT_CHECK_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, { EVENT_ID: PAYMENT_CHECK_SVR_ERR.value });
           },
           myResExt => {
             myResExt.fold(
@@ -67,13 +67,9 @@ export async function actionsCheck() {
                   sessionStorage.setItem('checkData', JSON.stringify(maybePayment.value));
                   mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                     EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
-                    idPayment: response.value?.data.idPayment,
                   });
                   const originInput = fromNullable(origin).getOrElse(response.value.data.urlRedirectEc);
-                  sessionStorage.setItem(
-                    'originUrlRedirect',
-                    originInput === 'payportal' ? 'https://paga.io.italia.it' : originInput,
-                  );
+                  sessionStorage.setItem('originUrlRedirect', originInput === 'payportal' ? '/' : originInput);
                 } else {
                   window.location.replace('ko.html');
                   mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {

@@ -1,9 +1,9 @@
 .errorhandler(id="errorHandler")
     .errorhandler__wrapper.d-flex.flex-column.align-items-center.justify-content-center
-        .errorhandler__icon.my-4.col-md-3.text-center
-            img(src="", title="Error icon")
-        .errorhandler__body.col-md-3.my-4
+        .errorhandler__icon.my-4.col-md-3.text-center(aria-hidden="true")
+            img(src="", title="Error icon", alt="Icona di errore")
+        .errorhandler__body.col-md-3.my-4(tab-index="1")
             .errorhandler__title.h3.text-center 
             .errorhandler__desc.my-3.text-center 
-        .errorhandler__footer.col-md-3.text-center
-            a(href="#", title="Chiudi").errorhandler__button.btn.btn-outline-primary.btn-sm.d-block Chiudi
+        .errorhandler__footer.col-md-3.text-center(tab-index="2")
+            a(href="#", title="Icona per chiudere").errorhandler__button.btn.btn-outline-primary.btn-sm.d-block Chiudi

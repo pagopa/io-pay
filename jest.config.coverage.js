@@ -4,7 +4,7 @@ const puppeteerPreset = require('jest-puppeteer/jest-preset');
 module.exports = {
   ...typescriptPreset,
   ...puppeteerPreset,
-  testRegex: '__integrations__.*integration.test.*',
+  testRegex: '__integrations__.*integration.test.*|__test__.*test.*',
   testPathIgnorePatterns: ['dist', '/node_modules'],
   setupFiles: ['dotenv/config'],
   reporters: [
@@ -14,4 +14,5 @@ module.exports = {
       outputName: 'io-pay-ui-TEST.xml',
     } ]
   ],
+  coverageReporters: ["cobertura"],
 };

@@ -1,7 +1,8 @@
 .windowcont__cards.mt-3
-    ul.windowcont__cards__list
+    ul(role="list").windowcont__cards__list
         each obj, index in cards
             li.windowcont__cards__item
+                .sr-only= obj.title
                 svg.card
                     title= "Carta " + obj.title
                     use(href="/assets/icons/app.svg#icons-" + obj.name)

@@ -57,6 +57,7 @@ const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: s
 const showFinalResult = (outcome: OutcomeEnumType) => {
   const viewOutcome: string = ViewOutcomeEnumType.decode(outcome).getOrElse(ViewOutcomeEnum.GENERIC_ERROR).toString();
   document.body.classList.remove('loadingOperations');
+  document.querySelector('.windowcont__response')?.setAttribute('tabindex', '1');
   document
     .querySelectorAll('[data-response]')
     .forEach(i => (i.getAttribute('data-response') === viewOutcome ? null : i.remove()));
@@ -302,14 +303,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 _ => {
                   mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
                     EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
-                    token: idTransaction,
                   });
                   handleFinalStatusResult(UNKNOWN.value);
                 },
                 transactionStatusResponse => {
                   mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                     EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-                    idTransaction,
                   });
                   handleFinalStatusResult(
                     transactionStatusResponse.data.idStatus,
@@ -338,14 +337,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 _ => {
                   mixpanel.track(THREEDS_CHECK_XPAY_RESP_ERR.value, {
                     EVENT_ID: THREEDS_CHECK_XPAY_RESP_ERR.value,
-                    idTransaction,
                   });
                   handleFinalStatusResult(UNKNOWN.value);
                 },
                 transactionStatusResponse => {
                   mixpanel.track(THREEDS_CHECK_XPAY_RESP_SUCCESS.value, {
                     EVENT_ID: THREEDS_CHECK_XPAY_RESP_SUCCESS.value,
-                    idTransaction,
                   });
                   handleFinalStatusResult(
                     transactionStatusResponse.data.idStatus,

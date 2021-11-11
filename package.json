@@ -1,6 +1,6 @@
 {
   "name": "io-pay",
-  "version": "2.4.20",
+  "version": "2.4.34",
   "main": "index.js",
   "license": "MIT",
   "pagopa_api": "openapi/api.yml",
@@ -23,6 +23,7 @@
     "test:uat-prod-int": "jest -c jest.config.integration.uat-prod.js --detectOpenHandles",
     "test": "yarn test:unit && yarn test:integration && yarn test:uat-prod-int",
     "test:coverage": "yarn test:coverage-unit && yarn test:coverage-int",
+    "test:all-coverage": "yarn build && yarn build:test-cases && jest -c jest.config.coverage.js --detectOpenHandles --coverage",
     "build": "parcel build src/*.pug src/privacypolicy/*.html --no-minify --public-url ./",
     "build:test-cases": "parcel build src/__integrations__/testCases/* --out-dir distTest",
     "build:index": "parcel build src/index.ts ",
@@ -40,11 +41,11 @@
     "@types/faker": "^5.1.5",
     "@types/http-terminator": "^2.0.1",
     "@types/jest": "^26.0.19",
+    "@types/mixpanel-browser": "^2.35.6",
     "@types/node-fetch": "^2.5.7",
     "@types/parcel-bundler": "^1.12.3",
     "@types/puppeteer": "^5.4.2",
     "@types/tingle.js": "^0.13.1",
-    "@types/mixpanel-browser": "^2.35.6",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "abort-controller": "^3.0.0",
@@ -71,6 +72,7 @@
     "italia-ts-commons": "8.5.0",
     "italia-utils": "^6.2.0",
     "jest": "^26.6",
+    "jest-junit": "^13.0.0",
     "jest-puppeteer": "^4.4.0",
     "mock-http-server": "^1.4.2",
     "node-fetch": "^2.6.1",
@@ -95,7 +97,10 @@
     "mixpanel-browser": "^2.41.0"
   },
   "resolutions": {
-    "fp-ts": "1.17.4"
+    "fp-ts": "1.17.4",
+    "set-value": "^4.0.1",
+    "underscore": "^1.12.1",
+    "glob-parent": "^5.1.2"
   },
   "browserslist": [
     "> 1%"

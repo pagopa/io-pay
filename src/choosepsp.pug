@@ -18,10 +18,10 @@ html(lang='it')
                                     .h3 Seleziona un gestore
                                     p Ogni gestore propone un suo costo di transazione. In questa lista trovi tutti i gestori 
                                         strong.font-weight-bold compatibili con la tua carta, anche se non sei loro cliente.
-                                .windowcont__psp__list.my-5
-                                    a.windowcont__psp__item(href="#", data-template="pspitem")
+                                .windowcont__psp__list.my-5(role="list", aria-label="Seleziona un gestore e premi continua")
+                                    a.windowcont__psp__item(href="#", data-template="pspitem", role="listitem")
                                         .d-flex.mb-2
-                                            img.windowcont__psp__logo(src="") 
+                                            img.windowcont__psp__logo(src="", aria-hidden="true", alt="Logo gestore") 
                                             .ml-auto.windowcont__psp__tag
                                         .d-flex
                                             .windowcont__psp__label

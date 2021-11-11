@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const privacyToggler = document.getElementById('privacyToggler') || null;
-  const privacyTogglerInput = document.getElementById('privacyTogglerInput') || null;
+  const privacyTogglerInput = (document.getElementById('privacyTogglerInput') as HTMLInputElement) || null;
   const obscureToggler = document.querySelectorAll('.obscureToggler') || null;
   const creditcardform = document.getElementById('creditcardform') || null;
   const creditcardformName = document.getElementById('creditcardname') || null;
@@ -127,6 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // function to check errors when user leave input
+  function checkValidityWhenLeave(inputel: HTMLInputElement): void {
+    const inputElId = inputel.id;
+    if (inputel.classList.contains('is-invalid')) {
+      const descEl = document.getElementById(inputElId + 'Error');
+      inputel.setAttribute('aria-invalid', 'true');
+      descEl?.setAttribute('aria-hidden', 'false');
+      descEl?.focus();
+    } else {
+      inputel.setAttribute('aria-invalid', 'false');
+    }
+  }
+
   // idpayguard
   idpayguard();
 
@@ -151,14 +164,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }),
       e => {
         errorHandler(ErrorsType.CONNECTION);
-        mixpanel.track(PAYMENT_RESOURCES_NET_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_NET_ERR.value, e });
+        mixpanel.track(PAYMENT_RESOURCES_NET_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_NET_ERR.value });
         return toError;
       },
     )
       .fold(
         r => {
           errorHandler(ErrorsType.SERVER);
-          mixpanel.track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value, r });
+          mixpanel.track(PAYMENT_RESOURCES_SVR_ERR.value, { EVENT_ID: PAYMENT_RESOURCES_SVR_ERR.value });
         },
         myResExt =>
           myResExt
@@ -180,18 +193,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   void setTermOfService();
 
+  privacyTogglerInput?.addEventListener('change', async function (evt) {
+    const checkEl = evt.target as HTMLInputElement;
+    if (checkEl.checked) {
+      checkEl.setAttribute('data-checked', '1');
+    } else {
+      checkEl.removeAttribute('data-checked');
+    }
+  });
+
   privacyToggler?.addEventListener('click', function () {
     if (privacyTogglerInput == null) {
       return;
     }
-
-    if (privacyTogglerInput.hasAttribute('checked') === true) {
-      privacyTogglerInput.removeAttribute('checked');
+    const privacyTogglerInputStatus = document.querySelector(privacyTogglerInput.id + ':checked') || undefined;
+    if (privacyTogglerInputStatus !== undefined) {
       privacyTogglerInput.removeAttribute('data-checked');
     } else {
-      privacyTogglerInput.setAttribute('checked', '1'); // TODO: should be bool
       privacyTogglerInput.setAttribute('data-checked', '1');
     }
+
     fieldsCheck();
   });
 
@@ -229,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mixpanel.track(PAYMENT_START_SESSION_INIT.value, {
         EVENT_ID: PAYMENT_START_SESSION_INIT.value,
-        idPayment: checkData.idPayment,
       });
       // 1. Start Session to Fetch session token
       const mySessionToken = await TE.tryCatch(
@@ -245,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }),
         e => {
           errorHandler(ErrorsType.CONNECTION);
-          mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value });
           if (creditcardformSubmit) {
             buttonEnabler(creditcardformSubmit as HTMLButtonElement);
           }
@@ -255,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_START_SESSION_SVR_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_START_SESSION_SVR_ERR.value, { EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value });
           }, // to be replaced with logic to handle failures
           myResExt => {
             const sessionToken = myResExt.fold(
@@ -264,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_START_SESSION_SUCCESS.value, {
                     EVENT_ID: PAYMENT_START_SESSION_SUCCESS.value,
-                    idPayment: myRes.value.idPayment,
                   });
                 } else {
                   errorHandler(ErrorsType.GENERIC_ERROR);
@@ -288,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mixpanel.track(PAYMENT_APPROVE_TERMS_INIT.value, {
         EVENT_ID: PAYMENT_APPROVE_TERMS_INIT.value,
-        idPayment: checkData.idPayment,
       });
       // 2. Approve Terms
       await TE.tryCatch(
@@ -307,14 +325,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (creditcardformSubmit) {
             buttonEnabler(creditcardformSubmit as HTMLButtonElement);
           }
-          mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value });
           return toError;
         },
       )
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, { EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value });
           }, // to be replaced with logic to handle failures
           myResExt => {
             myResExt.fold(
@@ -323,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_APPROVE_TERMS_SUCCESS.value, {
                     EVENT_ID: PAYMENT_APPROVE_TERMS_SUCCESS.value,
-                    idPayment: fromNullable(checkData.idPayment).getOrElse(''),
                   });
                 } else {
                   errorHandler(ErrorsType.GENERIC_ERROR);
@@ -343,7 +360,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mixpanel.track(PAYMENT_WALLET_INIT.value, {
         EVENT_ID: PAYMENT_WALLET_INIT.value,
-        idPayment: checkData.idPayment,
       });
       // 3. Wallet
       await TE.tryCatch(
@@ -370,14 +386,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (creditcardformSubmit) {
             buttonEnabler(creditcardformSubmit as HTMLButtonElement);
           }
-          mixpanel.track(PAYMENT_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_WALLET_NET_ERR.value, e });
+          mixpanel.track(PAYMENT_WALLET_NET_ERR.value, { EVENT_ID: PAYMENT_WALLET_NET_ERR.value });
           return toError;
         },
       )
         .fold(
           r => {
             errorHandler(ErrorsType.SERVER);
-            mixpanel.track(PAYMENT_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_WALLET_SVR_ERR.value, r });
+            mixpanel.track(PAYMENT_WALLET_SVR_ERR.value, { EVENT_ID: PAYMENT_WALLET_SVR_ERR.value });
           }, // to be replaced with logic to handle failures
           myResExt => {
             const walletResp = myResExt.fold(
@@ -394,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (myRes.status === 200) {
                   mixpanel.track(PAYMENT_WALLET_SUCCESS.value, {
                     EVENT_ID: PAYMENT_WALLET_SUCCESS.value,
-                    idPayment: fromNullable(checkData.idPayment).getOrElse(''),
                   });
                 } else {
                   errorHandler(ErrorsType.INVALID_CARD);
@@ -436,6 +451,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fieldsCheck();
   });
+  creditcardformName?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 
   // Creditcard specific
   creditcardformNumber?.addEventListener('focus', evt => {
@@ -453,8 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (element as HTMLElement).classList.remove('d-block');
       });
     }
-
-    if (creditCardValidation.isValid === true || creditCardValidation.isPotentiallyValid === true) {
+    if (creditCardValidation.isPotentiallyValid === true && inputel.value.replace(/\s/g, '').length > 12) {
       toggleValid(inputel, true);
       if (creditCardValidation.card) {
         holder = creditCardValidation.card.type.toLowerCase() || '';
@@ -485,6 +505,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fieldsCheck();
   });
+  creditcardformNumber?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 
   creditcardformExpiration?.addEventListener('focus', evt => {
     const el = evt.target;
@@ -492,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   creditcardformExpiration?.addEventListener('keyup', evt => {
     const inputel = evt?.target as HTMLInputElement;
-    if (inputel.value.length > 2 && inputel.value.indexOf('/') !== 2) {
+    if (inputel.value.length > 2 && inputel.value.indexOf('/') === -1) {
       // eslint-disable-next-line functional/immutable-data
       inputel.value = inputel.value.slice(0, 2) + '/' + inputel.value.slice(2);
     }
@@ -507,6 +533,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fieldsCheck();
   });
+  creditcardformExpiration?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
+
   creditcardformSecurecode?.addEventListener('focus', evt => {
     const el = evt.target;
     (el as HTMLInputElement).removeAttribute('readonly');
@@ -515,4 +548,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkCvvSize();
     fieldsCheck();
   });
+  creditcardformSecurecode?.addEventListener(
+    'focusout',
+    async (evt): Promise<void> => {
+      checkValidityWhenLeave(evt?.target as HTMLInputElement);
+    },
+  );
 });

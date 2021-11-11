@@ -1,5 +1,6 @@
 import * as t from 'io-ts';
 import { init, track } from 'mixpanel-browser';
+import { getConfigOrThrow } from './config';
 export const PAYMENT_CHECK_INIT = t.literal('PAYMENT_CHECK_INIT');
 export type PAYMENT_CHECK_INIT = t.TypeOf<typeof PAYMENT_CHECK_INIT>;
 export const PAYMENT_CHECK_NET_ERR = t.literal('PAYMENT_CHECK_NET_ERR');
@@ -142,21 +143,34 @@ export type THREEDS_CHECK_XPAY_RESP_SUCCESS = t.TypeOf<typeof THREEDS_CHECK_XPAY
 export const PAYMENT_OUTCOME_CODE = t.literal('PAYMENT_OUTCOME_CODE');
 export type PAYMENT_OUTCOME_CODE = t.TypeOf<typeof PAYMENT_OUTCOME_CODE>;
 
+export const PAYMENT_ACTION_DELETE_INIT = t.literal('PAYMENT_ACTION_DELETE_INIT');
+export type PAYMENT_ACTION_DELETE_INIT = t.TypeOf<typeof PAYMENT_ACTION_DELETE_INIT>;
+export const PAYMENT_ACTION_DELETE_NET_ERR = t.literal('PAYMENT_ACTION_DELETE_NET_ERR');
+export type PAYMENT_ACTION_DELETE_NET_ERR = t.TypeOf<typeof PAYMENT_ACTION_DELETE_NET_ERR>;
+export const PAYMENT_ACTION_DELETE_SVR_ERR = t.literal('PAYMENT_ACTION_DELETE_SVR_ERR');
+export type PAYMENT_ACTION_DELETE_SVR_ERR = t.TypeOf<typeof PAYMENT_ACTION_DELETE_SVR_ERR>;
+export const PAYMENT_ACTION_DELETE_RESP_ERR = t.literal('PAYMENT_ACTION_DELETE_RESP_ERR');
+export type PAYMENT_ACTION_DELETE_RESP_ERR = t.TypeOf<typeof PAYMENT_ACTION_DELETE_RESP_ERR>;
+export const PAYMENT_ACTION_DELETE_SUCCESS = t.literal('PAYMENT_ACTION_DELETE_SUCCESS');
+export type PAYMENT_ACTION_DELETE_SUCCESS = t.TypeOf<typeof PAYMENT_ACTION_DELETE_SUCCESS>;
+
+const ENV = getConfigOrThrow().IO_PAY_ENV;
+
 // ini MIX TODO: enable on deploy
-if (process.env.IO_PAY_ENV === 'develop') {
+if (ENV === 'develop') {
   // eslint-disable-next-line no-console
   console.log(`Mixpanel events mock on console log. See IO_PAY_ENV=${process.env.IO_PAY_ENV}`);
 } else {
   init('c3db8f517102d7a7ebd670c9da3e05c4', {
     api_host: 'https://api-eu.mixpanel.com',
-    cross_site_cookie: true,
+    ip: false,
     persistence: 'localStorage',
   });
 }
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (process.env.IO_PAY_ENV === 'develop') {
+    if (ENV === 'develop') {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {

@@ -51,7 +51,6 @@ export const resumeXpayTransactionTask = (
 ): TaskEither<UNKNOWN, number> => {
   mixpanel.track(TRANSACTION_RESUMEXPAY_INIT.value, {
     EVENT_ID: TRANSACTION_RESUMEXPAY_INIT.value,
-    token: idTransaction,
   });
   return tryCatch(
     () =>
@@ -81,7 +80,6 @@ export const resumeXpayTransactionTask = (
           if (responseType.status === 200) {
             mixpanel.track(TRANSACTION_RESUMEXPAY_SUCCESS.value, {
               EVENT_ID: TRANSACTION_RESUMEXPAY_SUCCESS.value,
-              idTransaction,
             });
           } else {
             mixpanel.track(TRANSACTION_RESUMEXPAY_RESP_ERR.value, {
@@ -102,7 +100,6 @@ export const resumeTransactionTask = (
 ): TaskEither<UNKNOWN, number> => {
   mixpanel.track(TRANSACTION_RESUME3DS2_INIT.value, {
     EVENT_ID: TRANSACTION_RESUME3DS2_INIT.value,
-    token: idTransaction,
     methodCompleted,
   });
   return tryCatch(
@@ -135,7 +132,6 @@ export const resumeTransactionTask = (
           if (responseType.status === 200) {
             mixpanel.track(TRANSACTION_RESUME3DS2_SUCCESS.value, {
               EVENT_ID: TRANSACTION_RESUME3DS2_SUCCESS.value,
-              idTransaction,
             });
           } else {
             mixpanel.track(TRANSACTION_RESUME3DS2_RESP_ERR.value, {
@@ -155,7 +151,6 @@ export const checkStatusTask = (
 ): TaskEither<UNKNOWN, TransactionStatusResponse> => {
   mixpanel.track(TRANSACTION_POLLING_CHECK_INIT.value, {
     EVENT_ID: TRANSACTION_POLLING_CHECK_INIT.value,
-    idTransaction: transactionId,
   });
   return tryCatch(
     () =>
@@ -188,13 +183,11 @@ export const checkStatusTask = (
           if (responseType.status === 200) {
             mixpanel.track(TRANSACTION_POLLING_CHECK_SUCCESS.value, {
               EVENT_ID: TRANSACTION_POLLING_CHECK_SUCCESS.value,
-              idTransaction: transactionId,
             });
             return taskEither.of(responseType.value);
           } else {
             mixpanel.track(TRANSACTION_POLLING_CHECK_RESP_ERR.value, {
               EVENT_ID: TRANSACTION_POLLING_CHECK_RESP_ERR.value,
-              idTransaction: transactionId,
             });
             return fromLeft(UNKNOWN.value);
           }
