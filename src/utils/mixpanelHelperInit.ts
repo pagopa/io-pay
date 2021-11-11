@@ -165,7 +165,7 @@ if (ENV === 'develop') {
     api_host: 'https://api-eu.mixpanel.com',
     ip: false,
     persistence: 'localStorage',
-    property_blacklist: ['$current_url', '$initial_referrer'],
+    property_blacklist: ['$current_url', '$initial_referrer', '$referrer'],
   });
 }
 
