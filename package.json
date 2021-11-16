@@ -1,6 +1,6 @@
 {
   "name": "io-pay",
-  "version": "2.4.37",
+  "version": "2.4.38",
   "main": "index.js",
   "license": "MIT",
   "pagopa_api": "openapi/api.yml",
