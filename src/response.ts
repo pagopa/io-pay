@@ -148,7 +148,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // set isDirectAcquirer to decide the final outcome
-  const isDirectAcquirer: boolean | undefined = WalletSession.decode(sessionStorage.getItem('wallet')).fold(
+  const isDirectAcquirer: boolean | undefined = WalletSession.decode(
+    JSON.parse(sessionStorage.getItem('wallet') || ''),
+  ).fold(
     _ => undefined,
     wallet => wallet.psp.directAcquirer,
   );
