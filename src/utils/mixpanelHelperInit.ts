@@ -190,7 +190,7 @@ global.OptanonWrapper = function () {
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (ENV === 'develop' && canIUseMixpanel() === false) {
+    if (ENV === 'develop' || canIUseMixpanel() === false) {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {
