@@ -12,6 +12,10 @@ parameters:
     type: string
     default: ''
 
+  - name: 'timeout'
+    type: string
+    default: '10000'
+
 steps:
   - script: |
       yarn generate
@@ -27,5 +31,5 @@ steps:
       IO_PAY_PAYMENT_MANAGER_HOST: ${{ parameters.api_host }}
       IO_PAY_FUNCTIONS_HOST: ${{ parameters.functions_host }}
       IO_PAY_ENV: ${{ parameters.env }}
-      IO_PAY_API_TIMEOUT: $(IO_PAY_API_TIMEOUT)
+      IO_PAY_API_TIMEOUT: ${{ parameters.timeout }}
     displayName: 'Build files'
