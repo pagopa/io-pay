@@ -200,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       checkEl.removeAttribute('data-checked');
     }
+    fieldsCheck();
   });
 
   privacyToggler?.addEventListener('click', function () {
