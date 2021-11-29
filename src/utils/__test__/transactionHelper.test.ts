@@ -8,6 +8,7 @@ import { left, right } from 'fp-ts/lib/Either';
   IO_PAY_PAYMENT_MANAGER_HOST: 'http://localhost:8080',
   IO_PAY_FUNCTIONS_HOST: 'http://localhost:7071',
   IO_PAY_ENV: 'develop',
+  IO_PAY_API_TIMEOUT: '10000',
 } as any;
 
 // eslint-disable-next-line functional/immutable-data
