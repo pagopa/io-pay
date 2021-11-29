@@ -4,6 +4,7 @@ const puppeteerPreset = require('jest-puppeteer/jest-preset');
 module.exports = {
   ...typescriptPreset,
   ...puppeteerPreset,
+  testEnvironment: 'jsdom',
   testRegex: '__integrations__.*integration.test.*',
   testPathIgnorePatterns: ['dist', '/node_modules'],
   setupFiles: ['dotenv/config'],

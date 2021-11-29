@@ -9,6 +9,15 @@ import { fromNullable } from 'fp-ts/lib/Option';
 import nodeFetch from 'node-fetch';
 
 import { createHttpTerminator } from 'http-terminator';
+
+// eslint-disable-next-line no-underscore-dangle,functional/immutable-data
+(window as any)._env_ = {
+  IO_PAY_API_TIMEOUT: '10000',
+  IO_PAY_PAYMENT_MANAGER_HOST: 'http://localhost:8080',
+  IO_PAY_ENV: 'develop',
+  IO_PAY_FUNCTIONS_HOST: 'http://localhost:7071',
+};
+
 import { retryingFetch } from '../utils/fetch';
 
 import { Client, createClient } from '../../generated/definitions/pagopa/client';
