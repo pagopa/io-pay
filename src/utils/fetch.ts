@@ -8,14 +8,16 @@ import { calculateExponentialBackoffInterval } from 'italia-ts-commons/lib/backo
 import { AbortableFetch, retriableFetch, setFetchTimeout, toFetch } from 'italia-ts-commons/lib/fetch';
 import { RetriableTask, TransientError, withRetries } from 'italia-ts-commons/lib/tasks';
 import { Millisecond } from 'italia-ts-commons/lib/units';
+import { getConfigOrThrow } from './config';
 
 //
 // Returns a fetch wrapped with timeout and retry logic
 //
+const API_TIMEOUT = getConfigOrThrow().IO_PAY_API_TIMEOUT as Millisecond;
 
 export function retryingFetch(
   fetchApi: typeof fetch,
-  timeout: Millisecond = 1000 as Millisecond,
+  timeout: Millisecond = API_TIMEOUT,
   maxRetries: number = 3,
 ): typeof fetch {
   // a fetch that can be aborted and that gets cancelled after fetchTimeoutMs
@@ -81,7 +83,7 @@ export const constantPollingWithPromisePredicateFetch = (
   shouldAbort: Promise<boolean>,
   retries: number,
   delay: number,
-  timeout: Millisecond = 1000 as Millisecond,
+  timeout: Millisecond = API_TIMEOUT,
   condition: (r: Response) => Promise<boolean>,
 ) => {
   // fetch client that can be aborted for timeout
@@ -111,7 +113,7 @@ export const transientConfigurableFetch = (
     numberOfRetries: 3,
     httpCodeMapToTransient: 429,
     delay: 10 as Millisecond,
-    timeout: 1000 as Millisecond,
+    timeout: API_TIMEOUT,
   },
 ) => {
   const abortableFetch = AbortableFetch(myFetch);

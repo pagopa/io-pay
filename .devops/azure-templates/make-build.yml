@@ -20,10 +20,12 @@ steps:
       echo 'IO_PAY_PAYMENT_MANAGER_HOST: $IO_PAY_PAYMENT_MANAGER_HOST'
       echo 'IO_PAY_FUNCTIONS_HOST: $IO_PAY_FUNCTIONS_HOST'
       echo 'IO_PAY_ENV: $IO_PAY_ENV'
+      echo 'IO_PAY_API_TIMEOUT: $IO_PAY_API_TIMEOUT'
       chmod +x env.sh && source env.sh
       yarn build
     env:
       IO_PAY_PAYMENT_MANAGER_HOST: ${{ parameters.api_host }}
       IO_PAY_FUNCTIONS_HOST: ${{ parameters.functions_host }}
       IO_PAY_ENV: ${{ parameters.env }}
+      IO_PAY_API_TIMEOUT: $(IO_PAY_API_TIMEOUT)
     displayName: 'Build files'

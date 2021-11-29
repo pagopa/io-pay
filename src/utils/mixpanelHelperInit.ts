@@ -153,44 +153,25 @@ export const PAYMENT_ACTION_DELETE_RESP_ERR = t.literal('PAYMENT_ACTION_DELETE_R
 export type PAYMENT_ACTION_DELETE_RESP_ERR = t.TypeOf<typeof PAYMENT_ACTION_DELETE_RESP_ERR>;
 export const PAYMENT_ACTION_DELETE_SUCCESS = t.literal('PAYMENT_ACTION_DELETE_SUCCESS');
 export type PAYMENT_ACTION_DELETE_SUCCESS = t.TypeOf<typeof PAYMENT_ACTION_DELETE_SUCCESS>;
-declare const OneTrust: any;
-declare const OnetrustActiveGroups: string;
-const global = window as any;
-const targCookiesGroup = 'C0004';
-const activeGroups = OnetrustActiveGroups;
 
 const ENV = getConfigOrThrow().IO_PAY_ENV;
 
-function canIUseMixpanel(): boolean {
-  return activeGroups.indexOf(targCookiesGroup) > -1 ? true : false;
-}
-
-const mixpanelInit = function (): void {
-  if (ENV === 'develop') {
-    // eslint-disable-next-line no-console
-    console.log(`Mixpanel events mock on console log. See IO_PAY_ENV=${process.env.IO_PAY_ENV}`);
-  } else {
-    init('c3db8f517102d7a7ebd670c9da3e05c4', {
-      api_host: 'https://api-eu.mixpanel.com',
-      ip: false,
-      persistence: 'localStorage',
-      property_blacklist: ['$current_url', '$initial_referrer', '$referrer'],
-    });
-  }
-};
-// OneTrust callback
-// eslint-disable-next-line functional/immutable-data
-global.OptanonWrapper = function () {
-  OneTrust.OnConsentChanged(function () {
-    if (canIUseMixpanel()) {
-      mixpanelInit();
-    }
+// ini MIX TODO: enable on deploy
+if (ENV === 'develop') {
+  // eslint-disable-next-line no-console
+  console.log(`Mixpanel events mock on console log. See IO_PAY_ENV=${process.env.IO_PAY_ENV}`);
+} else {
+  init('c3db8f517102d7a7ebd670c9da3e05c4', {
+    api_host: 'https://api-eu.mixpanel.com',
+    ip: false,
+    persistence: 'localStorage',
+    property_blacklist: ['$current_url', '$initial_referrer', '$referrer'],
   });
-};
+}
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (ENV === 'develop' || canIUseMixpanel() === false) {
+    if (ENV === 'develop') {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {

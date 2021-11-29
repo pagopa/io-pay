@@ -27,14 +27,16 @@ import { ErrorsType, errorHandler } from './js/errorhandler';
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from './utils/checkHelper';
 import { buttonDisabler, buttonEnabler } from './js/buttonutils';
 
+const conf = getConfigOrThrow();
+
 const iopayportalClient: IoPayPortalClient.Client = IoPayPortalClient.createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_FUNCTIONS_HOST,
-  fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+  baseUrl: conf.IO_PAY_FUNCTIONS_HOST,
+  fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
 });
 
 const pmClient: PmClient.Client = PmClient.createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
-  fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+  baseUrl: conf.IO_PAY_PAYMENT_MANAGER_HOST,
+  fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
 });
 
 // eslint-disable-next-line sonarjs/cognitive-complexity

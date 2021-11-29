@@ -27,9 +27,11 @@ import {
 } from './utils/mixpanelHelperInit';
 import { ErrorsType, errorHandler } from './js/errorhandler';
 
+const conf = getConfigOrThrow();
+
 const pmClient = createClient({
-  baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
-  fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+  baseUrl: conf.IO_PAY_PAYMENT_MANAGER_HOST,
+  fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
 });
 
 // eslint-disable-next-line sonarjs/cognitive-complexity

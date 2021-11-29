@@ -43,9 +43,11 @@ import { buttonDisabler, buttonEnabler } from './js/buttonutils';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', () => {
+  const conf = getConfigOrThrow();
+
   const pmClient = createClient({
-    baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
-    fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+    baseUrl: conf.IO_PAY_PAYMENT_MANAGER_HOST,
+    fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
   });
 
   const privacyToggler = document.getElementById('privacyToggler') || null;

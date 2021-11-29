@@ -23,10 +23,11 @@ import { ErrorsType, errorHandler } from './errorhandler';
 export async function actionsCheck() {
   document.body.classList.add('loading');
 
+  const conf = getConfigOrThrow();
   // This instance on PM Client calls the  of PM
   const pmClient = createClient({
-    baseUrl: getConfigOrThrow().IO_PAY_PAYMENT_MANAGER_HOST,
-    fetchApi: retryingFetch(fetch, 2000 as Millisecond, 3),
+    baseUrl: conf.IO_PAY_PAYMENT_MANAGER_HOST,
+    fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
   });
 
   const checkDataStored: string | null = sessionStorage.getItem('checkData') || null;
