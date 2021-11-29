@@ -156,8 +156,14 @@ export type PAYMENT_ACTION_DELETE_SUCCESS = t.TypeOf<typeof PAYMENT_ACTION_DELET
 declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
 const global = window as any;
+const targCookiesGroup = 'C0004';
+const activeGroups = OnetrustActiveGroups;
 
 const ENV = getConfigOrThrow().IO_PAY_ENV;
+
+function canIUseMixpanel(): boolean {
+  return activeGroups.indexOf(targCookiesGroup) > -1 ? true : false;
+}
 
 const mixpanelInit = function (): void {
   if (ENV === 'develop') {
@@ -176,9 +182,7 @@ const mixpanelInit = function (): void {
 // eslint-disable-next-line functional/immutable-data
 global.OptanonWrapper = function () {
   OneTrust.OnConsentChanged(function () {
-    const targCookiesGroup = 'C0004';
-    const activeGroups = OnetrustActiveGroups;
-    if (activeGroups.indexOf(targCookiesGroup) > -1) {
+    if (canIUseMixpanel()) {
       mixpanelInit();
     }
   });
@@ -186,7 +190,7 @@ global.OptanonWrapper = function () {
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (ENV === 'develop') {
+    if (ENV === 'develop' && canIUseMixpanel() === false) {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {
