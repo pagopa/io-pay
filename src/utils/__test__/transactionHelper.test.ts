@@ -10,6 +10,9 @@ import { left, right } from 'fp-ts/lib/Either';
   IO_PAY_ENV: 'develop',
 } as any;
 
+// eslint-disable-next-line functional/immutable-data
+(global as any).OnetrustActiveGroups = '';
+
 import {
   checkStatusTask,
   nextTransactionStep,
