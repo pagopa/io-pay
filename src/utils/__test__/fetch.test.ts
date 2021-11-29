@@ -4,6 +4,13 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 import 'abort-controller/polyfill';
 import ServerMock from 'mock-http-server';
 import nodeFetch from 'node-fetch';
+// eslint-disable-next-line no-underscore-dangle,functional/immutable-data
+(global as any).window._env_ = {
+  IO_PAY_PAYMENT_MANAGER_HOST: 'http://localhost:8080',
+  IO_PAY_FUNCTIONS_HOST: 'http://localhost:7071',
+  IO_PAY_ENV: 'develop',
+  IO_PAY_API_TIMEOUT: '10000',
+};
 import { retryingFetch, transientConfigurableFetch, ITransientFetchOpts } from '../fetch';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,functional/immutable-data
