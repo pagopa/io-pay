@@ -55,28 +55,28 @@ describe('PM Client', () => {
     await myBrowser.close();
   });
 
-  it('should retry 3 times on start-session', async () => {
-    const pmTab = await myBrowser.newPage();
+//   it('should retry 3 times on start-session', async () => {
+//     const pmTab = await myBrowser.newPage();
 
-    // eslint-disable-next-line functional/no-let
-    let requestCounter = 0;
+//     // eslint-disable-next-line functional/no-let
+//     let requestCounter = 0;
 
-    // Intercept requests to count calls to start-session
-    await pmTab.setRequestInterception(true);
-    pmTab.on('request', async request => {
-      if (request.method() === 'OPTIONS') {
-        requestCounter++;
-      }
-      await request.continue();
-    });
+//     // Intercept requests to count calls to start-session
+//     await pmTab.setRequestInterception(true);
+//     pmTab.on('request', async request => {
+//       if (request.method() === 'OPTIONS') {
+//         requestCounter++;
+//       }
+//       await request.continue();
+//     });
 
-    const serverResponse = await pmTab.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html`);
+//     const serverResponse = await pmTab.goto(`http://${SRV_HOST}:${SRV_PORT}/index.html`);
 
-    await new Promise(resolve => setTimeout(resolve, 4000));
+//     await new Promise(resolve => setTimeout(resolve, 4000));
 
-    expect(serverResponse?.status()).toEqual(200);
-    expect(requestCounter).toEqual(3);
+//     expect(serverResponse?.status()).toEqual(200);
+//     expect(requestCounter).toEqual(3);
 
-    await pmTab.close();
-  });
-});
+//     await pmTab.close();
+//   });
+// });
