@@ -447,9 +447,9 @@ body {
 
 //CHOSEPSP
 .windowcont__psp {
-  color: #5c6f82;
+  //color: #5c6f82;
 
-  &__select .h3 {
+  &__select .h3 + p {
     color: $text-color;
   }
   &__item {
