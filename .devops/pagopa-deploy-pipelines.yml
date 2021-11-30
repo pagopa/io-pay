@@ -199,7 +199,7 @@ stages:
               functions_host: 'https://api.platform.pagopa.it'
               api_host: 'https://wisp2.pagopa.gov.it'
               env: 'PROD'
-              timeout: '10000'
+              timeout: '16000'
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: BundlePROD
