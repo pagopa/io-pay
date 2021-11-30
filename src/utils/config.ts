@@ -21,8 +21,8 @@ export const IConfig = t.interface({
 const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
   // eslint-disable-next-line no-underscore-dangle
   ...(window as any)._env_,
-  // eslint-disable-next-line radix,no-underscore-dangle
-  IO_PAY_API_TIMEOUT: parseInt((window as any)._env_.IO_PAY_API_TIMEOUT),
+  // eslint-disable-next-line no-underscore-dangle
+  IO_PAY_API_TIMEOUT: parseInt((window as any)._env_.IO_PAY_API_TIMEOUT, 10),
 });
 
 /**

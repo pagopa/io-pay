@@ -3,8 +3,6 @@ import { Browser, launch } from 'puppeteer';
 import { createHttpTerminator } from 'http-terminator';
 import stubServer from './stubServer';
 
-jest.setTimeout(30000);
-
 describe('Local server stub', () => {
   const PORT = process.env.FETCH_STUB_SRV_PORT ? parseInt(process.env.FETCH_STUB_SRV_PORT, 10) : 50000;
   const HOST = process.env.FETCH_STUB_SRV_HOST as string;
