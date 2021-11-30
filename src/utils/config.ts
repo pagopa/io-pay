@@ -13,6 +13,7 @@ export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.interface({
   IO_PAY_PAYMENT_MANAGER_HOST: NonEmptyString,
   IO_PAY_FUNCTIONS_HOST: NonEmptyString,
+  IO_PAY_API_TIMEOUT: t.number,
   IO_PAY_ENV: NonEmptyString,
 });
 
@@ -20,6 +21,8 @@ export const IConfig = t.interface({
 const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
   // eslint-disable-next-line no-underscore-dangle
   ...(window as any)._env_,
+  // eslint-disable-next-line no-underscore-dangle
+  IO_PAY_API_TIMEOUT: parseInt((window as any)._env_.IO_PAY_API_TIMEOUT, 10),
 });
 
 /**

@@ -102,6 +102,7 @@ stages:
               functions_host: 'https://api.uat.platform.pagopa.it'
               api_host: 'https://acardste.vaservices.eu'
               env: 'UAT'
+              timeout: '10000'
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: BundleUAT
@@ -198,6 +199,7 @@ stages:
               functions_host: 'https://api.platform.pagopa.it'
               api_host: 'https://wisp2.pagopa.gov.it'
               env: 'PROD'
+              timeout: '10000'
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: BundlePROD

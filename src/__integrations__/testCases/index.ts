@@ -1,5 +1,12 @@
 import { Millisecond } from 'italia-ts-commons/lib/units';
 import { createClient } from '../../../generated/definitions/pagopa/client';
+// eslint-disable-next-line functional/immutable-data, no-underscore-dangle
+(global as any).window._env_ = {
+  IO_PAY_PAYMENT_MANAGER_HOST: 'http://localhost:8080',
+  IO_PAY_FUNCTIONS_HOST: 'http://localhost:7071',
+  IO_PAY_ENV: 'develop',
+  IO_PAY_API_TIMEOUT: '10000',
+} as any;
 import { transientConfigurableFetch } from '../../utils/fetch';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -9,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       numberOfRetries: 3,
       httpCodeMapToTransient: 429,
       delay: 10 as Millisecond,
-      timeout: 4000 as Millisecond,
+      timeout: 10000 as Millisecond,
     }),
   });
 

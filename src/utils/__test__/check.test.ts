@@ -2,6 +2,13 @@ import { Millisecond } from 'italia-ts-commons/lib/units';
 import nodeFetch from 'node-fetch';
 import { right } from 'fp-ts/lib/Either';
 import { Client, createClient } from '../../../generated/definitions/iopayportal/client';
+// eslint-disable-next-line no-underscore-dangle,functional/immutable-data
+(global as any).window._env_ = {
+  IO_PAY_PAYMENT_MANAGER_HOST: 'http://localhost:8080',
+  IO_PAY_FUNCTIONS_HOST: 'http://localhost:7071',
+  IO_PAY_ENV: 'develop',
+  IO_PAY_API_TIMEOUT: '10000',
+};
 import { retryingFetch } from '../fetch';
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from '../checkHelper';
 

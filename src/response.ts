@@ -73,7 +73,7 @@ const showFinalResult = (outcome: OutcomeEnumType) => {
  */
 const retries: number = 10;
 const delay: number = 3000;
-const timeout: Millisecond = 2000 as Millisecond;
+const timeout: Millisecond = config.IO_PAY_API_TIMEOUT as Millisecond;
 
 /**
  * Payment Manager Client with polling until the transaction has the methodUrl or xpayHtml
@@ -120,7 +120,7 @@ const paymentManagerClientWithPollingOnFinalStatus: Client = createClient({
  */
 const pmClient: Client = createClient({
   baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
-  fetchApi: retryingFetch(fetch, 5000 as Millisecond, 5),
+  fetchApi: retryingFetch(fetch, timeout as Millisecond, 5),
 });
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
