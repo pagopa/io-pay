@@ -13,15 +13,11 @@ html(lang='it')
             .main.flex-fill.container
                 .row.justify-content-md-center
                     .windowcont.px-4.px-md-0
-                        .d-flex.mt-2.mt-md-0
-                            .windowcont__accepted(data-lang="text.label.acceptedCards") Circuiti accettati:
-                            //-include includes/langselector.pug
-                            // CARDS' LIST
-                        include includes/cards.pug
+                        h1.h3 Dati della carta
                         .creditform
                             form.my-5(id="creditcardform", autocomplete="off")
                                 .form-group.mb-2.mb-md-4
-                                    .input-group.mt-2.mt-md-4
+                                    .input-group.mt-4
                                         .input-group-prepend
                                             .input-group-text
                                                 svg.icon.icon-sm
@@ -30,7 +26,7 @@ html(lang='it')
                                         input.form-control(type="text", placeholder="Mario Rossi", name="creditcardname",  id="creditcardname", maxlength="42", required, autocomplete="cc-name")
                                         .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.name.label", aria-hidden="true") titolare carta
                                         .reset-flex-flow.text-muted.mt-1.custom-label--error(id="creditcardnameError", aria-hidden="true", tabindex="-1") Inserisci come riportato sulla carta
-                                    .input-group.mt-2.mt-md-4
+                                    .input-group.mt-4
                                         .input-group-prepend
                                             .input-group-text
                                                 svg.icon.icon-sm(id="creditcardholdericon")
@@ -50,7 +46,7 @@ html(lang='it')
                                                     use(href="/assets/icons/sprite.svg#it-password-visible", class="showcontent")
                                         .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.pan.label", aria-hidden="true") numero carta
                                         .reset-flex-flow.text-muted.mt-1.custom-label--error(id="creditcardnumberError", aria-hidden="true", tabindex="-1") Inserisci un numero valido
-                                    .form-row.mt-2.mt-md-4
+                                    .form-row.mt-4
                                         .col-6
                                             .input-group
                                                 .input-group-prepend
