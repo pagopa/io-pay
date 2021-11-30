@@ -157,13 +157,8 @@ declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
 const global = window as any;
 const targCookiesGroup = 'C0004';
-const activeGroups = OnetrustActiveGroups;
 
 const ENV = getConfigOrThrow().IO_PAY_ENV;
-
-function canIUseMixpanel(): boolean {
-  return activeGroups.indexOf(targCookiesGroup) > -1 ? true : false;
-}
 
 const mixpanelInit = function (): void {
   if (ENV === 'develop') {
@@ -182,19 +177,31 @@ const mixpanelInit = function (): void {
 // eslint-disable-next-line functional/immutable-data
 global.OptanonWrapper = function () {
   OneTrust.OnConsentChanged(function () {
-    if (canIUseMixpanel()) {
+    const activeGroups = OnetrustActiveGroups;
+    if (activeGroups.indexOf(targCookiesGroup) > -1) {
       mixpanelInit();
     }
   });
 };
+// check mixpanel cookie consent in cookie
+const OTCookieValue: string = document.cookie.split('; ').find(row => row.startsWith('OptanonConsent=')) || '';
+const checkValue = `${targCookiesGroup}%3A1`;
+if (OTCookieValue.indexOf(checkValue) > -1) {
+  mixpanelInit();
+}
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (ENV === 'develop' || canIUseMixpanel() === false) {
+    if (ENV === 'develop') {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {
-      track(event_name, properties);
+      try {
+        track(event_name, properties);
+      } catch (_) {
+        // eslint-disable-next-line no-console
+        console.log(event_name, properties);
+      }
     }
   },
 };
