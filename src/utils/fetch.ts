@@ -113,7 +113,7 @@ export const transientConfigurableFetch = (
     numberOfRetries: 3,
     httpCodeMapToTransient: 429,
     delay: 10 as Millisecond,
-    timeout: API_TIMEOUT,
+    timeout: Millisecond = API_TIMEOUT,
   },
 ) => {
   const abortableFetch = AbortableFetch(myFetch);
