@@ -41,6 +41,10 @@ export async function actionsCheck() {
     // TRICK to listen when a user want use back button to leave webapp
     const actualUrl = `${window.location.origin}${window.location.pathname}`;
     history.pushState(null, '', `${actualUrl}${hashUrlName}`);
+    if ('scrollRestoration' in history) {
+      // eslint-disable-next-line functional/immutable-data
+      history.scrollRestoration = 'manual';
+    }
   }
 
   // eslint-disable-next-line functional/immutable-data
