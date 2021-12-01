@@ -4,7 +4,7 @@ import { tryCatch } from 'fp-ts/lib/TaskEither';
 import { toError } from 'fp-ts/lib/Either';
 
 import { createClient } from '../../generated/definitions/pagopa/client';
-import { retryingFetch } from '../utils/fetch';
+import { constantPollingWithPromisePredicateFetch, retryingFetch } from '../utils/fetch';
 import {
   mixpanel,
   PAYMENT_CHECK_INIT,
@@ -35,9 +35,33 @@ export async function actionsCheck() {
   const idPaymentByQS: string | null = getUrlParameter('p') !== '' ? getUrlParameter('p') : null;
   const idPayment: string | null = checkDataStored != null ? JSON.parse(checkDataStored).idPayment : idPaymentByQS;
   const origin: string | null = getUrlParameter('origin') !== '' ? getUrlParameter('origin') : null;
+  const hashUrlName: string = '#start';
+
+  function changeUrl(): void {
+    // TRICK to listen when a user want use back button to leave webapp
+    const actualUrl = `${window.location.origin}${window.location.pathname}`;
+    history.pushState(null, '', `${actualUrl}${hashUrlName}`);
+  }
+
+  // eslint-disable-next-line functional/immutable-data
+  (window as any).onpopstate = function () {
+    if (
+      window.confirm(
+        'Proseguendo, abbandonerai il pagamento in corso. Per effettuare un nuovo tentativo dovrai attendere diversi minuti.',
+      )
+    ) {
+      window.sessionStorage.clear();
+      // eslint-disable-next-line functional/immutable-data
+      window.location.href = 'https://checkout.pagopa.it/';
+    } else {
+      changeUrl();
+    }
+  };
 
   // Trying to avoid a new call to endpoint if we've data stored
   if (idPaymentStored === null) {
+    changeUrl();
+
     mixpanel.track(PAYMENT_CHECK_INIT.value, { EVENT_ID: PAYMENT_CHECK_INIT.value });
     fromNullable(idPayment).fold(
       // If undefined
