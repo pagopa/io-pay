@@ -4,7 +4,7 @@ script(src="../node_modules/promise-polyfill/dist/polyfill.min.js")
 script(src="../node_modules/whatwg-fetch/dist/fetch.umd.js")
 script(src="../node_modules/abort-controller/dist/abort-controller.umd.js")
 script(src="env-config.js")
-if process.env.IO_PAY_ENV=='production'
+if process.env.IO_PAY_ENV=='PROD'
     script(src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js", type="text/javascript", charset="UTF-8", data-domain-script="c4394b6a-86ce-428c-a3d3-5b81cabbfed4-test")
 else 
     script(src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js", type="text/javascript", charset="UTF-8", data-domain-script="c4394b6a-86ce-428c-a3d3-5b81cabbfed4-test")
