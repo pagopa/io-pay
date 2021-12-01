@@ -197,7 +197,11 @@ export const mixpanel = {
       console.log(event_name, properties);
     } else {
       try {
-        track(event_name, properties);
+        if (ENV === 'UAT') {
+          track(event_name, { ...properties, ...{ environment: 'UAT' } });
+        } else {
+          track(event_name, properties);
+        }
       } catch (_) {
         // eslint-disable-next-line no-console
         console.log(event_name, properties);
