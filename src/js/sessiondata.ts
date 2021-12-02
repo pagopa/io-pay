@@ -56,7 +56,7 @@ export async function actionsCheck() {
     ) {
       window.sessionStorage.clear();
       // eslint-disable-next-line functional/immutable-data
-      window.location.href = 'https://checkout.pagopa.it/';
+      window.location.href = '/';
     } else {
       changeUrl();
     }
