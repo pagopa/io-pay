@@ -6,7 +6,8 @@ import { initDropdowns } from './js/dropdowns';
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
   const useremail: HTMLInputElement | null = (document.getElementById('useremail') as HTMLInputElement) || null;
-  const useremailCheck: HTMLInputElement | null = (document.getElementById('useremailCheck') as HTMLInputElement) || null;
+  const useremailCheck: HTMLInputElement | null =
+    (document.getElementById('useremailCheck') as HTMLInputElement) || null;
   const emailform: HTMLElement | null = document.getElementById('emailform') || null;
   const emailformInputs: NodeListOf<HTMLInputElement> | undefined = emailform?.querySelectorAll('input');
   const emailformSubmit: HTMLElement | null = emailform?.querySelector("button[type='submit']") || null;
