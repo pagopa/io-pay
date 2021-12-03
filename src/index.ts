@@ -6,6 +6,7 @@ import { initDropdowns } from './js/dropdowns';
 // eslint-disable-next-line sonarjs/cognitive-complexity
 document.addEventListener('DOMContentLoaded', async () => {
   const useremail: HTMLInputElement | null = (document.getElementById('useremail') as HTMLInputElement) || null;
+  const useremailCheck: HTMLInputElement | null = (document.getElementById('useremailCheck') as HTMLInputElement) || null;
   const emailform: HTMLElement | null = document.getElementById('emailform') || null;
   const emailformInputs: NodeListOf<HTMLInputElement> | undefined = emailform?.querySelectorAll('input');
   const emailformSubmit: HTMLElement | null = emailform?.querySelector("button[type='submit']") || null;
@@ -63,8 +64,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       toggleValid(inputel, false);
     }
+    if (inputel.value === useremailCheck.value && emailValidation(useremailCheck.value)) {
+      toggleValid(useremailCheck, true);
+    } else if (useremailCheck.value.length > 0) {
+      toggleValid(useremailCheck, false);
+    }
+
     fieldsCheck();
   });
+  // Event to check the second e-mail field
+  useremailCheck?.addEventListener('keyup', function () {
+    const inputel: HTMLInputElement = this as HTMLInputElement;
+
+    if (inputel.value === useremail.value && emailValidation(useremail.value)) {
+      toggleValid(inputel, true);
+    } else {
+      toggleValid(inputel, false);
+    }
+    fieldsCheck();
+  });
+
   // Event to bind Submit button
   emailform?.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -82,7 +101,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (sessionStorage.getItem('useremail') !== null) {
     // eslint-disable-next-line functional/immutable-data
     useremail.value = sessionStorage.getItem('useremail') || '';
+    // eslint-disable-next-line functional/immutable-data
+    useremailCheck.value = sessionStorage.getItem('useremail') || '';
     toggleValid(useremail, true);
+    toggleValid(useremailCheck, true);
     fieldsCheck();
   }
 });
