@@ -27,6 +27,16 @@ html(lang='it')
                                         input.form-control(type="email", placeholder="Il tuo indirizzo email", name="useremail",  id="useremail", required)
                                         .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.name.label", aria-hidden="true") indirizzo email
                                         .reset-flex-flow.text-muted.mt-1.custom-label--error Inserisci un indirizzo email valido
+                                .form-group.mb-2.mb-md-4
+                                    .input-group.mt-4
+                                        .input-group-prepend
+                                            .input-group-text
+                                                svg.icon.icon-sm
+                                                    use(href="/assets/icons/sprite.svg#it-mail")
+                                        label.sr-only(for="useremail", data-lang="textField.name.label") conferma indirizzo email
+                                        input.form-control(type="email", placeholder="Ripeti di nuovo", name="useremail",  id="useremailCheck", required)
+                                        .reset-flex-flow.text-muted.mt-1.custom-label(data-lang="textField.name.label", aria-hidden="true") conferma indirizzo email
+                                        .reset-flex-flow.text-muted.mt-1.custom-label--error Gli indirizzi email devono coincidere
                                     
                                 .windowcont__bottom
                                     .container
