@@ -706,6 +706,10 @@ body {
   opacity: 0;
   user-select: none;
   cursor: pointer;
+
+  &.overflowed {
+    padding-top: 0 !important;
+  }
 }
 
 .tingle-modal--confirm .tingle-modal-box {
@@ -739,6 +743,16 @@ body {
   .xl & {
     @include media-breakpoint-up(md) {
       width: 60vw;
+    }
+  }
+  .overflowed & {
+    height: 100vh;
+    .modalwindow__content {
+      overflow-y: scroll;
+      height: 70vh;
+      @include media-breakpoint-up(md) {
+        height: 80vh;
+      }
     }
   }
 }
