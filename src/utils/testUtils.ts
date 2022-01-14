@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { launch } from 'puppeteer';
 
 export async function getIdPayment(pmControlHost: string, pmControlPort: string) {
@@ -17,6 +18,10 @@ export async function getIdPayment(pmControlHost: string, pmControlPort: string)
 
   await myBrowser.close();
   return idPayment;
+}
+
+export async function getIdPaymentMock(pmMockHost: string, pmMockPort: string) {
+  return (await axios.get(`http://${pmMockHost}:${pmMockPort}/getPaymentId`)).data.idPayment;
 }
 
 export async function setMethodChallengeSteps(pmControlHost: string, pmControlPort: string) {
