@@ -1,18 +1,20 @@
 import * as t from 'io-ts';
 
-const Dettaglio = t.exact(
-  t.interface({
-    IUV: t.string,
+const DettaglioR = t.interface({
+  IUV: t.string,
 
-    codicePagatore: t.string,
+  enteBeneficiario: t.string,
 
-    enteBeneficiario: t.string,
+  importo: t.number,
+});
 
-    importo: t.number,
+const DettaglioO = t.partial({
+  codicePagatore: t.string,
 
-    nomePagatore: t.string,
-  }),
-);
+  nomePagatore: t.string,
+});
+
+const Dettaglio = t.intersection([DettaglioR, DettaglioO]);
 
 type Dettaglio = t.TypeOf<typeof Dettaglio>;
 
@@ -28,18 +30,20 @@ const Amount = t.exact(
 
 type Amount = t.TypeOf<typeof Amount>;
 
-export const PaymentSession = t.exact(
-  t.interface({
-    amount: Amount,
+const PaymentSessionR = t.interface({
+  amount: Amount,
 
-    detailsList: t.readonlyArray(Dettaglio, 'array of Dettaglio'),
+  detailsList: t.readonlyArray(Dettaglio, 'array of Dettaglio'),
 
-    fiscalCode: t.string,
+  idPayment: t.string,
 
-    idPayment: t.string,
+  subject: t.string,
+});
 
-    subject: t.string,
-  }),
-);
+const PaymentSessionO = t.partial({
+  fiscalCode: t.string,
+});
+
+export const PaymentSession = t.intersection([PaymentSessionR, PaymentSessionO]);
 
 export type PaymentSession = t.TypeOf<typeof PaymentSession>;
