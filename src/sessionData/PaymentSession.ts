@@ -28,18 +28,20 @@ const Amount = t.exact(
 
 type Amount = t.TypeOf<typeof Amount>;
 
-export const PaymentSession = t.exact(
-  t.interface({
-    amount: Amount,
+const PaymentSessionR = t.interface({
+  amount: Amount,
 
-    detailsList: t.readonlyArray(Dettaglio, 'array of Dettaglio'),
+  detailsList: t.readonlyArray(Dettaglio, 'array of Dettaglio'),
 
-    fiscalCode: t.string,
+  idPayment: t.string,
 
-    idPayment: t.string,
+  subject: t.string,
+});
 
-    subject: t.string,
-  }),
-);
+const PaymentSessionO = t.partial({
+  fiscalCode: t.string,
+});
+
+export const PaymentSession = t.intersection([PaymentSessionR, PaymentSessionO]);
 
 export type PaymentSession = t.TypeOf<typeof PaymentSession>;
