@@ -1,18 +1,20 @@
 import * as t from 'io-ts';
 
-const Dettaglio = t.exact(
-  t.interface({
-    IUV: t.string,
+const DettaglioR = t.interface({
+  IUV: t.string,
 
-    codicePagatore: t.string,
+  enteBeneficiario: t.string,
 
-    enteBeneficiario: t.string,
+  importo: t.number,
+});
 
-    importo: t.number,
+const DettaglioO = t.partial({
+  codicePagatore: t.string,
 
-    nomePagatore: t.string,
-  }),
-);
+  nomePagatore: t.string,
+});
+
+const Dettaglio = t.intersection([DettaglioR, DettaglioO]);
 
 type Dettaglio = t.TypeOf<typeof Dettaglio>;
 
