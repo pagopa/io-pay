@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const fixedCost: number = wallet?.psp.fixedCost.amount || 0;
   const amount: number | null = checkData?.amount.amount;
-  const totAmount: number = fixedCost && amount ? fixedCost + amount : 0;
+  const totAmount: number = fixedCost >= 0 && amount ? fixedCost + amount : 0;
   const prettyAmount: number = totAmount / 100;
   const prettyfixedCost: number = fixedCost / 100;
 
