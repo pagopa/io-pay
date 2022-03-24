@@ -211,7 +211,7 @@ export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
     () => getOutcomeFromVposStatus(VposResultCodeEnumType.decode(authCode).getOrElse(VposResultCodeEnum.UNKNOWN_ERROR)),
     () => {
       if (idStatus === 4) {
-        return getOutcomeFromNexiResultCode(NexiResultCodeEnum.GENERIC_ERROR);
+        return OutcomeEnum.AUTH_ERROR;
       }
       return getOutcomeFromNexiResultCode(
         NexiResultCodeEnumType.decode(authCode).getOrElse(NexiResultCodeEnum.GENERIC_ERROR),
