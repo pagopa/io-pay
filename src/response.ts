@@ -45,7 +45,11 @@ import {
 const config = getConfigOrThrow();
 
 const handleFinalStatusResult = (idStatus: GENERIC_STATUS, authorizationCode?: string, isDirectAcquirer?: boolean) => {
-  const outcome: OutcomeEnumType = getOutcomeFromAuthcodeAndIsDirectAcquirer(authorizationCode, isDirectAcquirer);
+  const outcome: OutcomeEnumType = getOutcomeFromAuthcodeAndIsDirectAcquirer(
+    authorizationCode,
+    isDirectAcquirer,
+    idStatus,
+  );
   mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
     EVENT_ID: PAYMENT_OUTCOME_CODE.value,
     idStatus,

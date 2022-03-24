@@ -1,6 +1,7 @@
 import { fromPredicate, toError } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { enumType } from 'italia-ts-commons/lib/types';
+import { GENERIC_STATUS } from './TransactionStatesTypes';
 
 export enum OutcomeEnum {
   SUCCESS = '0',
@@ -201,12 +202,19 @@ export const getOutcomeFromVposStatus = (vposResultCode: VposResultCodeEnumType)
 export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
   authCode?: string,
   isDirectAcquirer?: boolean,
+  idStatus?: GENERIC_STATUS,
 ): OutcomeEnumType =>
   fromPredicate(
     directAcquirer => directAcquirer === true,
     toError,
   )(isDirectAcquirer).fold(
     () => getOutcomeFromVposStatus(VposResultCodeEnumType.decode(authCode).getOrElse(VposResultCodeEnum.UNKNOWN_ERROR)),
-    () =>
-      getOutcomeFromNexiResultCode(NexiResultCodeEnumType.decode(authCode).getOrElse(NexiResultCodeEnum.GENERIC_ERROR)),
+    () => {
+      if (idStatus === 4) {
+        return getOutcomeFromNexiResultCode(NexiResultCodeEnum.GENERIC_ERROR);
+      }
+      return getOutcomeFromNexiResultCode(
+        NexiResultCodeEnumType.decode(authCode).getOrElse(NexiResultCodeEnum.GENERIC_ERROR),
+      );
+    },
   );
