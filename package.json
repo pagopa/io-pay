@@ -67,7 +67,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-sonarjs": "^0.5.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "faker": "^5.1.0",
     "fp-ts": "1.17.4",
     "http-terminator": "^2.0.3",
